@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================
+   MOANA TURISMO — Global Styles
+   Paleta: Naranja #F5A54A | Teal #A8D5C8 | Azul #1A5C8A
+   ============================================= */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-moana-dark bg-white antialiased;
+  }
+
+  h1, h2, h3 {
+    @apply font-display;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  /* ---- Botones ---- */
+  .btn-primary {
+    @apply bg-moana-orange hover:bg-moana-orange-dark text-white font-semibold
+           px-6 py-3 rounded-full transition-all duration-200
+           shadow-moana-orange hover:shadow-lg hover:-translate-y-0.5
+           active:translate-y-0 active:shadow-none;
+  }
+
+  .btn-secondary {
+    @apply bg-white border-2 border-moana-orange text-moana-orange
+           hover:bg-moana-orange hover:text-white font-semibold
+           px-6 py-3 rounded-full transition-all duration-200;
+  }
+
+  .btn-blue {
+    @apply bg-moana-blue hover:bg-moana-blue-light text-white font-semibold
+           px-6 py-3 rounded-full transition-all duration-200
+           shadow-moana hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .btn-whatsapp {
+    @apply bg-[#25D366] hover:bg-[#1DAA57] text-white font-semibold
+           px-6 py-3 rounded-full transition-all duration-200
+           shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2;
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover
+           transition-all duration-300 overflow-hidden;
+  }
+
+  .card-hover {
+    @apply hover:-translate-y-1;
+  }
+
+  /* ---- Price Tag ---- */
+  .price-tag {
+    @apply bg-moana-blue text-white px-4 py-3 rounded-xl;
+  }
+
+  .price-desde {
+    @apply text-xs font-medium uppercase tracking-widest opacity-80;
+  }
+
+  .price-amount {
+    @apply text-2xl font-bold font-display text-moana-orange;
+  }
+
+  .price-unit {
+    @apply text-xs opacity-70 mt-0.5;
+  }
+
+  /* ---- Section titles ---- */
+  .section-title {
+    @apply font-display text-3xl md:text-4xl font-bold text-moana-blue;
+  }
+
+  .section-subtitle {
+    @apply text-moana-gray text-lg mt-3;
+  }
+
+  /* ---- Badge ---- */
+  .badge {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-orange {
+    @apply badge bg-moana-orange-light text-moana-orange-dark;
+  }
+
+  .badge-teal {
+    @apply badge bg-moana-teal text-moana-blue;
+  }
+
+  .badge-blue {
+    @apply badge bg-moana-blue-pale text-moana-blue;
+  }
+
+  /* ---- Nav link ---- */
+  .nav-link {
+    @apply text-moana-dark hover:text-moana-orange font-medium
+           transition-colors duration-200 relative;
+  }
+
+  .nav-link.active {
+    @apply text-moana-orange;
+  }
+
+  /* ---- Input fields ---- */
+  .input-field {
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3
+           focus:outline-none focus:ring-2 focus:ring-moana-orange focus:border-transparent
+           transition-all duration-200 bg-white text-moana-dark;
+  }
+
+  .label-field {
+    @apply block text-sm font-semibold text-moana-blue mb-1.5;
+  }
+
+  /* ---- Section patterns ---- */
+  .section-white {
+    @apply bg-white py-16 md:py-20;
+  }
+
+  .section-cream {
+    @apply bg-moana-cream py-16 md:py-20;
+  }
+
+  .section-pale-blue {
+    @apply bg-moana-blue-pale py-16 md:py-20;
+  }
+
+  .section-blue {
+    @apply bg-moana-blue py-16 md:py-20 text-white;
+  }
+
+  /* ---- Overlay gradients ---- */
+  .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(26, 92, 138, 0.45) 0%,
+      rgba(26, 92, 138, 0.20) 40%,
+      rgba(26, 92, 138, 0.60) 100%
+    );
+  }
+
+  /* ---- Container ---- */
+  .container-moana {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-up-delay-1 {
+    animation: fadeUp 0.6s ease-out 0.15s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-up-delay-2 {
+    animation: fadeUp 0.6s ease-out 0.3s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-up-delay-3 {
+    animation: fadeUp 0.6s ease-out 0.45s forwards;
+    opacity: 0;
+  }
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #A8D5C8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1A5C8A;
+}
+
+/* Cart drawer backdrop */
+.cart-backdrop {
+  backdrop-filter: blur(4px);
+  background: rgba(26, 26, 46, 0.5);
+}
