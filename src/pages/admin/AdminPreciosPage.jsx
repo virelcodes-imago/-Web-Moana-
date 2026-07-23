@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home } from 'lucide-react';
 import db from '../../db/db';
-import { paquetesBase, TEMPORADAS, HOTELES } from '../../data/paquetes';
+import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES } from '../../data/paquetes';
 import { excursionesBase, trasladosBase } from '../../data/extras';
 
 const HABITACIONES_POSADA = [
@@ -297,6 +297,9 @@ export default function AdminPreciosPage() {
   const selectedPkg = paquetesList.find(p => p.id === Number(selectedPaquete));
   const isExcursionOrTraslado = selectedPkg?.noches === null || selectedPkg?.categoria === 'traslados_excursiones' || selectedPkg?.categoria === 'traslados' || selectedPkg?.categoria === 'excursiones';
   const isInternationalPkg = selectedPkg?.categoria === 'internacional';
+  const isBuziosPkg = selectedPkg?.categoria === 'buzios' || selectedPkg?.slug?.includes('buzios');
+
+  const temporadasMatrix = isBuziosPkg ? TEMPORADAS_BUZIOS : TEMPORADAS;
   const columnsMatrix = isInternationalPkg
     ? [
         { id: 'economico', label: 'Con Desayuno' },
@@ -660,7 +663,7 @@ export default function AdminPreciosPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {TEMPORADAS.map((t, ti) => (
+                        {temporadasMatrix.map((t, ti) => (
                           <tr key={t.id} className={ti % 2 === 0 ? 'bg-white' : 'bg-moana-cream'}>
                             <td className="px-4 py-3 font-medium text-moana-dark">{t.label}</td>
                             <td className="px-4 py-3 text-center">
@@ -702,7 +705,7 @@ export default function AdminPreciosPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {TEMPORADAS.map((t, ti) => (
+                        {temporadasMatrix.map((t, ti) => (
                           <tr key={t.id} className={ti % 2 === 0 ? 'bg-white' : 'bg-moana-cream'}>
                             <td className="px-4 py-3 font-medium text-moana-dark">{t.label}</td>
                             {columnsMatrix.map((h) => (

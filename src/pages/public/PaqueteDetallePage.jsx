@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, X, ShoppingCart, Moon, ChevronDown, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { paquetesBase, TEMPORADAS, HOTELES } from '../../data/paquetes';
+import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES } from '../../data/paquetes';
 import useCartStore from '../../store/cartStore';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -126,6 +126,9 @@ export default function PaqueteDetallePage() {
       ]
     : HOTELES;
 
+  const isBuzios = paquete?.categoria === 'buzios' || paquete?.slug?.includes('buzios');
+  const TEMPORADA_LIST = isBuzios ? TEMPORADAS_BUZIOS : TEMPORADAS;
+
   const totalGeneral = precio ? precio * pasajeros : null;
 
   return (
@@ -244,7 +247,7 @@ export default function PaqueteDetallePage() {
             <div>
               <label className="label-field">{t('detalle_temporada')}</label>
               <select value={temporada} onChange={(e) => setTemporada(e.target.value)} className="input-field">
-                {TEMPORADAS.map((temp) => <option key={temp.id} value={temp.id}>{temp.label}</option>)}
+                {TEMPORADA_LIST.map((temp) => <option key={temp.id} value={temp.id}>{temp.label}</option>)}
               </select>
             </div>
             {!isExcursionOrTraslado && (

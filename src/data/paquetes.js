@@ -19,6 +19,13 @@ export const TEMPORADAS = [
   { id: 'vacaciones_invierno', label: 'Vacaciones de Invierno' },
 ];
 
+export const TEMPORADAS_BUZIOS = [
+  { id: 'baja', label: 'Abril a Octubre (Temp. Baja)' },
+  { id: 'semana_santa', label: 'Marzo (2da Q) / Noviembre / Dic (1ra Q)' },
+  { id: 'alta', label: 'Enero / Feb / Jul / Marzo (1ra Q)' },
+  { id: 'vacaciones_invierno', label: 'Año Nuevo y Carnaval' },
+];
+
 export const HOTELES = [
   { id: 'economico', label: 'Posada', stars: 0 },
   { id: 'familiar',  label: '2 Estrellas', stars: 2 },

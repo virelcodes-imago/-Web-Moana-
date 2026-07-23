@@ -28,12 +28,21 @@ export default function PackageCard({ paquete }) {
         { id: 'premium',   label: t('card_hotel_premium') },
       ];
 
-  const TEMPORADA_OPTIONS = [
-    { id: 'baja',               label: t('card_temp_baja') },
-    { id: 'alta',               label: t('card_temp_alta') },
-    { id: 'semana_santa',       label: t('card_temp_semana_santa') },
-    { id: 'vacaciones_invierno',label: t('card_temp_invierno') },
-  ];
+  const isBuzios = paquete?.categoria === 'buzios' || paquete?.slug?.includes('buzios');
+
+  const TEMPORADA_OPTIONS = isBuzios
+    ? [
+        { id: 'baja',                label: 'Abril a Octubre (Temp. Baja)' },
+        { id: 'semana_santa',        label: 'Marzo (2da Q) / Noviembre / Dic (1ra Q)' },
+        { id: 'alta',                label: 'Enero / Feb / Jul / Marzo (1ra Q)' },
+        { id: 'vacaciones_invierno', label: 'Año Nuevo y Carnaval' },
+      ]
+    : [
+        { id: 'baja',                label: t('card_temp_baja') },
+        { id: 'alta',                label: t('card_temp_alta') },
+        { id: 'semana_santa',        label: t('card_temp_semana_santa') },
+        { id: 'vacaciones_invierno', label: t('card_temp_invierno') },
+      ];
 
   // Load price from Dexie
   useEffect(() => {
