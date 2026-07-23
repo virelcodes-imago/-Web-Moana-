@@ -23,6 +23,9 @@ db.version(1).stores({
 
   // Configuración de la app (PIN admin, PIN vendedor, etc.)
   config: 'clave',
+
+  // Tarifario exclusivo Posada Moana por temporada y habitacion
+  posadaPrecios: '++id, temporada, habitacion',
 });
 
 export default db;

@@ -201,5 +201,31 @@ export async function seedDatabase() {
   });
   await db.traslados.bulkAdd(trasladosToInsert);
 
+  // 7. Cargar tarifario base de Posada Moana por habitación / temporada
+  const posadaCount = await db.posadaPrecios.count().catch(() => 0);
+  if (posadaCount === 0) {
+    const posadaMatrix = [];
+    const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+    const habitaciones = ['single', 'doble', 'triple', 'cuadruple'];
+    const preciosBaseHab = {
+      baja:               { single: 45, doble: 60, triple: 80, cuadruple: 100 },
+      alta:               { single: 65, doble: 90, triple: 120, cuadruple: 150 },
+      semana_santa:       { single: 75, doble: 100, triple: 135, cuadruple: 170 },
+      finde_largo:        { single: 55, doble: 75, triple: 100, cuadruple: 125 },
+      vacaciones_invierno:{ single: 60, doble: 85, triple: 110, cuadruple: 140 },
+    };
+
+    temporadas.forEach((temp) => {
+      habitaciones.forEach((hab) => {
+        posadaMatrix.push({
+          temporada: temp,
+          habitacion: hab,
+          precio: preciosBaseHab[temp]?.[hab] || 60
+        });
+      });
+    });
+    await db.posadaPrecios.bulkAdd(posadaMatrix).catch(() => {});
+  }
+
   console.log('Sembrado finalizado exitosamente.');
 }

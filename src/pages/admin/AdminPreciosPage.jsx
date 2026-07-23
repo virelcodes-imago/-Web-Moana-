@@ -1,8 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles } from 'lucide-react';
+import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home } from 'lucide-react';
 import db from '../../db/db';
 import { paquetesBase, TEMPORADAS, HOTELES } from '../../data/paquetes';
 import { excursionesBase, trasladosBase } from '../../data/extras';
+
+const HABITACIONES_POSADA = [
+  { id: 'single', label: 'Single (1 pax)', emoji: '👤' },
+  { id: 'doble', label: 'Doble (2 pax)', emoji: '👥' },
+  { id: 'triple', label: 'Triple (3 pax)', emoji: '👨‍👩‍👦' },
+  { id: 'cuadruple', label: 'Cuádruple (4 pax)', emoji: '👨‍👩‍👧‍👦' },
+];
 
 export default function AdminPreciosPage() {
   const [activeTab, setActiveTab] = useState('paquetes');
@@ -23,6 +30,9 @@ export default function AdminPreciosPage() {
     destacado: false
   });
 
+  // --- Posada Moana ---
+  const [posadaMatrix, setPosadaMatrix] = useState({}); // key: `temporada-habitacion` → precio
+
   // --- Excursiones ---
   const [excursiones, setExcursiones] = useState(excursionesBase);
 
@@ -41,6 +51,22 @@ export default function AdminPreciosPage() {
 
   useEffect(() => {
     reloadPaquetes();
+  }, []);
+
+  // Cargar tarifario de la Posada desde Dexie
+  const reloadPosadaPrecios = async () => {
+    try {
+      const rows = await db.posadaPrecios.toArray();
+      const map = {};
+      rows.forEach((r) => { map[`${r.temporada}-${r.habitacion}`] = r.precio; });
+      setPosadaMatrix(map);
+    } catch {
+      setPosadaMatrix({});
+    }
+  };
+
+  useEffect(() => {
+    reloadPosadaPrecios();
   }, []);
 
   // Cargar metadatos y matriz de precios al seleccionar paquete
@@ -97,6 +123,11 @@ export default function AdminPreciosPage() {
     setPrecioMatrix((prev) => ({ ...prev, [key]: value === '' ? '' : Number(value) }));
   };
 
+  const handlePosadaPrecioChange = (temporada, habitacion, value) => {
+    const key = `${temporada}-${habitacion}`;
+    setPosadaMatrix((prev) => ({ ...prev, [key]: value === '' ? '' : Number(value) }));
+  };
+
   const handleMetaChange = (key, val) => {
     setPaqueteMeta(prev => ({ ...prev, [key]: val }));
   };
@@ -109,7 +140,6 @@ export default function AdminPreciosPage() {
     
     await db.paquetes.update(pkg.id, { activo: newStatus });
     
-    // Si es el paquete seleccionado actualmente, actualizar el form meta
     if (Number(selectedPaquete) === pkg.id) {
       setPaqueteMeta(prev => ({ ...prev, activo: newStatus === 1 }));
     }
@@ -126,7 +156,6 @@ export default function AdminPreciosPage() {
     
     await db.paquetes.update(pkg.id, { destacado: newDest });
     
-    // Si es el paquete seleccionado actualmente, actualizar el form meta
     if (Number(selectedPaquete) === pkg.id) {
       setPaqueteMeta(prev => ({ ...prev, destacado: newDest === 1 }));
     }
@@ -172,6 +201,18 @@ export default function AdminPreciosPage() {
 
     await reloadPaquetes();
     showSaved('¡Publicación y precios guardados correctamente!');
+  };
+
+  const handleSavePosada = async () => {
+    await db.posadaPrecios.clear();
+    const rows = [];
+    for (const [key, precio] of Object.entries(posadaMatrix)) {
+      if (precio === '' || precio === null) continue;
+      const [temporada, habitacion] = key.split('-');
+      rows.push({ temporada, habitacion, precio: Number(precio) });
+    }
+    await db.posadaPrecios.bulkAdd(rows);
+    showSaved('¡Tarifario de la Posada Moana guardado exitosamente!');
   };
 
   const handleSaveExcursiones = async () => {
@@ -221,7 +262,7 @@ export default function AdminPreciosPage() {
               </div>
               <div>
                 <h1 className="font-display font-bold text-2xl md:text-3xl">Panel Admin — Moana Turismo</h1>
-                <p className="text-white/70 text-sm">Control total de publicaciones, destacados del mes y precios de venta</p>
+                <p className="text-white/70 text-sm">Control total de publicaciones, destacados del mes, posada y precios</p>
               </div>
             </div>
             <a href="/" target="_blank" rel="noreferrer"
@@ -275,9 +316,10 @@ export default function AdminPreciosPage() {
         </div>
 
         {/* Main Tabs */}
-        <div className="flex gap-2 bg-white rounded-2xl p-1.5 shadow-card w-fit">
+        <div className="flex flex-wrap gap-2 bg-white rounded-2xl p-1.5 shadow-card w-fit">
           {[
             { id: 'paquetes', label: '✈️ Publicaciones & Precios' },
+            { id: 'posada', label: '🏡 Posada Moana' },
             { id: 'excursiones', label: '🚢 Excursiones' },
             { id: 'traslados', label: '🚌 Traslados' },
           ].map(({ id, label }) => (
@@ -299,7 +341,7 @@ export default function AdminPreciosPage() {
         {activeTab === 'paquetes' && (
           <div className="space-y-8">
 
-            {/* 1. GESTIÓN RÁPIDA DE PUBLICACIONES (Publicar/Sacar de venta + Destacados) */}
+            {/* 1. GESTIÓN RÁPIDA DE PUBLICACIONES */}
             <div className="card p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
@@ -371,7 +413,7 @@ export default function AdminPreciosPage() {
                             {pkg.categoria}
                           </td>
 
-                          {/* Publicado / En Venta toggle button */}
+                          {/* Publicado toggle button */}
                           <td className="px-4 py-3 text-center">
                             <button
                               onClick={(e) => handleToggleActivo(pkg, e)}
@@ -380,15 +422,15 @@ export default function AdminPreciosPage() {
                                   ? 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-300'
                                   : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
                               }`}
-                              title={isActive ? "Hacé clic para sacar de venta en la web" : "Hacé clic para publicar en la web"}
+                              title={isActive ? "Hacé clic para ocultar de la web" : "Hacé clic para publicar en la web"}
                             >
                               {isActive ? (
                                 <>
-                                  <Eye size={14} /> 🟢 Publicado (En venta)
+                                  <Eye size={14} /> 🟢 Publicado
                                 </>
                               ) : (
                                 <>
-                                  <EyeOff size={14} /> 🔴 Oculto (Fuera de venta)
+                                  <EyeOff size={14} /> 🔴 Oculto
                                 </>
                               )}
                             </button>
@@ -469,7 +511,7 @@ export default function AdminPreciosPage() {
                   </select>
                 </div>
 
-                {/* Camposs de metadatos */}
+                {/* Campos de metadatos */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="label-field">Título de la Publicación</label>
@@ -519,7 +561,7 @@ export default function AdminPreciosPage() {
                       />
                       <span className="font-semibold text-sm text-moana-dark select-none flex items-center gap-1.5">
                         <Eye size={16} className={paqueteMeta.activo ? "text-green-600" : "text-gray-400"} />
-                        Mostrar en la Web (Publicación Activa en Venta)
+                        Mostrar en la Web (Publicación Activa)
                       </span>
                     </label>
 
@@ -598,6 +640,78 @@ export default function AdminPreciosPage() {
                     <Save size={20} /> Guardar Cambios en la Web
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* === POSADA MOANA TAB === */}
+        {activeTab === 'posada' && (
+          <div className="space-y-6">
+            <div className="card p-6">
+              <div className="flex items-center gap-3 mb-2 pb-3 border-b border-gray-100">
+                <div className="w-10 h-10 bg-moana-teal/20 rounded-xl flex items-center justify-center text-moana-blue">
+                  <Home size={22} />
+                </div>
+                <div>
+                  <h2 className="font-display font-bold text-moana-blue text-xl">
+                    Tarifario Exclusivo Posada Moana B&B (Búzios)
+                  </h2>
+                  <p className="text-moana-gray text-sm">
+                    Establecé la tarifa en USD por noche/persona según la ocupación de la habitación (Single, Doble, Triple, Cuádruple) y la temporada.
+                  </p>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto mt-6">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-moana-blue-pale">
+                      <th className="text-left px-4 py-3 text-moana-blue font-semibold rounded-l-xl">
+                        Temporada
+                      </th>
+                      {HABITACIONES_POSADA.map((hab) => (
+                        <th key={hab.id} className="px-4 py-3 text-moana-blue font-semibold text-center">
+                          {hab.emoji} {hab.label}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {TEMPORADAS.map((temp, ti) => (
+                      <tr key={temp.id} className={ti % 2 === 0 ? 'bg-white' : 'bg-moana-cream'}>
+                        <td className="px-4 py-3 font-semibold text-moana-blue">{temp.label}</td>
+                        {HABITACIONES_POSADA.map((hab) => (
+                          <td key={hab.id} className="px-4 py-3">
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray font-semibold text-xs">
+                                USD
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder="—"
+                                value={posadaMatrix[`${temp.id}-${hab.id}`] ?? ''}
+                                onChange={(e) => handlePosadaPrecioChange(temp.id, hab.id, e.target.value)}
+                                className="w-28 pl-10 pr-2 py-2 border border-gray-200 rounded-lg text-center
+                                           focus:outline-none focus:ring-2 focus:ring-moana-orange text-moana-dark font-semibold text-sm"
+                              />
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={handleSavePosada}
+                  className="btn-primary flex items-center gap-2 px-8 py-3.5 text-base shadow-lg"
+                >
+                  <Save size={20} /> Guardar Tarifario Posada Moana
+                </button>
               </div>
             </div>
           </div>
