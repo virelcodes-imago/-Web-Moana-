@@ -35,7 +35,12 @@ function ScrollToTopOnRoute() {
 // Protected route wrapper
 function ProtectedRoute({ children, requiredRole }) {
   const { isAuthenticated, role } = useAuthStore();
-  if (!isAuthenticated) return <Navigate to="/admin" replace />;
+  const hasValidSession = isAuthenticated && (role === 'admin' || role === 'vendedor');
+
+  // A persisted session can become incomplete after an app update or a manual
+  // localStorage change. Send it back to the login instead of creating a
+  // redirect loop or exposing a protected screen with an invalid role.
+  if (!hasValidSession) return <Navigate to="/admin" replace />;
   if (requiredRole && role !== requiredRole && role !== 'admin') return <Navigate to="/admin/cotizador" replace />;
   return children;
 }
