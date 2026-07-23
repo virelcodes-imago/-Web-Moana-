@@ -3,19 +3,24 @@ import PackageCard from '../../components/packages/PackageCard';
 import { paquetesBase, CATEGORIAS } from '../../data/paquetes';
 import { Search } from 'lucide-react';
 import db from '../../db/db';
+import { useLanguage } from '../../i18n/LanguageContext';
 
-const CATEGORIAS_TABS = [
-  { id: 'todos', label: 'Todos los destinos' },
-  { id: CATEGORIAS.BUZIOS, label: '🌴 Búzios Brasil' },
-  { id: CATEGORIAS.INTERNACIONAL, label: '🌍 Internacional' },
-  { id: CATEGORIAS.NACIONAL, label: '🏔️ Nacional' },
-  { id: CATEGORIAS.PACKS, label: '🎁 Packs y Promos' },
-];
+
+
 
 export default function PaquetesPage() {
   const [catActiva, setCatActiva] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
   const [paquetes, setPaquetes] = useState([]);
+  const { t } = useLanguage();
+
+  const CATEGORIAS_TABS = [
+    { id: 'todos', label: t('paquetes_todos') },
+    { id: CATEGORIAS.BUZIOS, label: `🌴 ${t('paquetes_buzios')}` },
+    { id: CATEGORIAS.INTERNACIONAL, label: `🌍 ${t('paquetes_internacional')}` },
+    { id: CATEGORIAS.NACIONAL, label: `🏔️ ${t('paquetes_nacional')}` },
+    { id: CATEGORIAS.PACKS, label: `🎁 ${t('paquetes_packs')}` },
+  ];
 
   useEffect(() => {
     const load = async () => {
@@ -46,11 +51,10 @@ export default function PaquetesPage() {
       <div className="bg-moana-blue py-14 text-white">
         <div className="container-moana text-center">
           <h1 className="font-display font-bold text-4xl md:text-5xl mb-3">
-            Nuestros Paquetes de Viaje
+            {t('paquetes_title')}
           </h1>
           <p className="text-white/80 text-lg max-w-2xl mx-auto">
-            Paquetes económicos a Búzios, destinos nacionales e internacionales.
-            Financiación en cuotas sin tarjeta disponible.
+            {t('paquetes_subtitle')}
           </p>
 
           {/* Search */}
@@ -119,7 +123,7 @@ export default function PaquetesPage() {
               ¿Necesitás un destino personalizado? ¡Escribinos!
             </p>
             <a
-              href="https://wa.me/5522998024697?text=Hola%20Moana!%20Quiero%20info%20sobre%20un%20viaje%20%F0%9F%8C%8A"
+              href="https://wa.me/5491126810289?text=Hola%20Moana!%20Quiero%20info%20sobre%20un%20viaje%20%F0%9F%8C%8A"
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp inline-flex"

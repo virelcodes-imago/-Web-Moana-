@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // CATÁLOGO DE PAQUETES — Moana Turismo
 // Los precios de venta se cargan desde el panel Admin (Dexie)
 // Estos son los datos base del catálogo público
@@ -20,7 +20,7 @@ export const TEMPORADAS = [
 ];
 
 export const HOTELES = [
-  { id: 'economico', label: 'Económico', stars: 2 },
+  { id: 'economico', label: 'Est\u00e1ndar', stars: 2 },
   { id: 'familiar', label: 'Familiar', stars: 3 },
   { id: 'premium', label: 'Premium', stars: 4 },
 ];

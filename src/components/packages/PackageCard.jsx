@@ -5,7 +5,7 @@ import useCartStore from '../../store/cartStore';
 import db from '../../db/db';
 
 const HOTEL_OPTIONS = [
-  { id: 'economico', label: 'Económico', stars: 2 },
+  { id: 'economico', label: 'Estándar', stars: 2 },
   { id: 'familiar', label: 'Familiar', stars: 3 },
   { id: 'premium', label: 'Premium', stars: 4 },
 ];

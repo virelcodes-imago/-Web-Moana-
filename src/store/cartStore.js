@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const useCartStore = create(
@@ -60,7 +60,7 @@ const useCartStore = create(
           vacaciones_invierno: 'Vacaciones de Invierno',
         };
         const HOTEL_LABELS = {
-          economico: 'Económico ⭐⭐',
+          economico: 'Est\u00e1ndar \u2b50\u2b50',
           familiar: 'Familiar ⭐⭐⭐',
           premium: 'Premium ⭐⭐⭐⭐',
         };

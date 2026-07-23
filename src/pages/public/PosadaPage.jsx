@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Wifi, Wind, Car, Coffee, Waves, Users } from 'lucide-react';
 
 const SERVICIOS = [
@@ -55,7 +55,7 @@ export default function PosadaPage() {
 
             <div className="flex flex-wrap gap-3">
               <a
-                href="https://wa.me/5522998024697?text=Hola!%20Quiero%20consultar%20disponibilidad%20en%20la%20Posada%20Moana%20%F0%9F%8C%8A"
+                href="https://wa.me/5491126810289?text=Hola!%20Quiero%20consultar%20disponibilidad%20en%20la%20Posada%20Moana%20%F0%9F%8C%8A"
                 target="_blank"
                 rel="noreferrer"
                 className="btn-whatsapp"
@@ -125,7 +125,7 @@ export default function PosadaPage() {
               Ver Paquete Búzios Full
             </Link>
             <a
-              href="https://wa.me/5522998024697"
+              href="https://wa.me/5491126810289"
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp"

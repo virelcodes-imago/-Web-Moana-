@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Copy, Send, Calculator, ChevronDown, ChevronUp, Layers, Compass, Plus, Trash2 } from 'lucide-react';
 import db from '../../db/db';
 import { paquetesBase, TEMPORADAS, HOTELES, TIPOS_HABITACION } from '../../data/paquetes';
@@ -162,7 +162,7 @@ export default function VendedorCotizadorPage() {
       vacaciones_invierno: 'Vacaciones de Invierno',
     };
     const HOTEL_LABELS = {
-      economico: 'Económico ⭐⭐',
+      economico: 'Est\u00e1ndar \u2b50\u2b50',
       familiar: 'Familiar ⭐⭐⭐',
       premium: 'Premium ⭐⭐⭐⭐',
     };

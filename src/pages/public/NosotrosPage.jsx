@@ -1,4 +1,4 @@
-import { equipoData } from '../../data/equipo';
+﻿import { equipoData } from '../../data/equipo';
 
 const NOSOTROS = [
   {
@@ -104,7 +104,7 @@ export default function NosotrosPage() {
             Nuestro equipo te asesora para encontrar el paquete perfecto con financiación en cuotas sin tarjeta.
           </p>
           <a
-            href="https://wa.me/5522998024697?text=Hola%20Moana!%20Quiero%20planificar%20mi%20viaje%20%F0%9F%8C%8A"
+            href="https://wa.me/5491126810289?text=Hola%20Moana!%20Quiero%20planificar%20mi%20viaje%20%F0%9F%8C%8A"
             target="_blank"
             rel="noreferrer"
             className="btn-whatsapp inline-flex"

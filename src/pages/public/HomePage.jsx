@@ -5,6 +5,7 @@ import Hero from '../../components/home/Hero';
 import PackageCard from '../../components/packages/PackageCard';
 import { paquetesBase, CATEGORIAS } from '../../data/paquetes';
 import db from '../../db/db';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 const CATEGORIAS_TABS = [
   { id: 'todos', label: '✈️ Todos', emoji: '' },
@@ -18,12 +19,13 @@ const WHYS = [
   { icon: Shield, title: 'Confianza garantizada', desc: 'Más de 10 años llevando familias y parejas a disfrutar sus vacaciones.' },
   { icon: CreditCard, title: 'Cuotas sin tarjeta', desc: 'Financiación accesible para que el precio no sea un obstáculo para viajar.' },
   { icon: Users, title: 'Atención personalizada', desc: 'Un equipo de asesores listos para armar el viaje perfecto para vos.' },
-  { icon: Star, title: 'Precio = Calidad', desc: 'Paquetes económicos con la mejor relación costo-beneficio del mercado.' },
+  { icon: Star, title: 'Precio = Calidad', desc: 'La mejor relación calidad-precio del mercado, con opciones para cada presupuesto.' },
 ];
 
 export default function HomePage() {
   const [catActiva, setCatActiva] = useState('todos');
   const [paquetes, setPaquetes] = useState([]);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const load = async () => {
@@ -97,8 +99,8 @@ export default function HomePage() {
       <section className="section-cream" id="paquetes">
         <div className="container-moana">
           <div className="text-center mb-8">
-            <h2 className="section-title">Todos Nuestros Destinos</h2>
-            <p className="section-subtitle">Paquetes económicos con financiación en cuotas</p>
+            <h2 className="section-title">{t('home_catalog_title')}</h2>
+            <p className="section-subtitle">{t('home_catalog_subtitle')}</p>
           </div>
 
           {/* Filter tabs */}
@@ -131,7 +133,7 @@ export default function HomePage() {
               ¿No encontrás lo que buscás? ¡Consultanos por WhatsApp y armamos el viaje a tu medida!
             </p>
             <a
-              href="https://wa.me/5522998024697?text=Hola%20Moana!%20Quiero%20consultar%20sobre%20un%20viaje%20personalizado%20%F0%9F%8C%8A"
+              href="https://wa.me/5491126810289?text=Hola%20Moana!%20Quiero%20consultar%20sobre%20un%20viaje%20personalizado%20%F0%9F%8C%8A"
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp inline-flex"
@@ -175,13 +177,13 @@ export default function HomePage() {
       {/* Financing band */}
       <div className="bg-moana-orange py-5">
         <div className="container-moana flex flex-wrap justify-center gap-6 text-white text-sm font-semibold text-center">
-          <span>💳 Financiación en cuotas sin tarjeta</span>
+          <span>{t('home_banner_financing')}</span>
           <span>|</span>
-          <span>✈️ Precios económicos y accesibles</span>
+          <span>{t('home_banner_prices')}</span>
           <span>|</span>
-          <span>🌊 Posada propia en Búzios</span>
+          <span>{t('home_banner_posada')}</span>
           <span>|</span>
-          <span>📱 Atención por WhatsApp 24/7</span>
+          <span>{t('home_banner_team')}</span>
         </div>
       </div>
     </>

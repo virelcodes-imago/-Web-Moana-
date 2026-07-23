@@ -2,13 +2,20 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Phone, Instagram } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
+import { useLanguage } from '../../i18n/LanguageContext';
 
-const NAV_ITEMS = [
-  { label: 'Inicio', to: '/' },
-  { label: 'Paquetes', to: '/paquetes' },
-  { label: 'Posada', to: '/posada' },
-  { label: 'Nosotros', to: '/nosotros' },
-  { label: 'Contacto', to: '/contacto' },
+const NAV_KEYS = [
+  { key: 'nav_inicio', to: '/' },
+  { key: 'nav_paquetes', to: '/paquetes' },
+  { key: 'nav_posada', to: '/posada' },
+  { key: 'nav_nosotros', to: '/nosotros' },
+  { key: 'nav_contacto', to: '/contacto' },
+];
+
+const LANG_OPTIONS = [
+  { code: 'es', flag: '🇦🇷', label: 'ES' },
+  { code: 'pt', flag: '🇧🇷', label: 'PT' },
+  { code: 'en', flag: '🇺🇸', label: 'EN' },
 ];
 
 export default function Navbar() {
@@ -16,6 +23,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { items, toggleCart } = useCartStore();
   const location = useLocation();
+  const { lang, setLang, t } = useLanguage();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -35,18 +43,35 @@ export default function Navbar() {
       <div className="bg-moana-blue text-white text-xs py-1.5 hidden md:block">
         <div className="container-moana flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <span>📍 Búzios, Brasil</span>
-            <span className="text-white/30">|</span>
             <span>📍 Mar del Plata, Argentina</span>
+            <span className="text-white/30">|</span>
+            <span>📍 Búzios, Brasil</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="tel:+5522998024697" className="flex items-center gap-1 hover:text-moana-orange transition-colors">
-              <Phone size={12} /> +55 (22) 99802-4697
+            <a href="tel:+5491126810289" className="flex items-center gap-1 hover:text-moana-orange transition-colors">
+              <Phone size={12} /> +54 9 11 2681-0289
             </a>
             <a href="https://instagram.com/moanaturismo.oficial" target="_blank" rel="noreferrer"
                className="flex items-center gap-1 hover:text-moana-orange transition-colors">
               <Instagram size={12} /> @moanaturismo.oficial
             </a>
+            {/* Language selector */}
+            <div className="flex items-center gap-1 ml-2 border-l border-white/20 pl-3">
+              {LANG_OPTIONS.map(({ code, flag, label }) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-semibold transition-colors ${
+                    lang === code
+                      ? 'bg-moana-orange text-white'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                  aria-label={`Cambiar idioma a ${label}`}
+                >
+                  {flag} {label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -71,13 +96,13 @@ export default function Navbar() {
               <p className="text-[10px] font-medium text-moana-gray leading-tight">
                 AGENCIA DE TURISMO
               </p>
-              <p className="text-[10px] text-moana-teal-dark font-medium">BÚZIOS · BRASIL</p>
+              <p className="text-[10px] text-moana-teal-dark font-medium">ARGENTINA · BRASIL</p>
             </div>
           </Link>
 
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-8">
-            {NAV_ITEMS.map(({ label, to }) => (
+            {NAV_KEYS.map(({ key, to }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -86,7 +111,7 @@ export default function Navbar() {
                   `nav-link text-sm ${isActive ? 'text-moana-orange font-semibold' : ''}`
                 }
               >
-                {label}
+                {t(key)}
               </NavLink>
             ))}
           </nav>
@@ -94,7 +119,7 @@ export default function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             <a
-              href="https://wa.me/5522998024697"
+              href="https://wa.me/5491126810289"
               target="_blank"
               rel="noreferrer"
               className="hidden md:flex btn-primary text-sm px-4 py-2 items-center gap-2"
@@ -103,7 +128,7 @@ export default function Navbar() {
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.554 4.123 1.526 5.863L0 24l6.338-1.499A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.776 9.776 0 01-5.013-1.38l-.36-.213-3.764.89.937-3.654-.234-.376A9.78 9.78 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
               </svg>
-              Consultar
+              {t('nav_consultar')}
             </a>
 
             {/* Cart button */}
@@ -138,7 +163,7 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg animate-fade-in">
             <nav className="container-moana py-4 flex flex-col gap-1">
-              {NAV_ITEMS.map(({ label, to }) => (
+              {NAV_KEYS.map(({ key, to }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -151,11 +176,27 @@ export default function Navbar() {
                     }`
                   }
                 >
-                  {label}
+                  {t(key)}
                 </NavLink>
               ))}
+              {/* Mobile language switcher */}
+              <div className="flex gap-2 mt-2 px-4">
+                {LANG_OPTIONS.map(({ code, flag, label }) => (
+                  <button
+                    key={code}
+                    onClick={() => setLang(code)}
+                    className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                      lang === code
+                        ? 'bg-moana-orange text-white'
+                        : 'bg-gray-100 text-moana-gray hover:bg-moana-orange-light'
+                    }`}
+                  >
+                    {flag} {label}
+                  </button>
+                ))}
+              </div>
               <a
-                href="https://wa.me/5522998024697"
+                href="https://wa.me/5491126810289"
                 className="mt-2 btn-whatsapp justify-center text-sm"
                 target="_blank"
                 rel="noreferrer"
