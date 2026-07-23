@@ -50,6 +50,8 @@ export default function AdminPreciosPage() {
     subtitulo: '',
     descCorta: '',
     descripcion: '',
+    incluye: '',
+    noIncluye: '',
     activo: true,
     destacado: false
   });
@@ -105,6 +107,8 @@ export default function AdminPreciosPage() {
           subtitulo: pkg.subtitulo || '',
           descCorta: pkg.descCorta || '',
           descripcion: pkg.descripcion || '',
+          incluye: Array.isArray(pkg.incluye) ? pkg.incluye.join('\n') : '',
+          noIncluye: Array.isArray(pkg.noIncluye) ? pkg.noIncluye.join('\n') : '',
           activo: pkg.activo !== 0 && pkg.activo !== false,
           destacado: pkg.destacado === 1 || pkg.destacado === true
         });
@@ -116,6 +120,8 @@ export default function AdminPreciosPage() {
             subtitulo: basePkg.subtitulo || '',
             descCorta: basePkg.descCorta || '',
             descripcion: basePkg.descripcion || '',
+            incluye: Array.isArray(basePkg.incluye) ? basePkg.incluye.join('\n') : '',
+            noIncluye: Array.isArray(basePkg.noIncluye) ? basePkg.noIncluye.join('\n') : '',
             activo: true,
             destacado: Boolean(basePkg.destacado)
           });
@@ -190,6 +196,10 @@ export default function AdminPreciosPage() {
 
   const handleSavePaquete = async () => {
     const pId = Number(selectedPaquete);
+    const parseItems = (value) => String(value || '')
+      .split('\n')
+      .map((item) => item.trim())
+      .filter(Boolean);
     
     // 1. Guardar metadatos (Publicación)
     const existing = await db.paquetes.get(pId);
@@ -208,8 +218,8 @@ export default function AdminPreciosPage() {
       imagenHero: existing?.imagenHero || paquetesBase.find(p => p.id === pId)?.imagenHero || '',
       noches: existing?.noches !== undefined ? existing.noches : (paquetesBase.find(p => p.id === pId)?.noches || null),
       orden: existing?.orden !== undefined ? existing.orden : (paquetesBase.find(p => p.id === pId)?.orden || 99),
-      incluye: existing?.incluye || paquetesBase.find(p => p.id === pId)?.incluye || [],
-      noIncluye: existing?.noIncluye || paquetesBase.find(p => p.id === pId)?.noIncluye || [],
+      incluye: parseItems(paqueteMeta.incluye),
+      noIncluye: parseItems(paqueteMeta.noIncluye),
     };
     await db.paquetes.put(updatedPkg);
 
@@ -734,33 +744,28 @@ export default function AdminPreciosPage() {
                     ></textarea>
                   </div>
 
-                  {/* Toggles en el form */}
-                  <div className="sm:col-span-2 flex flex-wrap gap-6 pt-3 bg-moana-cream/50 p-4 rounded-xl">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={paqueteMeta.activo}
-                        onChange={(e) => handleMetaChange('activo', e.target.checked)}
-                        className="accent-moana-orange w-5 h-5"
-                      />
-                      <span className="font-semibold text-sm text-moana-dark select-none flex items-center gap-1.5">
-                        <Eye size={16} className={paqueteMeta.activo ? "text-green-600" : "text-gray-400"} />
-                        Mostrar en la Web (Publicación Activa)
-                      </span>
-                    </label>
+                  <div>
+                    <label className="label-field text-green-700">Qué incluye</label>
+                    <p className="text-xs text-moana-gray mb-2">Escribí un concepto por línea.</p>
+                    <textarea
+                      value={paqueteMeta.incluye}
+                      rows="7"
+                      placeholder={'Aéreos ida y vuelta\nHotel con desayuno\nTraslados'}
+                      onChange={(e) => handleMetaChange('incluye', e.target.value)}
+                      className="input-field py-3 text-sm leading-relaxed border-green-200 focus:ring-green-500"
+                    ></textarea>
+                  </div>
 
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={paqueteMeta.destacado}
-                        onChange={(e) => handleMetaChange('destacado', e.target.checked)}
-                        className="accent-moana-orange w-5 h-5"
-                      />
-                      <span className="font-semibold text-sm text-moana-dark select-none flex items-center gap-1.5">
-                        <Star size={16} className={paqueteMeta.destacado ? "text-amber-500 fill-amber-500" : "text-gray-400"} />
-                        Destacar en Portada (Destacados del Mes ⭐)
-                      </span>
-                    </label>
+                  <div>
+                    <label className="label-field text-red-700">Qué no incluye</label>
+                    <p className="text-xs text-moana-gray mb-2">Escribí un concepto por línea.</p>
+                    <textarea
+                      value={paqueteMeta.noIncluye}
+                      rows="7"
+                      placeholder={'Excursiones opcionales\nComidas no especificadas\nTasas locales'}
+                      onChange={(e) => handleMetaChange('noIncluye', e.target.value)}
+                      className="input-field py-3 text-sm leading-relaxed border-red-200 focus:ring-red-500"
+                    ></textarea>
                   </div>
                 </div>
               </div>
