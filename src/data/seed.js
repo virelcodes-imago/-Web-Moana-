@@ -139,28 +139,27 @@ export async function seedDatabase() {
     });
     await db.precios.bulkAdd(preciosOtros).catch(() => {});
   } else {
-    // Si la DB ya existe, únicamente agregar paquetes NUEVOS que no existan aún en Dexie sin tocar los precios editados
+    // Si la DB ya existe, sincronizar el orden y categorías oficiales de paquetesBase sin tocar precios editados
     for (const p of paquetesBase) {
       const existing = await db.paquetes.get(p.id);
-      if (!existing) {
-        await db.paquetes.put({
-          id: p.id,
-          categoria: p.categoria,
-          slug: p.slug,
-          titulo: p.titulo,
-          subtitulo: p.subtitulo,
-          descCorta: p.descCorta,
-          descripcion: p.descripcion,
-          imagen: p.imagen,
-          imagenHero: p.imagenHero,
-          noches: p.noches,
-          destacado: p.destacado ? 1 : 0,
-          orden: p.orden || 99,
-          activo: 1,
-          incluye: p.incluye || [],
-          noIncluye: p.noIncluye || []
-        });
-      }
+      await db.paquetes.put({
+        ...(existing || {}),
+        id: p.id,
+        categoria: p.categoria,
+        slug: p.slug,
+        titulo: p.titulo,
+        subtitulo: p.subtitulo,
+        descCorta: p.descCorta,
+        descripcion: p.descripcion,
+        imagen: existing?.imagen || p.imagen,
+        imagenHero: existing?.imagenHero || p.imagenHero,
+        noches: p.noches,
+        destacado: existing?.destacado !== undefined ? existing.destacado : (p.destacado ? 1 : 0),
+        orden: p.orden || 99,
+        activo: existing?.activo !== undefined ? existing.activo : 1,
+        incluye: p.incluye || [],
+        noIncluye: p.noIncluye || []
+      });
     }
   }
 
