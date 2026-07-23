@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { X, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
+import { NACIONAL_SEASON_TEXT } from '../../data/paquetes';
 
 const TEMPORADA_LABELS = {
   baja: 'Temporada Baja',
@@ -115,8 +116,10 @@ export default function CartDrawer() {
                     <h4 className="font-semibold text-moana-blue text-sm leading-tight">
                       {item.titulo}
                     </h4>
-                    <p className="text-moana-gray text-xs mt-1">
-                      {TEMPORADA_LABELS[item.temporada]} · Hotel {HOTEL_LABELS[item.hotel]}
+                    <p className="text-moana-gray text-xs mt-1 leading-relaxed">
+                      {item.categoria === 'nacional'
+                        ? NACIONAL_SEASON_TEXT
+                        : `${TEMPORADA_LABELS[item.temporada]} · Hotel ${HOTEL_LABELS[item.hotel]}`}
                     </p>
                     <p className="text-moana-gray text-xs">
                       👥 {item.pasajeros} pasajero{item.pasajeros > 1 ? 's' : ''}

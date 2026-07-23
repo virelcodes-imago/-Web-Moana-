@@ -4,6 +4,7 @@ import { ShoppingCart, Eye, Moon, MessageCircle } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { NACIONAL_SEASON_TEXT } from '../../data/paquetes';
 
 export default function PackageCard({ paquete }) {
   const [hotel, setHotel] = useState('economico');
@@ -100,7 +101,9 @@ export default function PackageCard({ paquete }) {
     let detailText = '';
     if (isInternational) {
       detailText = 'Salida Grupal Acompañada';
-    } else if (isNacional || isExcursionOrTraslado) {
+    } else if (isNacional) {
+      detailText = NACIONAL_SEASON_TEXT;
+    } else if (isExcursionOrTraslado) {
       detailText = tempObj?.label || '';
     } else {
       detailText = `${tempObj?.label || ''} - Categoría: ${hotelObj?.label || ''}`;
@@ -154,7 +157,16 @@ export default function PackageCard({ paquete }) {
             <span>✈️ Salida Grupal Acompañada</span>
             <span className="text-moana-orange font-bold">Cupos Confirmados</span>
           </div>
-        ) : isNacional || isExcursionOrTraslado ? (
+        ) : isNacional ? (
+          <div>
+            <p className="label-field text-xs">{t('card_temporada_label')}</p>
+            <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-3 py-2.5">
+              <p className="text-sm leading-relaxed font-semibold text-moana-blue whitespace-normal">
+                {NACIONAL_SEASON_TEXT}
+              </p>
+            </div>
+          </div>
+        ) : isExcursionOrTraslado ? (
           <div>
             <label className="label-field text-xs">{t('card_temporada_label')}</label>
             <select

@@ -12,6 +12,9 @@ export const CATEGORIAS = {
   TRASLADOS_EXCURSIONES: 'traslados_excursiones',
 };
 
+export const NACIONAL_SEASON_TEXT =
+  'Salidas desde mayo hasta septiembre (excepto feriados y vacaciones de invierno).';
+
 // Los servicios sueltos se publican en su categoría, pero no deben ocupar
 // lugares reservados para paquetes destacados en la portada.
 export const isExcursionOrTransfer = (paquete) => {

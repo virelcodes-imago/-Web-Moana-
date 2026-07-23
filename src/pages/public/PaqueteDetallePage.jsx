@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, X, ShoppingCart, Moon, ChevronDown, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES } from '../../data/paquetes';
+import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES, NACIONAL_SEASON_TEXT } from '../../data/paquetes';
 import useCartStore from '../../store/cartStore';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -262,12 +262,23 @@ export default function PaqueteDetallePage() {
               </div>
             ) : (
               <>
-                <div>
-                  <label className="label-field">{t('detalle_temporada')}</label>
-                  <select value={temporada} onChange={(e) => setTemporada(e.target.value)} className="input-field">
-                    {TEMPORADA_LIST.map((temp) => <option key={temp.id} value={temp.id}>{temp.label}</option>)}
-                  </select>
-                </div>
+                {isNacional ? (
+                  <div>
+                    <p className="label-field">{t('detalle_temporada')}</p>
+                    <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-4 py-3">
+                      <p className="text-sm leading-relaxed font-semibold text-moana-blue whitespace-normal">
+                        {NACIONAL_SEASON_TEXT}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="label-field">{t('detalle_temporada')}</label>
+                    <select value={temporada} onChange={(e) => setTemporada(e.target.value)} className="input-field">
+                      {TEMPORADA_LIST.map((temp) => <option key={temp.id} value={temp.id}>{temp.label}</option>)}
+                    </select>
+                  </div>
+                )}
 
                 {!isNacional && !isExcursionOrTraslado && (
                   <div>

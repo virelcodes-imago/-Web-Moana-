@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { NACIONAL_SEASON_TEXT } from '../data/paquetes';
 
 const useCartStore = create(
   persist(
@@ -71,10 +72,15 @@ const useCartStore = create(
           msg += `*${idx + 1}. ${item.titulo}*\n`;
           if (item.noches) msg += `   🌙 ${item.noches} noches\n`;
           const isInter = item.categoria === 'internacional';
+          const isNacional = item.categoria === 'nacional';
           const hotelLabel = isInter
             ? (item.hotel === 'premium' ? 'All Inclusive 🍹' : 'Con Desayuno ☕')
             : (HOTEL_LABELS[item.hotel] || item.hotel);
-          msg += `   ${isInter ? '🍽️ Plan' : '🏨 Hotel'}: ${hotelLabel}\n`;
+          if (isNacional) {
+            msg += `   📅 ${NACIONAL_SEASON_TEXT}\n`;
+          } else {
+            msg += `   ${isInter ? '🍽️ Plan' : '🏨 Hotel'}: ${hotelLabel}\n`;
+          }
           msg += `   🛏️ Habitación: ${item.habitacion}\n`;
           msg += `   👥 Pasajeros: ${item.pasajeros}\n`;
           if (item.precio) {
