@@ -20,10 +20,10 @@ export const TEMPORADAS = [
 ];
 
 export const TEMPORADAS_BUZIOS = [
-  { id: 'baja', label: 'Abril a Octubre (Temp. Baja)' },
-  { id: 'semana_santa', label: 'Marzo (2da Q) / Noviembre / Dic (1ra Q)' },
-  { id: 'alta', label: 'Enero / Feb / Jul / Marzo (1ra Q)' },
-  { id: 'vacaciones_invierno', label: 'Año Nuevo y Carnaval' },
+  { id: 'baja', label: 'Temporada baja' },
+  { id: 'semana_santa', label: 'Temporada media' },
+  { id: 'alta', label: 'Temporada alta' },
+  { id: 'vacaciones_invierno', label: 'Año nuevo y carnaval' },
 ];
 
 export const HOTELES = [
