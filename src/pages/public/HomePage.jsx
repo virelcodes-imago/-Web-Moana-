@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, CreditCard, Users, Star } from 'lucide-react';
 import Hero from '../../components/home/Hero';
 import PackageCard from '../../components/packages/PackageCard';
-import { paquetesBase, CATEGORIAS } from '../../data/paquetes';
+import { paquetesBase, CATEGORIAS, isExcursionOrTransfer } from '../../data/paquetes';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
 
@@ -38,7 +38,7 @@ export default function HomePage() {
   }, []);
 
   const destacados = paquetes
-    .filter((p) => p.destacado === 1 || p.destacado === true)
+    .filter((p) => (p.destacado === 1 || p.destacado === true) && !isExcursionOrTransfer(p))
     .sort((a, b) => (a.orden || 99) - (b.orden || 99));
 
   const filtrados = (catActiva === 'todos'

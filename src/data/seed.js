@@ -1,5 +1,5 @@
 import db from '../db/db';
-import paquetesBase from './paquetes';
+import paquetesBase, { isExcursionOrTransfer } from './paquetes';
 import equipoData from './equipo';
 import { excursionesBase, trasladosBase } from './extras';
 
@@ -151,6 +151,14 @@ export async function seedDatabase() {
   }
 
   // 3. Cargar Equipo solo si la tabla está vacía
+  // Limpiar valores destacados antiguos en excursiones y traslados. Esos
+  // servicios conservan su publicación normal, pero no aparecen en el bloque
+  // de paquetes destacados de la portada.
+  await db.paquetes
+    .filter((p) => isExcursionOrTransfer(p) && (p.destacado === 1 || p.destacado === true))
+    .modify({ destacado: 0 })
+    .catch(() => {});
+
   const equipoCount = await db.equipo.count().catch(() => 0);
   if (equipoCount === 0) {
     const equipoToInsert = equipoData.map(e => ({

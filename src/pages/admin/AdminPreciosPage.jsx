@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home, LogOut } from 'lucide-react';
 import db from '../../db/db';
-import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES } from '../../data/paquetes';
+import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES, isExcursionOrTransfer } from '../../data/paquetes';
 import { excursionesBase, trasladosBase } from '../../data/extras';
 import useAuthStore from '../../store/authStore';
 
@@ -342,7 +342,9 @@ export default function AdminPreciosPage() {
     });
 
   const totalPublicados = paquetesList.filter(p => p.activo !== 0 && p.activo !== false).length;
-  const totalDestacados = paquetesList.filter(p => p.destacado === 1 || p.destacado === true).length;
+  const totalDestacados = paquetesList.filter(
+    (p) => (p.destacado === 1 || p.destacado === true) && !isExcursionOrTransfer(p)
+  ).length;
 
   const selectedPkg = paquetesList.find(p => p.id === Number(selectedPaquete));
   const isExcursionOrTraslado = selectedPkg?.noches === null || selectedPkg?.categoria === 'traslados_excursiones' || selectedPkg?.categoria === 'traslados' || selectedPkg?.categoria === 'excursiones';
@@ -436,7 +438,7 @@ export default function AdminPreciosPage() {
         </div>
 
         {/* Tabs navigation */}
-        <div className="flex border-b border-gray-200 gap-2">
+        <div className="flex flex-wrap border-b border-gray-200 gap-2">
           <button
             onClick={() => setActiveTab('paquetes')}
             className={`px-6 py-3 font-semibold text-sm rounded-t-xl transition-all ${
@@ -446,6 +448,16 @@ export default function AdminPreciosPage() {
             }`}
           >
             ✈️ Paquetes de Viajes
+          </button>
+          <button
+            onClick={() => setActiveTab('posada')}
+            className={`px-6 py-3 font-semibold text-sm rounded-t-xl transition-all ${
+              activeTab === 'posada'
+                ? 'bg-moana-blue text-white shadow-sm'
+                : 'bg-white text-moana-gray hover:text-moana-blue'
+            }`}
+          >
+            🏡 Alojamiento
           </button>
           <button
             onClick={() => setActiveTab('excursiones')}

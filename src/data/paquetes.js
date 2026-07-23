@@ -12,6 +12,18 @@ export const CATEGORIAS = {
   TRASLADOS_EXCURSIONES: 'traslados_excursiones',
 };
 
+// Los servicios sueltos se publican en su categoría, pero no deben ocupar
+// lugares reservados para paquetes destacados en la portada.
+export const isExcursionOrTransfer = (paquete) => {
+  const categoria = paquete?.categoria;
+  return (
+    categoria === CATEGORIAS.TRASLADOS_EXCURSIONES ||
+    categoria === 'excursiones' ||
+    categoria === 'traslados' ||
+    (paquete?.noches == null && categoria !== CATEGORIAS.ALOJAMIENTO)
+  );
+};
+
 export const TEMPORADAS = [
   { id: 'baja', label: 'Temporada Baja' },
   { id: 'alta', label: 'Temporada Alta' },
@@ -129,7 +141,7 @@ export const paquetesBase = [
     imagen: '/fotos/excursiones/-excursion-02.jpg',
     imagenHero: '/fotos/excursiones/-excursion-02.jpg',
     noches: null,
-    destacado: true,
+    destacado: false,
     orden: 4,
     incluye: [
       'Vehículo privado climatizado',
@@ -577,7 +589,7 @@ export const paquetesBase = [
     imagen: '/fotos/excursiones/arraial.jpg',
     imagenHero: '/fotos/excursiones/arraial.jpg',
     noches: null,
-    destacado: true,
+    destacado: false,
     orden: 3,
     incluye: [
       'Traslado ida y vuelta desde Búzios',
