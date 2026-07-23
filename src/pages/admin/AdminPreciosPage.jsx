@@ -554,6 +554,7 @@ export default function AdminPreciosPage() {
                   <tbody className="divide-y divide-gray-100">
                     {paquetesFiltrados.map((pkg) => {
                       const isActive = pkg.activo !== 0 && pkg.activo !== false;
+                      const isDestacado = pkg.destacado === 1 || pkg.destacado === true;
                       const isSelected = Number(selectedPaquete) === pkg.id;
 
                       return (
