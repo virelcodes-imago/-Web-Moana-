@@ -3,6 +3,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import CartDrawer from './components/cart/CartDrawer';
 import WhatsAppFloat from './components/layout/WhatsAppFloat';
+import ScrollToTop from './components/layout/ScrollToTop';
 
 // Public pages
 import HomePage from './pages/public/HomePage';
@@ -36,6 +37,7 @@ function PublicLayout({ children }) {
       <Footer />
       <CartDrawer />
       <WhatsAppFloat />
+      <ScrollToTop />
     </div>
   );
 }
