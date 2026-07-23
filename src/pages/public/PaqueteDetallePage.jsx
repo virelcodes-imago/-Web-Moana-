@@ -192,31 +192,33 @@ export default function PaqueteDetallePage() {
 
             {/* Price display */}
             <div className="price-tag">
-              <p className="price-desde">{t('detalle_desde')}</p>
               {precio ? (
                 <>
+                  <p className="price-desde">{t('detalle_desde')}</p>
                   <p className="price-amount font-display text-3xl">USD {precio.toLocaleString()}</p>
-                  <p className="price-unit">{t('detalle_por_persona')}</p>
+                  <p className="price-unit">{isExcursionOrTraslado ? 'por persona · servicio' : t('detalle_por_persona')}</p>
                   <div className="mt-2 pt-2 border-t border-white/20">
                     <p className="text-white/70 text-xs">{t('detalle_total')} {pasajeros} {t('detalle_pax')}</p>
                     <p className="font-bold text-moana-orange text-lg">USD {totalGeneral?.toLocaleString()}</p>
                   </div>
                 </>
               ) : (
-                <>
-                  <p className="price-amount font-display text-2xl">{t('detalle_consultar_precio')}</p>
-                  <p className="price-unit">{t('detalle_financiacion')}</p>
-                </>
+                <div className="py-2 text-center">
+                  <p className="price-amount font-display text-3xl text-moana-orange font-extrabold uppercase tracking-wider">CONSULTAR</p>
+                  <p className="text-white/80 text-xs mt-1 font-medium">Cotización personalizada por WhatsApp</p>
+                </div>
               )}
             </div>
 
-            <button
-              onClick={handleAdd}
-              className={`btn-primary w-full flex items-center justify-center gap-2 py-4 ${added ? 'bg-green-500' : ''}`}
-            >
-              <ShoppingCart size={18} />
-              {added ? t('detalle_agregado') : t('detalle_lo_quiero')}
-            </button>
+            {precio ? (
+              <button
+                onClick={handleAdd}
+                className={`btn-primary w-full flex items-center justify-center gap-2 py-4 ${added ? 'bg-green-500' : ''}`}
+              >
+                <ShoppingCart size={18} />
+                {added ? t('detalle_agregado') : t('detalle_lo_quiero')}
+              </button>
+            ) : null}
 
             <a
               href={`https://wa.me/5491126810289?text=Hola%20Moana!%20Me%20interesa%20el%20paquete%20*${encodeURIComponent(paquete.titulo)}*%20%F0%9F%8C%8A%20%C2%BFPodr%C3%ADan%20darme%20m%C3%A1s%20informaci%C3%B3n%3F`}

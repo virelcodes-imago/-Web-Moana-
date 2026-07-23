@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Eye, Moon } from 'lucide-react';
+import { ShoppingCart, Eye, Moon, MessageCircle } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -45,7 +45,7 @@ export default function PackageCard({ paquete }) {
         const p = await db.precios
           .where({ paqueteId: paquete.id, temporada, hotel })
           .first();
-        setPrecio(p ? p.precio : null);
+        setPrecio(p && p.precio ? p.precio : null);
       } catch {
         setPrecio(null);
       }
@@ -57,6 +57,18 @@ export default function PackageCard({ paquete }) {
     addItem(paquete, { temporada, hotel, precio });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleConsultar = () => {
+    const tempObj = TEMPORADA_OPTIONS.find((t) => t.id === temporada);
+    const hotelObj = HOTEL_OPTIONS.find((h) => h.id === hotel);
+    const detailText = isExcursionOrTraslado
+      ? `${tempObj?.label || ''}`
+      : `${tempObj?.label || ''} - Categoría: ${hotelObj?.label || ''}`;
+    const text = encodeURIComponent(
+      `Hola Moana! Quiero consultar precio y disponibilidad para el paquete *${paquete.titulo}* (${detailText}) 🌊`
+    );
+    window.open(`https://wa.me/5491126810289?text=${text}`, '_blank');
   };
 
   return (
@@ -140,13 +152,20 @@ export default function PackageCard({ paquete }) {
 
         {/* Price */}
         <div className="price-tag flex-shrink-0">
-          <p className="price-desde">{t('card_desde')}</p>
           {precio ? (
-            <p className="price-amount font-display">USD {precio.toLocaleString()}</p>
+            <>
+              <p className="price-desde">{t('card_desde')}</p>
+              <p className="price-amount font-display">USD {precio.toLocaleString()}</p>
+              <p className="price-unit">{isExcursionOrTraslado ? 'por persona · servicio' : t('card_por_persona')}</p>
+            </>
           ) : (
-            <p className="price-amount font-display text-xl">{t('card_a_consultar')}</p>
+            <div className="py-1">
+              <p className="price-amount font-display text-2xl text-moana-orange font-extrabold uppercase tracking-wider">
+                CONSULTAR
+              </p>
+              <p className="text-xs text-moana-gray font-medium mt-0.5">Cotización por WhatsApp</p>
+            </div>
           )}
-          <p className="price-unit">{isExcursionOrTraslado ? 'por persona · servicio' : t('card_por_persona')}</p>
         </div>
 
         {/* Includes preview */}
@@ -165,22 +184,33 @@ export default function PackageCard({ paquete }) {
 
         {/* Actions */}
         <div className="flex gap-2 mt-auto pt-2">
-          <button
-            id={`add-cart-btn-${paquete.id}`}
-            onClick={handleAdd}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm transition-all duration-200 ${
-              added
-                ? 'bg-green-500 text-white'
-                : 'btn-primary'
-            }`}
-          >
-            <ShoppingCart size={16} />
-            {added ? t('card_agregado') : t('card_lo_quiero')}
-          </button>
+          {precio ? (
+            <button
+              id={`add-cart-btn-${paquete.id}`}
+              onClick={handleAdd}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm transition-all duration-200 ${
+                added
+                  ? 'bg-green-500 text-white'
+                  : 'btn-primary'
+              }`}
+            >
+              <ShoppingCart size={16} />
+              {added ? t('card_agregado') : t('card_lo_quiero')}
+            </button>
+          ) : (
+            <button
+              id={`consult-btn-${paquete.id}`}
+              onClick={handleConsultar}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm btn-whatsapp text-white transition-all duration-200"
+            >
+              <MessageCircle size={16} />
+              Consultar
+            </button>
+          )}
           <Link
             to={`/paquetes/${paquete.slug}`}
-            className="w-12 h-12 border-2 border-moana-blue-pale text-moana-blue hover:bg-moana-blue-pale rounded-full flex items-center justify-center transition-colors flex-shrink-0"
-            aria-label={t('card_ver_detalle')}
+            className="w-10 h-10 border-2 border-moana-teal text-moana-blue hover:bg-moana-teal hover:text-white rounded-full flex items-center justify-center transition-colors flex-shrink-0"
+            title="Ver detalles"
           >
             <Eye size={16} />
           </Link>
