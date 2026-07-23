@@ -30,7 +30,7 @@ export default function ScrollToTop() {
     <button
       onClick={scrollToTop}
       aria-label="Volver arriba"
-      className="fixed bottom-24 right-7 z-40 w-12 h-12 bg-moana-blue hover:bg-moana-orange text-white
+      className="fixed bottom-28 right-8 z-40 w-12 h-12 bg-moana-blue hover:bg-moana-orange text-white
                  rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-110
                  transition-all duration-300 border-2 border-white/30 group animate-fade-up"
     >
