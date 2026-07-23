@@ -117,6 +117,15 @@ export default function PaqueteDetallePage() {
     setTimeout(() => setAdded(false), 2500);
   };
 
+  const isInternational = paquete?.categoria === 'internacional';
+
+  const HOTELES_OPTIONS = isInternational
+    ? [
+        { id: 'economico', label: 'Con Desayuno' },
+        { id: 'premium',   label: 'All Inclusive' },
+      ]
+    : HOTELES;
+
   const totalGeneral = precio ? precio * pasajeros : null;
 
   return (
@@ -240,9 +249,9 @@ export default function PaqueteDetallePage() {
             </div>
             {!isExcursionOrTraslado && (
               <div>
-                <label className="label-field">{t('detalle_hotel')}</label>
+                <label className="label-field">{isInternational ? 'Régimen' : t('detalle_hotel')}</label>
                 <select value={hotel} onChange={(e) => setHotel(e.target.value)} className="input-field">
-                  {HOTELES.map((h) => <option key={h.id} value={h.id}>{h.label}</option>)}
+                  {HOTELES_OPTIONS.map((h) => <option key={h.id} value={h.id}>{h.label}</option>)}
                 </select>
               </div>
             )}

@@ -169,11 +169,17 @@ export default function VendedorCotizadorPage() {
       semana_santa: 'Semana Santa',
       vacaciones_invierno: 'Vacaciones de Invierno',
     };
-    const HOTEL_LABELS = {
-      economico: 'Posada',
-      familiar: '2 Estrellas',
-      premium: '3 Estrellas',
-    };
+    const isInter = paqueteSeleccionado?.categoria === 'internacional';
+    const HOTEL_LABELS = isInter
+      ? {
+          economico: 'Con Desayuno',
+          premium: 'All Inclusive',
+        }
+      : {
+          economico: 'Posada',
+          familiar: '2 Estrellas',
+          premium: '3 Estrellas',
+        };
     const REGIMEN_LABELS = {
       desayuno: 'Desayuno',
       media_pension: 'Media Pensión',

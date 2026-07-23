@@ -296,6 +296,13 @@ export default function AdminPreciosPage() {
 
   const selectedPkg = paquetesList.find(p => p.id === Number(selectedPaquete));
   const isExcursionOrTraslado = selectedPkg?.noches === null || selectedPkg?.categoria === 'traslados_excursiones' || selectedPkg?.categoria === 'traslados' || selectedPkg?.categoria === 'excursiones';
+  const isInternationalPkg = selectedPkg?.categoria === 'internacional';
+  const columnsMatrix = isInternationalPkg
+    ? [
+        { id: 'economico', label: 'Con Desayuno' },
+        { id: 'premium',   label: 'All Inclusive' },
+      ]
+    : HOTELES;
 
   return (
     <div className="min-h-screen bg-moana-cream pb-16">
@@ -687,7 +694,7 @@ export default function AdminPreciosPage() {
                           <th className="text-left px-4 py-3 text-moana-blue font-semibold rounded-l-xl">
                             Temporada
                           </th>
-                          {HOTELES.map((h) => (
+                          {columnsMatrix.map((h) => (
                             <th key={h.id} className="px-4 py-3 text-moana-blue font-semibold text-center">
                               {h.label}
                             </th>
@@ -698,7 +705,7 @@ export default function AdminPreciosPage() {
                         {TEMPORADAS.map((t, ti) => (
                           <tr key={t.id} className={ti % 2 === 0 ? 'bg-white' : 'bg-moana-cream'}>
                             <td className="px-4 py-3 font-medium text-moana-dark">{t.label}</td>
-                            {HOTELES.map((h) => (
+                            {columnsMatrix.map((h) => (
                               <td key={h.id} className="px-4 py-3">
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray font-semibold text-sm">

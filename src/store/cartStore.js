@@ -70,8 +70,11 @@ const useCartStore = create(
         items.forEach((item, idx) => {
           msg += `*${idx + 1}. ${item.titulo}*\n`;
           if (item.noches) msg += `   🌙 ${item.noches} noches\n`;
-          msg += `   📅 ${TEMPORADA_LABELS[item.temporada] || item.temporada}\n`;
-          msg += `   🏨 Hotel: ${HOTEL_LABELS[item.hotel] || item.hotel}\n`;
+          const isInter = item.categoria === 'internacional';
+          const hotelLabel = isInter
+            ? (item.hotel === 'premium' ? 'All Inclusive 🍹' : 'Con Desayuno ☕')
+            : (HOTEL_LABELS[item.hotel] || item.hotel);
+          msg += `   ${isInter ? '🍽️ Plan' : '🏨 Hotel'}: ${hotelLabel}\n`;
           msg += `   🛏️ Habitación: ${item.habitacion}\n`;
           msg += `   👥 Pasajeros: ${item.pasajeros}\n`;
           if (item.precio) {

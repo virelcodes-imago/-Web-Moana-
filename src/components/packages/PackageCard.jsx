@@ -15,11 +15,18 @@ export default function PackageCard({ paquete }) {
 
   const isExcursionOrTraslado = paquete?.noches === null || paquete?.categoria === 'traslados_excursiones' || paquete?.categoria === 'traslados' || paquete?.categoria === 'excursiones';
 
-  const HOTEL_OPTIONS = [
-    { id: 'economico', label: t('card_hotel_estandar') },
-    { id: 'familiar',  label: t('card_hotel_familiar') },
-    { id: 'premium',   label: t('card_hotel_premium') },
-  ];
+  const isInternational = paquete?.categoria === 'internacional';
+
+  const HOTEL_OPTIONS = isInternational
+    ? [
+        { id: 'economico', label: 'Con Desayuno' },
+        { id: 'premium',   label: 'All Inclusive' },
+      ]
+    : [
+        { id: 'economico', label: t('card_hotel_estandar') },
+        { id: 'familiar',  label: t('card_hotel_familiar') },
+        { id: 'premium',   label: t('card_hotel_premium') },
+      ];
 
   const TEMPORADA_OPTIONS = [
     { id: 'baja',               label: t('card_temp_baja') },
@@ -139,7 +146,7 @@ export default function PackageCard({ paquete }) {
         ) : (
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="label-field text-xs">{t('card_hotel_label')}</label>
+              <label className="label-field text-xs">{isInternational ? 'Régimen' : t('card_hotel_label')}</label>
               <select
                 value={hotel}
                 onChange={(e) => setHotel(e.target.value)}
