@@ -37,16 +37,19 @@ export default function HomePage() {
     load();
   }, []);
 
-  const destacados = paquetes.filter((p) => p.destacado === 1 || p.destacado === true);
+  const destacados = paquetes
+    .filter((p) => p.destacado === 1 || p.destacado === true)
+    .sort((a, b) => (a.orden || 99) - (b.orden || 99));
 
-  const filtrados = catActiva === 'todos'
+  const filtrados = (catActiva === 'todos'
     ? paquetes
     : paquetes.filter((p) => {
         if (catActiva === CATEGORIAS.BUZIOS) {
-          return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'posada-moana-alojamiento' || p.id === 30;
+          return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'buzios-hospedaje' || p.id === 30;
         }
         return p.categoria === catActiva;
-      });
+      })
+  ).sort((a, b) => (a.orden || 99) - (b.orden || 99));
 
   return (
     <>

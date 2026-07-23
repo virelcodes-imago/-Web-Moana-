@@ -36,7 +36,7 @@ export default function PaquetesPage() {
     .filter((p) => {
       if (catActiva === 'todos') return true;
       if (catActiva === CATEGORIAS.BUZIOS) {
-        return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'posada-moana-alojamiento' || p.id === 30;
+        return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'buzios-hospedaje' || p.id === 30;
       }
       return p.categoria === catActiva;
     })
@@ -44,7 +44,8 @@ export default function PaquetesPage() {
       busqueda === '' ||
       p.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
       p.descCorta?.toLowerCase().includes(busqueda.toLowerCase())
-    );
+    )
+    .sort((a, b) => (a.orden || 99) - (b.orden || 99));
 
   return (
     <>

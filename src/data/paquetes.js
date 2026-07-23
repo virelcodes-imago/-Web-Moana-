@@ -99,7 +99,7 @@ export const paquetesBase = [
     imagen: '/fotos/habitaciones/habitacion1.jpg',
     imagenHero: '/fotos/habitaciones/100924152927-01.jpg',
     noches: 7,
-    destacado: false,
+    destacado: true,
     orden: 3,
     incluye: [
       'Traslados IN / OUT Aeropuerto Río de Janeiro',
