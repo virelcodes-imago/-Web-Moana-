@@ -202,7 +202,13 @@ export default function PackageCard({ paquete }) {
             <>
               <p className="price-desde">{t('card_desde')}</p>
               <p className="price-amount font-display">USD {precio.toLocaleString()}</p>
-              <p className="price-unit">{isExcursionOrTraslado ? 'por persona · servicio' : t('card_por_persona')}</p>
+              <p className="price-unit">
+                {isExcursionOrTraslado
+                  ? 'por persona · servicio'
+                  : isBuzios
+                  ? 'por persona · base doble (+ 2,9% Imp.)'
+                  : t('card_por_persona')}
+              </p>
             </>
           ) : (
             <div className="py-1">

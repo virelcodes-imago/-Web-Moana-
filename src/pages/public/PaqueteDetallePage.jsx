@@ -291,7 +291,13 @@ export default function PaqueteDetallePage() {
                 <>
                   <p className="price-desde">{t('detalle_desde')}</p>
                   <p className="price-amount font-display text-3xl">USD {precio.toLocaleString()}</p>
-                  <p className="price-unit">{isExcursionOrTraslado ? 'por persona · servicio' : t('detalle_por_persona')}</p>
+                  <p className="price-unit">
+                    {isExcursionOrTraslado
+                      ? 'por persona · servicio'
+                      : isBuzios
+                      ? 'por persona · base doble (+ 2,9% Imp.)'
+                      : t('detalle_por_persona')}
+                  </p>
                   <div className="mt-2 pt-2 border-t border-white/20">
                     <p className="text-white/70 text-xs">{t('detalle_total')} {pasajeros} {t('detalle_pax')}</p>
                     <p className="font-bold text-moana-orange text-lg">USD {totalGeneral?.toLocaleString()}</p>
