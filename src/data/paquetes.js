@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // CATÁLOGO DE PAQUETES — Moana Turismo
 // Los precios de venta se cargan desde el panel Admin (Dexie)
 // Estos son los datos base del catálogo público
@@ -8,7 +8,9 @@ export const CATEGORIAS = {
   BUZIOS: 'buzios',
   INTERNACIONAL: 'internacional',
   NACIONAL: 'nacional',
-  PACKS: 'packs',
+  ALOJAMIENTO: 'alojamiento',
+  TRASLADOS: 'traslados',
+  EXCURSIONES: 'excursiones',
 };
 
 export const TEMPORADAS = [
@@ -20,9 +22,9 @@ export const TEMPORADAS = [
 ];
 
 export const HOTELES = [
-  { id: 'economico', label: 'Est\u00e1ndar', stars: 2 },
-  { id: 'familiar', label: 'Familiar', stars: 3 },
-  { id: 'premium', label: 'Premium', stars: 4 },
+  { id: 'economico', label: 'Posada Moana', stars: 0, emoji: '🏡' },
+  { id: 'familiar',  label: '2 Estrellas',   stars: 2, emoji: '⭐⭐' },
+  { id: 'premium',   label: '3 Estrellas',   stars: 3, emoji: '⭐⭐⭐' },
 ];
 
 export const TIPOS_HABITACION = [
@@ -394,6 +396,149 @@ export const paquetesBase = [
     incluye: ['Aéreos BUE-FTE', 'Hotel con desayuno', 'Traslados', 'Visita Glaciar Perito Moreno'],
     noIncluye: ['Mini-trek sobre hielo (opcional)', 'Safari náutico (opcional)'],
   },
+
+  // ======== ALOJAMIENTO ========
+  {
+    id: 30,
+    slug: 'posada-moana-alojamiento',
+    categoria: CATEGORIAS.ALOJAMIENTO,
+    titulo: 'Posada Moana B&B',
+    subtitulo: 'Alojamiento en el corazón de Búzios',
+    descCorta: 'Suite con desayuno continental en la Posada Moana, a 600m de Rua das Pedras.',
+    descripcion: 'Hospedáte en nuestra Posada Moana B&B, ubicada en Búzios a 600m de Rua das Pedras (el centro) y de Playa do Canto. A 1km de las playas de Ferradura y Tartaruga, y a 50m del transporte público. Habitaciones en suite con aire acondicionado, TV, minibar y desayuno continental incluido. Ideal para parejas y familias.',
+    imagen: '/fotos/habitaciones/habitacion1.jpg',
+    imagenHero: '/fotos/habitaciones/100924152927-01.jpg',
+    noches: null,
+    destacado: false,
+    orden: 1,
+    incluye: [
+      'Suite con aire acondicionado',
+      'TV y minibar',
+      'Desayuno continental incluido',
+      'WiFi gratuito',
+      'Jardín y áreas comunes',
+      'A 600m de Rua das Pedras',
+    ],
+    noIncluye: [
+      'Traslados aeropuerto (cotizar por separado)',
+      'Excursiones (cotizar por separado)',
+      'Vuelos',
+    ],
+  },
+
+  // ======== TRASLADOS ========
+  {
+    id: 40,
+    slug: 'traslado-rio-buzios',
+    categoria: CATEGORIAS.TRASLADOS,
+    titulo: 'Traslado Río de Janeiro ↔ Búzios',
+    subtitulo: 'Transfer privado aeropuerto / terminal',
+    descCorta: 'Traslado privado entre el Aeropuerto Internacional de Río de Janeiro y Búzios.',
+    descripcion: 'Servicio de traslado privado entre el Aeropuerto Internacional Tom Jobim (GIG) o el Aeropuerto Santos Dumont (SDU) y Búzios. Unidad climatizada, conductor de confianza y horario a elección. Tiempo estimado de viaje: 2:30 hs.',
+    imagen: '/fotos/excursiones/-excursion-02.jpg',
+    imagenHero: '/fotos/excursiones/-excursion-02.jpg',
+    noches: null,
+    destacado: false,
+    orden: 1,
+    incluye: [
+      'Vehículo privado climatizado',
+      'Conductor de confianza',
+      'Horario a elección',
+      'Hasta 4 pasajeros (consultar para grupos)',
+    ],
+    noIncluye: [
+      'Peajes (incluidos en la tarifa)',
+      'Equipaje extra voluminoso (consultar)',
+    ],
+  },
+  {
+    id: 41,
+    slug: 'traslado-aeropuerto-mdq',
+    categoria: CATEGORIAS.TRASLADOS,
+    titulo: 'Traslado Aeropuerto Mar del Plata',
+    subtitulo: 'Transfer privado desde/hacia el aeropuerto',
+    descCorta: 'Traslado privado desde el Aeropuerto de Mar del Plata a tu hotel o domicilio.',
+    descripcion: 'Servicio de traslado privado desde o hacia el Aeropuerto de Mar del Plata (MDQ) a cualquier destino de la ciudad o alrededores. Vehículo confortable, a tiempo garantizado.',
+    imagen: '/fotos/excursiones/-excursion-01.jpg',
+    imagenHero: '/fotos/excursiones/-excursion-01.jpg',
+    noches: null,
+    destacado: false,
+    orden: 2,
+    incluye: [
+      'Vehículo privado climatizado',
+      'Conductor puntual y de confianza',
+      'Hasta 4 pasajeros',
+    ],
+    noIncluye: ['Esperas mayores a 30 minutos (consultar tarifa adicional)'],
+  },
+
+  // ======== EXCURSIONES ========
+  {
+    id: 50,
+    slug: 'excursion-arraial-do-cabo',
+    categoria: CATEGORIAS.EXCURSIONES,
+    titulo: 'Arraial do Cabo Full Day',
+    subtitulo: 'El Caribe Brasileño a una hora de Búzios',
+    descCorta: 'Excursión de día completo a Arraial do Cabo con almuerzo incluido y snorkeling.',
+    descripcion: 'Una de las excursiones más espectaculares desde Búzios. Visita a las aguas turquesas y arenas blancas de Arraial do Cabo, considerada el Caribe Brasileño. Incluye traslado, almuerzo típico, y tiempo libre para hacer snorkeling y buceo. Una experiencia imperdible.',
+    imagen: '/fotos/excursiones/arraial.jpg',
+    imagenHero: '/fotos/excursiones/arraial.jpg',
+    noches: null,
+    destacado: true,
+    orden: 1,
+    incluye: [
+      'Traslado ida y vuelta desde Búzios',
+      'Guía bilingüe (ES/PT)',
+      'Almuerzo típico incluido',
+      'Tiempo libre para snorkeling',
+      'Seguro de viaje',
+    ],
+    noIncluye: ['Equipo de snorkeling (se alquila en el lugar)', 'Bebidas extra'],
+  },
+  {
+    id: 51,
+    slug: 'excursion-escuna-buzios',
+    categoria: CATEGORIAS.EXCURSIONES,
+    titulo: 'Paseo en Escuna por Búzios',
+    subtitulo: 'Navegá por las 23 playas de Búzios',
+    descCorta: 'Navegación en goleta por las playas más paradisíacas de la Península de Búzios.',
+    descripcion: 'Navegación en escuna (goleta típica brasileña) por las 23 playas de la Península de Búzios. El paseo sale del Orla Bardot, visita las playas más hermosas y hace paradas para nadar en aguas cristalinas. Con animación y música a bordo. Una experiencia única e imperdible.',
+    imagen: '/fotos/escuna.webp',
+    imagenHero: '/fotos/escuna.webp',
+    noches: null,
+    destacado: false,
+    orden: 2,
+    incluye: [
+      'Paseo completo en escuna ~4 horas',
+      'Animación y música a bordo',
+      'Paradas para nadar',
+      'Vista a las 23 playas',
+    ],
+    noIncluye: ['Bebidas a bordo (se venden)', 'Traslado al Orla Bardot'],
+  },
+  {
+    id: 52,
+    slug: 'excursion-buceo-buzios',
+    categoria: CATEGORIAS.EXCURSIONES,
+    titulo: 'Buceo en Búzios',
+    subtitulo: 'Descubrí el mundo submarino del Atlántico',
+    descCorta: 'Inmersiones de buceo con equipo completo en las aguas cristalinas de Búzios.',
+    descripcion: 'Búzios tiene una de las mejores visibilidades submarinas del litoral brasileño. Ideales para principiantes y con opción para certificados (Open Water). Incluye equipo completo, instructor y transporte en lancha a los puntos de buceo.',
+    imagen: '/fotos/buceo.jpg',
+    imagenHero: '/fotos/buceo.jpg',
+    noches: null,
+    destacado: false,
+    orden: 3,
+    incluye: [
+      'Equipo de buceo completo',
+      'Instructor certificado',
+      'Transporte en lancha',
+      '2 inmersiones incluidas',
+      'Fotos y video subacuático',
+    ],
+    noIncluye: ['Certificación PADI adicional (consultar)'],
+  },
 ];
+
 
 export default paquetesBase;

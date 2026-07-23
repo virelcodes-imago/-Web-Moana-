@@ -157,7 +157,7 @@ export default function PaqueteDetallePage() {
             <div>
               <label className="label-field">{t('detalle_hotel')}</label>
               <select value={hotel} onChange={(e) => setHotel(e.target.value)} className="input-field">
-                {HOTELES.map((h) => <option key={h.id} value={h.id}>{h.label} {'⭐'.repeat(h.stars)}</option>)}
+                {HOTELES.map((h) => <option key={h.id} value={h.id}>{h.emoji} {h.label}</option>)}
               </select>
             </div>
             <div>

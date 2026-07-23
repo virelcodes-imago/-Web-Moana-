@@ -62,9 +62,16 @@ export default function ContactoPage() {
                 <div className="w-12 h-12 bg-moana-teal rounded-xl flex items-center justify-center flex-shrink-0">
                   <MapPin size={20} className="text-moana-blue" />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <p className="font-semibold text-moana-blue text-sm">{t('contacto_dir_label')}</p>
-                  <p className="text-moana-gray">{t('contacto_dir_valor')}</p>
+                  <div>
+                    <p className="text-xs font-medium text-moana-orange">Mar del Plata, Argentina</p>
+                    <p className="text-moana-gray text-sm">Atención vía WhatsApp e Instagram</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-moana-orange">🏡 Posada Moana B&B — Búzios, Brasil</p>
+                    <p className="text-moana-gray text-sm">Rua portal da Ferradura Nº10, Búzios, RJ</p>
+                  </div>
                 </div>
               </div>
 

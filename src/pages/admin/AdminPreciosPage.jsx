@@ -325,7 +325,7 @@ export default function AdminPreciosPage() {
                       </th>
                       {HOTELES.map((h) => (
                         <th key={h.id} className="px-4 py-3 text-moana-blue font-semibold text-center">
-                          {h.label} {'⭐'.repeat(h.stars)}
+                          {h.emoji} {h.label}
                         </th>
                       ))}
                     </tr>

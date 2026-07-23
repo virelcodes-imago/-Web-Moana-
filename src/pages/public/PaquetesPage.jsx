@@ -19,7 +19,9 @@ export default function PaquetesPage() {
     { id: CATEGORIAS.BUZIOS, label: `🌴 ${t('paquetes_buzios')}` },
     { id: CATEGORIAS.INTERNACIONAL, label: `🌍 ${t('paquetes_internacional')}` },
     { id: CATEGORIAS.NACIONAL, label: `🏔️ ${t('paquetes_nacional')}` },
-    { id: CATEGORIAS.PACKS, label: `🎁 ${t('paquetes_packs')}` },
+    { id: CATEGORIAS.ALOJAMIENTO, label: `🏡 ${t('paquetes_alojamiento')}` },
+    { id: CATEGORIAS.TRASLADOS, label: `🚗 ${t('paquetes_traslados')}` },
+    { id: CATEGORIAS.EXCURSIONES, label: `🌊 ${t('paquetes_excursiones')}` },
   ];
 
   useEffect(() => {
