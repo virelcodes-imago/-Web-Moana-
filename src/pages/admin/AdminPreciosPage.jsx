@@ -250,6 +250,9 @@ export default function AdminPreciosPage() {
   const totalPublicados = paquetesList.filter(p => p.activo !== 0 && p.activo !== false).length;
   const totalDestacados = paquetesList.filter(p => p.destacado === 1 || p.destacado === true).length;
 
+  const selectedPkg = paquetesList.find(p => p.id === Number(selectedPaquete));
+  const isExcursionOrTraslado = selectedPkg?.noches === null || selectedPkg?.categoria === 'traslados_excursiones' || selectedPkg?.categoria === 'traslados' || selectedPkg?.categoria === 'excursiones';
+
   return (
     <div className="min-h-screen bg-moana-cream pb-16">
       {/* Header */}
@@ -584,52 +587,96 @@ export default function AdminPreciosPage() {
               {/* Matriz de Precios */}
               <div className="card p-6">
                 <h2 className="font-display font-bold text-moana-blue text-xl mb-1">
-                  Matriz de Precios de Venta (USD)
+                  {isExcursionOrTraslado ? 'Tarifario del Servicio / Excursión (USD)' : 'Matriz de Precios de Venta (USD)'}
                 </h2>
                 <p className="text-moana-gray text-sm mb-5">
-                  Ingresá el precio final en USD por persona (base doble) para cada combinación de Temporada y Categoría de Hotel.
+                  {isExcursionOrTraslado
+                    ? 'Ingresá el precio final en USD por persona / servicio para cada temporada. Si lo dejás vacío o en cero, en la web figurará como CONSULTAR.'
+                    : 'Ingresá el precio final en USD por persona (base doble) para cada combinación de Temporada y Categoría de Hotel.'}
                 </p>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border-collapse">
-                    <thead>
-                      <tr className="bg-moana-blue-pale">
-                        <th className="text-left px-4 py-3 text-moana-blue font-semibold rounded-l-xl">
-                          Temporada
-                        </th>
-                        {HOTELES.map((h) => (
-                          <th key={h.id} className="px-4 py-3 text-moana-blue font-semibold text-center">
-                            {h.label}
+                  {isExcursionOrTraslado ? (
+                    <table className="w-full text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-moana-blue-pale">
+                          <th className="text-left px-4 py-3 text-moana-blue font-semibold rounded-l-xl">
+                            Temporada
                           </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {TEMPORADAS.map((t, ti) => (
-                        <tr key={t.id} className={ti % 2 === 0 ? 'bg-white' : 'bg-moana-cream'}>
-                          <td className="px-4 py-3 font-medium text-moana-dark">{t.label}</td>
-                          {HOTELES.map((h) => (
-                            <td key={h.id} className="px-4 py-3">
-                              <div className="relative">
+                          <th className="px-4 py-3 text-moana-blue font-semibold text-center rounded-r-xl">
+                            Precio en USD (Vacío = CONSULTAR)
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {TEMPORADAS.map((t, ti) => (
+                          <tr key={t.id} className={ti % 2 === 0 ? 'bg-white' : 'bg-moana-cream'}>
+                            <td className="px-4 py-3 font-medium text-moana-dark">{t.label}</td>
+                            <td className="px-4 py-3 text-center">
+                              <div className="relative inline-block">
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray font-semibold text-sm">
                                   USD
                                 </span>
                                 <input
                                   type="number"
                                   min="0"
-                                  placeholder="—"
-                                  value={precioMatrix[`${t.id}-${h.id}`] ?? ''}
-                                  onChange={(e) => handlePrecioChange(t.id, h.id, e.target.value)}
-                                  className="w-32 pl-12 pr-3 py-2 border border-gray-200 rounded-lg text-center
+                                  placeholder="Consultar"
+                                  value={precioMatrix[`${t.id}-economico`] ?? ''}
+                                  onChange={(e) => {
+                                    handlePrecioChange(t.id, 'economico', e.target.value);
+                                    handlePrecioChange(t.id, 'familiar', e.target.value);
+                                    handlePrecioChange(t.id, 'premium', e.target.value);
+                                  }}
+                                  className="w-44 pl-12 pr-3 py-2 border border-gray-200 rounded-lg text-center
                                              focus:outline-none focus:ring-2 focus:ring-moana-orange text-moana-dark font-semibold"
                                 />
                               </div>
                             </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <table className="w-full text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-moana-blue-pale">
+                          <th className="text-left px-4 py-3 text-moana-blue font-semibold rounded-l-xl">
+                            Temporada
+                          </th>
+                          {HOTELES.map((h) => (
+                            <th key={h.id} className="px-4 py-3 text-moana-blue font-semibold text-center">
+                              {h.label}
+                            </th>
                           ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {TEMPORADAS.map((t, ti) => (
+                          <tr key={t.id} className={ti % 2 === 0 ? 'bg-white' : 'bg-moana-cream'}>
+                            <td className="px-4 py-3 font-medium text-moana-dark">{t.label}</td>
+                            {HOTELES.map((h) => (
+                              <td key={h.id} className="px-4 py-3">
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray font-semibold text-sm">
+                                    USD
+                                  </span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    placeholder="—"
+                                    value={precioMatrix[`${t.id}-${h.id}`] ?? ''}
+                                    onChange={(e) => handlePrecioChange(t.id, h.id, e.target.value)}
+                                    className="w-32 pl-12 pr-3 py-2 border border-gray-200 rounded-lg text-center
+                                               focus:outline-none focus:ring-2 focus:ring-moana-orange text-moana-dark font-semibold"
+                                  />
+                                </div>
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
 
                 <div className="mt-6 flex justify-end">

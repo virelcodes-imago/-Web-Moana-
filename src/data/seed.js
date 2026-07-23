@@ -129,16 +129,23 @@ export async function seedDatabase() {
     const preciosOtros = [];
     paquetesBase.forEach((p) => {
       if ([1, 30, 31].includes(p.id)) return;
-      const base = preciosBases[p.id] || 500;
+      if (p.noches === null || !preciosBases[p.id]) return; // Do not auto-set prices for excursiones & traslados
+      const base = preciosBases[p.id];
       temporadas.forEach((temp) => {
         hoteles.forEach((hotel) => {
-          if (p.noches === null && hotel !== 'economico') return;
           preciosOtros.push({ paqueteId: p.id, temporada: temp, hotel, precio: base });
         });
       });
     });
-    await db.precios.bulkAdd(preciosOtros).catch(() => {});
+    if (preciosOtros.length > 0) {
+      await db.precios.bulkAdd(preciosOtros).catch(() => {});
+    }
   } else {
+    // Si la DB ya existe, limpiar cualquier precio base residual de 500 para excursiones/traslados
+    const excPkgIds = [2, 3, 4, 5, 6, 40, 41];
+    for (const id of excPkgIds) {
+      await db.precios.where({ paqueteId: id, precio: 500 }).delete().catch(() => {});
+    }
     // Si la DB ya existe, sincronizar el orden y categorías oficiales de paquetesBase sin tocar precios editados
     for (const p of paquetesBase) {
       const existing = await db.paquetes.get(p.id);
