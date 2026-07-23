@@ -35,6 +35,8 @@ const useAuthStore = create(
     {
       name: 'moana-auth',
       partialize: (state) => ({
+        role: state.role,
+        isAuthenticated: state.isAuthenticated,
         adminPin: state.adminPin,
         sellerPin: state.sellerPin,
       }),

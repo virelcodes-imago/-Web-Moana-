@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home } from 'lucide-react';
+import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home, LogOut } from 'lucide-react';
 import db from '../../db/db';
 import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES } from '../../data/paquetes';
 import { excursionesBase, trasladosBase } from '../../data/extras';
+import useAuthStore from '../../store/authStore';
 
 const HABITACIONES_POSADA = [
   { id: 'single', label: 'Single (1 pax)', emoji: '👤' },
@@ -12,6 +13,7 @@ const HABITACIONES_POSADA = [
 ];
 
 export default function AdminPreciosPage() {
+  const { logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState('paquetes');
   const [savedMsg, setSavedMsg] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
@@ -371,10 +373,22 @@ export default function AdminPreciosPage() {
                 <p className="text-white/70 text-sm">Control total de publicaciones, destacados del mes, posada y precios</p>
               </div>
             </div>
-            <a href="/" target="_blank" rel="noreferrer"
-               className="text-xs bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl text-white font-semibold border border-white/20 transition-all flex items-center gap-2">
-              <Eye size={14} /> Ver Web Pública
-            </a>
+            <div className="flex items-center gap-2">
+              <a href="/" target="_blank" rel="noreferrer"
+                 className="text-xs bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl text-white font-semibold border border-white/20 transition-all flex items-center gap-2">
+                <Eye size={14} /> Ver Web Pública
+              </a>
+              <button
+                onClick={() => {
+                  logout();
+                  window.location.href = '/admin';
+                }}
+                className="text-xs bg-red-500/20 hover:bg-red-500 text-white px-3.5 py-2.5 rounded-xl font-semibold border border-red-400/30 transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Cerrar sesión de administrador"
+              >
+                <LogOut size={14} /> Salir
+              </button>
+            </div>
           </div>
         </div>
       </div>

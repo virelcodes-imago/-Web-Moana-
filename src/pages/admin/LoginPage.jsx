@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Shield, Calculator } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
@@ -6,8 +6,15 @@ import useAuthStore from '../../store/authStore';
 export default function LoginPage() {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuthStore();
+  const { isAuthenticated, role, login } = useAuthStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (role === 'admin') navigate('/admin/precios', { replace: true });
+      else navigate('/admin/cotizador', { replace: true });
+    }
+  }, [isAuthenticated, role, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
