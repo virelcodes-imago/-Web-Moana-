@@ -209,45 +209,45 @@ export default function PaqueteDetallePage() {
                   </ul>
                 </div>
               )}
+            </div>
 
-              {/* Policy & Conditions Accordion */}
-              {(paquete.categoria === 'buzios' || paquete.slug?.includes('buzios')) && (
-                <div className="card overflow-hidden border border-moana-teal/30 shadow-sm">
-                  <button
-                    type="button"
-                    onClick={() => setCondicionesOpen(!condicionesOpen)}
-                    className="w-full flex items-center justify-between p-4 bg-moana-cream/80 hover:bg-moana-cream text-left transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2.5 text-moana-blue font-bold text-sm md:text-base">
-                      <Info size={20} className="text-moana-orange flex-shrink-0" />
-                      <span>Información Importante & Condiciones</span>
-                    </div>
-                    <ChevronDown
-                      size={20}
-                      className={`text-moana-blue transition-transform duration-300 flex-shrink-0 ${condicionesOpen ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-
-                  {condicionesOpen && (
-                    <div className="p-5 bg-white space-y-2.5 text-xs md:text-sm text-moana-dark border-t border-moana-cream animate-fade-in">
-                      <p>• <strong>Impuestos:</strong> Los paquetes tienen 2.9% tasas e impuestos.</p>
-                      <p>• <strong>Menores (0 a 2 años):</strong> No pagan (hasta 2 años sin excepción).</p>
-                      <p>• <strong>Menores (2 a 11 años):</strong> 15% OFF en base familiar (solo aplica a menores).</p>
-                      <p>• <strong>Días Extras:</strong> Todos los paquetes son por 8 días 7 noches. Para adicionar días extras, la variación del aéreo es de USD 100 y la diaria extra de hospedaje es de USD 25 por noche por pasajero.</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Bottom Back Button */}
-              <div className="pt-2 flex justify-start">
+            {/* Policy & Conditions Accordion */}
+            {(paquete.categoria === 'buzios' || paquete.slug?.includes('buzios')) && (
+              <div className="card overflow-hidden border border-moana-teal/30 shadow-sm">
                 <button
-                  onClick={handleVolver}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-moana-blue hover:bg-moana-blue-dark text-white rounded-full text-sm font-semibold transition-all shadow-md cursor-pointer"
+                  type="button"
+                  onClick={() => setCondicionesOpen(!condicionesOpen)}
+                  className="w-full flex items-center justify-between p-4 bg-moana-cream/80 hover:bg-moana-cream text-left transition-colors cursor-pointer"
                 >
-                  <ArrowLeft size={18} /> {t('detalle_volver')}
+                  <div className="flex items-center gap-2.5 text-moana-blue font-bold text-sm md:text-base">
+                    <Info size={20} className="text-moana-orange flex-shrink-0" />
+                    <span>Información Importante & Condiciones</span>
+                  </div>
+                  <ChevronDown
+                    size={20}
+                    className={`text-moana-blue transition-transform duration-300 flex-shrink-0 ${condicionesOpen ? 'rotate-180' : ''}`}
+                  />
                 </button>
+
+                {condicionesOpen && (
+                  <div className="p-5 bg-white space-y-2.5 text-xs md:text-sm text-moana-dark border-t border-moana-cream animate-fade-in">
+                    <p>• <strong>Impuestos:</strong> Los paquetes tienen 2.9% tasas e impuestos.</p>
+                    <p>• <strong>Menores (0 a 2 años):</strong> No pagan (hasta 2 años sin excepción).</p>
+                    <p>• <strong>Menores (2 a 11 años):</strong> 15% OFF en base familiar (solo aplica a menores).</p>
+                    <p>• <strong>Días Extras:</strong> Todos los paquetes son por 8 días 7 noches. Para adicionar días extras, la variación del aéreo es de USD 100 y la diaria extra de hospedaje es de USD 25 por noche por pasajero.</p>
+                  </div>
+                )}
               </div>
+            )}
+
+            {/* Bottom Back Button (Discrete & Small) */}
+            <div className="pt-2 flex justify-start items-center">
+              <button
+                onClick={handleVolver}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-moana-blue/10 hover:bg-moana-blue text-moana-blue hover:text-white rounded-full text-xs font-semibold transition-all border border-moana-blue/30 cursor-pointer shadow-sm h-fit flex-shrink-0"
+              >
+                <ArrowLeft size={14} /> {t('detalle_volver')}
+              </button>
             </div>
           </div>
 
