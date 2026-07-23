@@ -218,13 +218,53 @@ export default function AdminPreciosPage() {
   const handleSaveExcursiones = async () => {
     await db.excursiones.clear();
     await db.excursiones.bulkAdd(excursiones.map(({ id: _id, ...e }) => e));
-    showSaved('¡Excursiones guardadas correctamente!');
+
+    const pkgMap = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6 };
+    const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+
+    for (let i = 0; i < excursiones.length; i++) {
+      const exc = excursiones[i];
+      const pId = exc.paqueteId || pkgMap[exc.id] || pkgMap[i + 1];
+      if (pId) {
+        if (exc.nombre) {
+          await db.paquetes.update(pId, { titulo: exc.nombre, descCorta: exc.descripcion || '' }).catch(() => {});
+        }
+        await db.precios.where({ paqueteId: pId }).delete().catch(() => {});
+        if (exc.precio && Number(exc.precio) > 0) {
+          const rows = temporadas.map(t => ({ paqueteId: pId, temporada: t, hotel: 'economico', precio: Number(exc.precio) }));
+          await db.precios.bulkAdd(rows).catch(() => {});
+        }
+      }
+    }
+
+    await reloadPaquetes();
+    showSaved('¡Excursiones guardadas y actualizadas en la web correctamente!');
   };
 
   const handleSaveTraslados = async () => {
     await db.traslados.clear();
     await db.traslados.bulkAdd(traslados.map(({ id: _id, ...t }) => t));
-    showSaved('¡Traslados guardados correctamente!');
+
+    const pkgMap = { 1: 40, 2: 41 };
+    const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+
+    for (let i = 0; i < traslados.length; i++) {
+      const tras = traslados[i];
+      const pId = tras.paqueteId || pkgMap[tras.id] || pkgMap[i + 1];
+      if (pId) {
+        if (tras.nombre) {
+          await db.paquetes.update(pId, { titulo: tras.nombre }).catch(() => {});
+        }
+        await db.precios.where({ paqueteId: pId }).delete().catch(() => {});
+        if (tras.precio && Number(tras.precio) > 0) {
+          const rows = temporadas.map(t => ({ paqueteId: pId, temporada: t, hotel: 'economico', precio: Number(tras.precio) }));
+          await db.precios.bulkAdd(rows).catch(() => {});
+        }
+      }
+    }
+
+    await reloadPaquetes();
+    showSaved('¡Traslados guardados y actualizados en la web correctamente!');
   };
 
   const addExcursion = () => {
@@ -240,12 +280,16 @@ export default function AdminPreciosPage() {
     setTimeout(() => setSavedMsg(''), 4000);
   };
 
-  // Filtrar lista de paquetes en el admin
-  const paquetesFiltrados = paquetesList.filter((p) =>
-    searchFilter === '' ||
-    p.titulo.toLowerCase().includes(searchFilter.toLowerCase()) ||
-    p.categoria.toLowerCase().includes(searchFilter.toLowerCase())
-  );
+  // Filtrar lista de paquetes de viajes en el admin (excluyendo excursiones y traslados directos)
+  const paquetesFiltrados = paquetesList.filter((p) => {
+    const isExcursionOrTrasladoPkg = p.noches === null || p.categoria === 'traslados_excursiones' || p.categoria === 'traslados' || p.categoria === 'excursiones';
+    if (isExcursionOrTrasladoPkg) return false;
+    return (
+      searchFilter === '' ||
+      p.titulo.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      p.categoria.toLowerCase().includes(searchFilter.toLowerCase())
+    );
+  });
 
   const totalPublicados = paquetesList.filter(p => p.activo !== 0 && p.activo !== false).length;
   const totalDestacados = paquetesList.filter(p => p.destacado === 1 || p.destacado === true).length;

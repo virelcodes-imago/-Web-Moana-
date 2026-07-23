@@ -42,16 +42,32 @@ export default function PackageCard({ paquete }) {
             return;
           }
         }
+
+        if (isExcursionOrTraslado) {
+          const excs = await db.excursiones.toArray();
+          const foundExc = excs.find(e => (e.paqueteId === paquete.id) || (e.nombre && paquete.titulo && e.nombre.toLowerCase().includes(paquete.titulo.toLowerCase().slice(0, 5))));
+          if (foundExc && foundExc.precio && Number(foundExc.precio) > 0) {
+            setPrecio(Number(foundExc.precio));
+            return;
+          }
+          const tras = await db.traslados.toArray();
+          const foundTras = tras.find(t => (t.paqueteId === paquete.id) || (t.nombre && paquete.titulo && t.nombre.toLowerCase().includes(paquete.titulo.toLowerCase().slice(0, 5))));
+          if (foundTras && foundTras.precio && Number(foundTras.precio) > 0) {
+            setPrecio(Number(foundTras.precio));
+            return;
+          }
+        }
+
         const p = await db.precios
           .where({ paqueteId: paquete.id, temporada, hotel })
           .first();
-        setPrecio(p && p.precio ? p.precio : null);
+        setPrecio(p && p.precio && Number(p.precio) > 0 ? Number(p.precio) : null);
       } catch {
         setPrecio(null);
       }
     };
     load();
-  }, [paquete.id, paquete.slug, paquete.categoria, hotel, temporada]);
+  }, [paquete.id, paquete.slug, paquete.categoria, hotel, temporada, isExcursionOrTraslado]);
 
   const handleAdd = () => {
     addItem(paquete, { temporada, hotel, precio });
