@@ -162,7 +162,7 @@ export default function VendedorCotizadorPage() {
       vacaciones_invierno: 'Vacaciones de Invierno',
     };
     const HOTEL_LABELS = {
-      economico: '🏡 Posada Moana',
+      economico: '🏡 Posada',
       familiar: '⭐⭐ 2 Estrellas',
       premium: '⭐⭐⭐ 3 Estrellas',
     };

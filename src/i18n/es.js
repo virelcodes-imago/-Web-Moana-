@@ -56,8 +56,7 @@ const es = {
   paquetes_internacional: 'Internacional',
   paquetes_nacional: 'Nacional',
   paquetes_alojamiento: 'Alojamiento',
-  paquetes_traslados: 'Traslados',
-  paquetes_excursiones: 'Excursiones',
+  paquetes_traslados_excursiones: 'Traslados y Excursiones',
   paquetes_no_results: 'No hay paquetes disponibles en esta categoría.',
   paquetes_consultar_custom: 'Consultar paquete a medida',
 
@@ -69,7 +68,7 @@ const es = {
   card_ver_detalle: 'Ver detalle',
   card_hotel_label: 'Hotel',
   card_temporada_label: 'Temporada',
-  card_hotel_estandar: '🏡 Posada Moana',
+  card_hotel_estandar: '🏡 Posada',
   card_hotel_familiar: '⭐⭐',
   card_hotel_premium: '⭐⭐⭐',
   card_temp_baja: 'Temporada Baja',

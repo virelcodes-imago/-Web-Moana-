@@ -56,8 +56,7 @@ const en = {
   paquetes_internacional: 'International',
   paquetes_nacional: 'National',
   paquetes_alojamiento: 'Accommodation',
-  paquetes_traslados: 'Transfers',
-  paquetes_excursiones: 'Excursions',
+  paquetes_traslados_excursiones: 'Transfers & Excursions',
   paquetes_no_results: 'No packages available in this category.',
   paquetes_consultar_custom: 'Request a custom package',
 
@@ -69,7 +68,7 @@ const en = {
   card_ver_detalle: 'View details',
   card_hotel_label: 'Hotel',
   card_temporada_label: 'Season',
-  card_hotel_estandar: '🏡 Posada Moana',
+  card_hotel_estandar: '🏡 Lodge',
   card_hotel_familiar: '⭐⭐',
   card_hotel_premium: '⭐⭐⭐',
   card_temp_baja: 'Low Season',

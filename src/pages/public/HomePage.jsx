@@ -25,8 +25,7 @@ export default function HomePage() {
     { id: CATEGORIAS.INTERNACIONAL, label: `🌍 ${t('paquetes_internacional')}` },
     { id: CATEGORIAS.NACIONAL, label: `🏔️ ${t('paquetes_nacional')}` },
     { id: CATEGORIAS.ALOJAMIENTO, label: `🏡 ${t('paquetes_alojamiento')}` },
-    { id: CATEGORIAS.TRASLADOS, label: `🚗 ${t('paquetes_traslados')}` },
-    { id: CATEGORIAS.EXCURSIONES, label: `🌊 ${t('paquetes_excursiones')}` },
+    { id: CATEGORIAS.TRASLADOS_EXCURSIONES, label: `🌊 ${t('paquetes_traslados_excursiones')}` },
   ];
 
   useEffect(() => {

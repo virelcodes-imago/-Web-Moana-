@@ -56,8 +56,7 @@ const pt = {
   paquetes_internacional: 'Internacional',
   paquetes_nacional: 'Nacional',
   paquetes_alojamiento: 'Hospedagem',
-  paquetes_traslados: 'Transfers',
-  paquetes_excursiones: 'Excursões',
+  paquetes_traslados_excursiones: 'Transfers e Excursões',
   paquetes_no_results: 'Nenhum pacote disponível nesta categoria.',
   paquetes_consultar_custom: 'Consultar pacote personalizado',
 
@@ -69,7 +68,7 @@ const pt = {
   card_ver_detalle: 'Ver detalhes',
   card_hotel_label: 'Hotel',
   card_temporada_label: 'Temporada',
-  card_hotel_estandar: '🏡 Pousada Moana',
+  card_hotel_estandar: '🏡 Pousada',
   card_hotel_familiar: '⭐⭐',
   card_hotel_premium: '⭐⭐⭐',
   card_temp_baja: 'Baixa Temporada',

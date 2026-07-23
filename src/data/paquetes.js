@@ -9,8 +9,7 @@ export const CATEGORIAS = {
   INTERNACIONAL: 'internacional',
   NACIONAL: 'nacional',
   ALOJAMIENTO: 'alojamiento',
-  TRASLADOS: 'traslados',
-  EXCURSIONES: 'excursiones',
+  TRASLADOS_EXCURSIONES: 'traslados_excursiones',
 };
 
 export const TEMPORADAS = [
@@ -22,9 +21,9 @@ export const TEMPORADAS = [
 ];
 
 export const HOTELES = [
-  { id: 'economico', label: 'Posada Moana', stars: 0, emoji: '🏡' },
-  { id: 'familiar',  label: '2 Estrellas',   stars: 2, emoji: '⭐⭐' },
-  { id: 'premium',   label: '3 Estrellas',   stars: 3, emoji: '⭐⭐⭐' },
+  { id: 'economico', label: 'Posada', stars: 0, emoji: '🏡' },
+  { id: 'familiar',  label: '2 Estrellas', stars: 2, emoji: '⭐⭐' },
+  { id: 'premium',   label: '3 Estrellas', stars: 3, emoji: '⭐⭐⭐' },
 ];
 
 export const TIPOS_HABITACION = [
@@ -426,11 +425,11 @@ export const paquetesBase = [
     ],
   },
 
-  // ======== TRASLADOS ========
+  // ======== TRASLADOS Y EXCURSIONES ========
   {
     id: 40,
     slug: 'traslado-rio-buzios',
-    categoria: CATEGORIAS.TRASLADOS,
+    categoria: CATEGORIAS.TRASLADOS_EXCURSIONES,
     titulo: 'Traslado Río de Janeiro ↔ Búzios',
     subtitulo: 'Transfer privado aeropuerto / terminal',
     descCorta: 'Traslado privado entre el Aeropuerto Internacional de Río de Janeiro y Búzios.',
@@ -454,7 +453,7 @@ export const paquetesBase = [
   {
     id: 41,
     slug: 'traslado-aeropuerto-mdq',
-    categoria: CATEGORIAS.TRASLADOS,
+    categoria: CATEGORIAS.TRASLADOS_EXCURSIONES,
     titulo: 'Traslado Aeropuerto Mar del Plata',
     subtitulo: 'Transfer privado desde/hacia el aeropuerto',
     descCorta: 'Traslado privado desde el Aeropuerto de Mar del Plata a tu hotel o domicilio.',
@@ -471,12 +470,10 @@ export const paquetesBase = [
     ],
     noIncluye: ['Esperas mayores a 30 minutos (consultar tarifa adicional)'],
   },
-
-  // ======== EXCURSIONES ========
   {
     id: 50,
     slug: 'excursion-arraial-do-cabo',
-    categoria: CATEGORIAS.EXCURSIONES,
+    categoria: CATEGORIAS.TRASLADOS_EXCURSIONES,
     titulo: 'Arraial do Cabo Full Day',
     subtitulo: 'El Caribe Brasileño a una hora de Búzios',
     descCorta: 'Excursión de día completo a Arraial do Cabo con almuerzo incluido y snorkeling.',
@@ -485,7 +482,7 @@ export const paquetesBase = [
     imagenHero: '/fotos/excursiones/arraial.jpg',
     noches: null,
     destacado: true,
-    orden: 1,
+    orden: 3,
     incluye: [
       'Traslado ida y vuelta desde Búzios',
       'Guía bilingüe (ES/PT)',
@@ -498,7 +495,7 @@ export const paquetesBase = [
   {
     id: 51,
     slug: 'excursion-escuna-buzios',
-    categoria: CATEGORIAS.EXCURSIONES,
+    categoria: CATEGORIAS.TRASLADOS_EXCURSIONES,
     titulo: 'Paseo en Escuna por Búzios',
     subtitulo: 'Navegá por las 23 playas de Búzios',
     descCorta: 'Navegación en goleta por las playas más paradisíacas de la Península de Búzios.',
@@ -507,7 +504,7 @@ export const paquetesBase = [
     imagenHero: '/fotos/escuna.webp',
     noches: null,
     destacado: false,
-    orden: 2,
+    orden: 4,
     incluye: [
       'Paseo completo en escuna ~4 horas',
       'Animación y música a bordo',
@@ -519,7 +516,7 @@ export const paquetesBase = [
   {
     id: 52,
     slug: 'excursion-buceo-buzios',
-    categoria: CATEGORIAS.EXCURSIONES,
+    categoria: CATEGORIAS.TRASLADOS_EXCURSIONES,
     titulo: 'Buceo en Búzios',
     subtitulo: 'Descubrí el mundo submarino del Atlántico',
     descCorta: 'Inmersiones de buceo con equipo completo en las aguas cristalinas de Búzios.',
@@ -528,7 +525,7 @@ export const paquetesBase = [
     imagenHero: '/fotos/buceo.jpg',
     noches: null,
     destacado: false,
-    orden: 3,
+    orden: 5,
     incluye: [
       'Equipo de buceo completo',
       'Instructor certificado',
