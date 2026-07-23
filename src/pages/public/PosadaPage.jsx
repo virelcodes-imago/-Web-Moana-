@@ -102,7 +102,7 @@ export default function PosadaPage() {
                 {WA_ICON}
                 {t('posada_consultar_disp')}
               </a>
-              <Link to="/paquetes/buzios-full" className="btn-secondary flex items-center gap-2">
+              <Link to="/paquetes/buzios-clasico" className="btn-secondary flex items-center gap-2">
                 {t('posada_ver_paquete')} <ArrowRight size={16} />
               </Link>
             </div>

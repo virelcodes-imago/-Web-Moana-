@@ -39,7 +39,88 @@ export async function seedDatabase() {
   await db.config.put({ clave: 'adminPin', valor: '1234' });
   await db.config.put({ clave: 'sellerPin', valor: '0000' });
 
-  // 2. Sincronizar paquetes de paquetesBase en Dexie si falta alguno
+  // 2. Sincronizar paquetes oficiales de Búzios (Clásico, Premium, Hospedaje)
+  const buziosOfficialPkgs = [1, 30, 31];
+  for (const bId of buziosOfficialPkgs) {
+    const baseP = paquetesBase.find(p => p.id === bId);
+    if (baseP) {
+      await db.paquetes.put({
+        id: baseP.id,
+        categoria: baseP.categoria,
+        slug: baseP.slug,
+        titulo: baseP.titulo,
+        subtitulo: baseP.subtitulo,
+        descCorta: baseP.descCorta,
+        descripcion: baseP.descripcion,
+        imagen: baseP.imagen,
+        imagenHero: baseP.imagenHero,
+        noches: baseP.noches,
+        destacado: baseP.destacado ? 1 : 0,
+        orden: baseP.orden || 99,
+        activo: 1,
+        incluye: baseP.incluye || [],
+        noIncluye: baseP.noIncluye || []
+      });
+    }
+  }
+
+  // Cargar matriz de precios oficial para Búzios Clásico (1), Premium (31), y Hospedaje (30)
+  const buziosOfficialPrices = [
+    // Búzios Clásico (1)
+    { paqueteId: 1, temporada: 'baja', hotel: 'economico', precio: 825 },
+    { paqueteId: 1, temporada: 'baja', hotel: 'familiar', precio: 825 },
+    { paqueteId: 1, temporada: 'baja', hotel: 'premium', precio: 825 },
+
+    { paqueteId: 1, temporada: 'semana_santa', hotel: 'economico', precio: 925 },
+    { paqueteId: 1, temporada: 'semana_santa', hotel: 'familiar', precio: 925 },
+    { paqueteId: 1, temporada: 'semana_santa', hotel: 'premium', precio: 925 },
+
+    { paqueteId: 1, temporada: 'alta', hotel: 'economico', precio: 995 },
+    { paqueteId: 1, temporada: 'alta', hotel: 'familiar', precio: 995 },
+    { paqueteId: 1, temporada: 'alta', hotel: 'premium', precio: 995 },
+
+    { paqueteId: 1, temporada: 'vacaciones_invierno', hotel: 'economico', precio: 995 },
+    { paqueteId: 1, temporada: 'vacaciones_invierno', hotel: 'familiar', precio: 995 },
+    { paqueteId: 1, temporada: 'vacaciones_invierno', hotel: 'premium', precio: 995 },
+
+    { paqueteId: 1, temporada: 'finde_largo', hotel: 'economico', precio: 1150 },
+    { paqueteId: 1, temporada: 'finde_largo', hotel: 'familiar', precio: 1150 },
+    { paqueteId: 1, temporada: 'finde_largo', hotel: 'premium', precio: 1150 },
+
+    // Búzios Premium (31)
+    { paqueteId: 31, temporada: 'baja', hotel: 'economico', precio: 975 },
+    { paqueteId: 31, temporada: 'baja', hotel: 'familiar', precio: 975 },
+    { paqueteId: 31, temporada: 'baja', hotel: 'premium', precio: 975 },
+
+    { paqueteId: 31, temporada: 'semana_santa', hotel: 'economico', precio: 1095 },
+    { paqueteId: 31, temporada: 'semana_santa', hotel: 'familiar', precio: 1095 },
+    { paqueteId: 31, temporada: 'semana_santa', hotel: 'premium', precio: 1095 },
+
+    { paqueteId: 31, temporada: 'alta', hotel: 'economico', precio: 1250 },
+    { paqueteId: 31, temporada: 'alta', hotel: 'familiar', precio: 1250 },
+    { paqueteId: 31, temporada: 'alta', hotel: 'premium', precio: 1250 },
+
+    { paqueteId: 31, temporada: 'vacaciones_invierno', hotel: 'economico', precio: 1250 },
+    { paqueteId: 31, temporada: 'vacaciones_invierno', hotel: 'familiar', precio: 1250 },
+    { paqueteId: 31, temporada: 'vacaciones_invierno', hotel: 'premium', precio: 1250 },
+
+    { paqueteId: 31, temporada: 'finde_largo', hotel: 'economico', precio: 1300 },
+    { paqueteId: 31, temporada: 'finde_largo', hotel: 'familiar', precio: 1300 },
+    { paqueteId: 31, temporada: 'finde_largo', hotel: 'premium', precio: 1300 },
+
+    // Búzios Hospedaje (30)
+    { paqueteId: 30, temporada: 'baja', hotel: 'economico', precio: 395 },
+    { paqueteId: 30, temporada: 'semana_santa', hotel: 'economico', precio: 475 },
+    { paqueteId: 30, temporada: 'alta', hotel: 'economico', precio: 475 },
+    { paqueteId: 30, temporada: 'vacaciones_invierno', hotel: 'economico', precio: 475 },
+    { paqueteId: 30, temporada: 'finde_largo', hotel: 'economico', precio: 550 },
+  ];
+
+  for (const row of buziosOfficialPrices) {
+    await db.precios.put(row).catch(() => {});
+  }
+
+  // 3. Sincronizar paquetes base faltantes
   for (const p of paquetesBase) {
     const existing = await db.paquetes.get(p.id);
     if (!existing) {
@@ -60,24 +141,6 @@ export async function seedDatabase() {
         incluye: p.incluye || [],
         noIncluye: p.noIncluye || []
       });
-
-      // Insertar precios iniciales para el paquete nuevo
-      const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
-      const hoteles = ['economico', 'familiar', 'premium'];
-      const base = 500;
-      const preciosNuevos = [];
-      temporadas.forEach((temp) => {
-        hoteles.forEach((hotel) => {
-          if (p.noches === null && hotel !== 'economico') return;
-          preciosNuevos.push({
-            paqueteId: p.id,
-            temporada: temp,
-            hotel: hotel,
-            precio: base
-          });
-        });
-      });
-      await db.precios.bulkAdd(preciosNuevos).catch(() => {});
     }
   }
 

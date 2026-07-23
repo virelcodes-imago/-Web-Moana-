@@ -70,14 +70,14 @@ export default function Footer() {
           </h3>
           <ul className="space-y-2">
             {[
-              ['Búzios Full', '/paquetes/buzios-full'],
-              ['Bayahíbe All Inclusive', '/paquetes/bayahibe'],
+              ['Búzios Clásico', '/paquetes/buzios-clasico'],
+              ['Búzios Premium', '/paquetes/buzios-premium'],
+              ['Búzios Hospedaje', '/paquetes/buzios-hospedaje'],
               ['Miami / Orlando', '/paquetes/miami-orlando-full'],
               ['Cataratas Iguazú', '/paquetes/cataratas-iguazu'],
               ['Europa Soñada', '/paquetes/europa-sonada'],
               ['Cancún All Inclusive', '/paquetes/cancun'],
               ['El Calafate', '/paquetes/el-calafate'],
-              ['Salta + Jujuy', '/paquetes/salta-jujuy'],
             ].map(([label, to]) => (
               <li key={to}>
                 <Link to={to} className="text-white/70 hover:text-moana-orange transition-colors text-sm">

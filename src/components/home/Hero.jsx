@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
@@ -8,7 +8,7 @@ const SLIDES = [
   {
     id: 1,
     paqueteId: 1,
-    slug: 'buzios-full',
+    slug: 'buzios-clasico',
     titulo: 'BÚZIOS',
     subtitulo: '¡No te lo podés perder!',
     tagline: 'Aéreos · 7 Noches · Posada Propia · Desayuno Incluido',
