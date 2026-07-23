@@ -100,7 +100,7 @@ export default function Footer() {
             </li>
             <li className="flex items-start gap-2 text-white/70 text-sm">
               <MapPin size={16} className="mt-0.5 text-moana-teal flex-shrink-0" />
-              Rua portal da Ferradura Nº10, Búzios, Brasil
+              Búzios, Brasil
             </li>
             <li>
               <a href="tel:+5491126810289" className="flex items-center gap-2 text-white/70 hover:text-moana-orange transition-colors text-sm">
