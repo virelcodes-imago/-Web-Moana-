@@ -13,6 +13,8 @@ export default function PackageCard({ paquete }) {
   const { addItem } = useCartStore();
   const { t } = useLanguage();
 
+  const isExcursionOrTraslado = paquete?.noches === null || paquete?.categoria === 'traslados_excursiones' || paquete?.categoria === 'traslados' || paquete?.categoria === 'excursiones';
+
   const HOTEL_OPTIONS = [
     { id: 'economico', label: t('card_hotel_estandar') },
     { id: 'familiar',  label: t('card_hotel_familiar') },
@@ -94,32 +96,47 @@ export default function PackageCard({ paquete }) {
         </div>
 
         {/* Selectors */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="label-field text-xs">{t('card_hotel_label')}</label>
-            <select
-              value={hotel}
-              onChange={(e) => setHotel(e.target.value)}
-              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
-            >
-              {HOTEL_OPTIONS.map((h) => (
-                <option key={h.id} value={h.id}>{h.label}</option>
-              ))}
-            </select>
-          </div>
+        {isExcursionOrTraslado ? (
           <div>
             <label className="label-field text-xs">{t('card_temporada_label')}</label>
             <select
               value={temporada}
               onChange={(e) => setTemporada(e.target.value)}
-              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
+              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange font-medium"
             >
               {TEMPORADA_OPTIONS.map((opt) => (
                 <option key={opt.id} value={opt.id}>{opt.label}</option>
               ))}
             </select>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="label-field text-xs">{t('card_hotel_label')}</label>
+              <select
+                value={hotel}
+                onChange={(e) => setHotel(e.target.value)}
+                className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
+              >
+                {HOTEL_OPTIONS.map((h) => (
+                  <option key={h.id} value={h.id}>{h.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label-field text-xs">{t('card_temporada_label')}</label>
+              <select
+                value={temporada}
+                onChange={(e) => setTemporada(e.target.value)}
+                className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
+              >
+                {TEMPORADA_OPTIONS.map((opt) => (
+                  <option key={opt.id} value={opt.id}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
 
         {/* Price */}
         <div className="price-tag flex-shrink-0">
@@ -129,7 +146,7 @@ export default function PackageCard({ paquete }) {
           ) : (
             <p className="price-amount font-display text-xl">{t('card_a_consultar')}</p>
           )}
-          <p className="price-unit">{t('card_por_persona')}</p>
+          <p className="price-unit">{isExcursionOrTraslado ? 'por persona · servicio' : t('card_por_persona')}</p>
         </div>
 
         {/* Includes preview */}

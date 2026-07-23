@@ -18,6 +18,8 @@ export default function PaqueteDetallePage() {
   const { addItem } = useCartStore();
   const { t } = useLanguage();
 
+  const isExcursionOrTraslado = paquete?.noches === null || paquete?.categoria === 'traslados_excursiones' || paquete?.categoria === 'traslados' || paquete?.categoria === 'excursiones';
+
   // Load package from Dexie
   useEffect(() => {
     const loadPkg = async () => {
@@ -163,12 +165,14 @@ export default function PaqueteDetallePage() {
                 {TEMPORADAS.map((temp) => <option key={temp.id} value={temp.id}>{temp.label}</option>)}
               </select>
             </div>
-            <div>
-              <label className="label-field">{t('detalle_hotel')}</label>
-              <select value={hotel} onChange={(e) => setHotel(e.target.value)} className="input-field">
-                {HOTELES.map((h) => <option key={h.id} value={h.id}>{h.label}</option>)}
-              </select>
-            </div>
+            {!isExcursionOrTraslado && (
+              <div>
+                <label className="label-field">{t('detalle_hotel')}</label>
+                <select value={hotel} onChange={(e) => setHotel(e.target.value)} className="input-field">
+                  {HOTELES.map((h) => <option key={h.id} value={h.id}>{h.label}</option>)}
+                </select>
+              </div>
+            )}
             <div>
               <label className="label-field">{t('detalle_pasajeros')}</label>
               <input type="number" min="1" max="20" value={pasajeros}
