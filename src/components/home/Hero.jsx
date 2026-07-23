@@ -43,7 +43,7 @@ const SLIDES = [
     subtitulo: '¡Una maravilla natural!',
     tagline: 'Aéreos · Hotel · Traslados · Entradas al Parque',
     imagen: '/fotos/destinos/cataratas_real.png',
-    temporada: 'Temporada alta',
+    temporada: 'Temporada baja',
     precio: null,
     precioLabel: 'DESDE',
     moneda: 'USD',
