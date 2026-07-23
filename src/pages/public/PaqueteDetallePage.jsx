@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Check, X, ShoppingCart, Moon } from 'lucide-react';
+import { ArrowLeft, Check, X, ShoppingCart, Moon, ChevronDown, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { paquetesBase, TEMPORADAS, HOTELES } from '../../data/paquetes';
 import useCartStore from '../../store/cartStore';
@@ -15,10 +15,16 @@ export default function PaqueteDetallePage() {
   const [pasajeros, setPasajeros] = useState(2);
   const [precio, setPrecio] = useState(null);
   const [added, setAdded] = useState(false);
+  const [condicionesOpen, setCondicionesOpen] = useState(false);
   const { addItem } = useCartStore();
   const { t } = useLanguage();
 
   const isExcursionOrTraslado = paquete?.noches === null || paquete?.categoria === 'traslados_excursiones' || paquete?.categoria === 'traslados' || paquete?.categoria === 'excursiones';
+
+  // Scroll to top on mount / slug change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   // Load package from Dexie
   useEffect(() => {
@@ -153,14 +159,32 @@ export default function PaqueteDetallePage() {
                 </div>
               )}
 
-              {/* Policy & Conditions */}
+              {/* Policy & Conditions Accordion */}
               {(paquete.categoria === 'buzios' || paquete.slug?.includes('buzios')) && (
-                <div className="card p-5 bg-moana-cream border-l-4 border-moana-orange space-y-2 text-xs text-moana-dark">
-                  <h4 className="font-bold text-moana-blue text-sm">Información Importante & Condiciones:</h4>
-                  <p>• <strong>Impuestos:</strong> Los paquetes tienen 2.9% tasas e impuestos.</p>
-                  <p>• <strong>Menores (0 a 2 años):</strong> No pagan (hasta 2 años sin excepción).</p>
-                  <p>• <strong>Menores (2 a 11 años):</strong> 15% OFF en base familiar (solo aplica a menores).</p>
-                  <p>• <strong>Días Extras:</strong> Todos los paquetes son por 8 días 7 noches. Para adicionar días extras, la variación del aéreo es de USD 100 y la diaria extra de hospedaje es de USD 25 por noche por pasajero.</p>
+                <div className="card overflow-hidden border border-moana-teal/30 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => setCondicionesOpen(!condicionesOpen)}
+                    className="w-full flex items-center justify-between p-4 bg-moana-cream/80 hover:bg-moana-cream text-left transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 text-moana-blue font-bold text-sm md:text-base">
+                      <Info size={20} className="text-moana-orange flex-shrink-0" />
+                      <span>Información Importante & Condiciones</span>
+                    </div>
+                    <ChevronDown
+                      size={20}
+                      className={`text-moana-blue transition-transform duration-300 flex-shrink-0 ${condicionesOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  {condicionesOpen && (
+                    <div className="p-5 bg-white space-y-2.5 text-xs md:text-sm text-moana-dark border-t border-moana-cream animate-fade-in">
+                      <p>• <strong>Impuestos:</strong> Los paquetes tienen 2.9% tasas e impuestos.</p>
+                      <p>• <strong>Menores (0 a 2 años):</strong> No pagan (hasta 2 años sin excepción).</p>
+                      <p>• <strong>Menores (2 a 11 años):</strong> 15% OFF en base familiar (solo aplica a menores).</p>
+                      <p>• <strong>Días Extras:</strong> Todos los paquetes son por 8 días 7 noches. Para adicionar días extras, la variación del aéreo es de USD 100 y la diaria extra de hospedaje es de USD 25 por noche por pasajero.</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

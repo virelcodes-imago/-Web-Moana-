@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import CartDrawer from './components/cart/CartDrawer';
@@ -20,6 +21,17 @@ import VendedorCotizadorPage from './pages/admin/VendedorCotizadorPage';
 
 import useAuthStore from './store/authStore';
 
+// Auto scroll to top on navigation
+function ScrollToTopOnRoute() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+
+  return null;
+}
+
 // Protected route wrapper
 function ProtectedRoute({ children, requiredRole }) {
   const { isAuthenticated, role } = useAuthStore();
@@ -32,6 +44,7 @@ function ProtectedRoute({ children, requiredRole }) {
 function PublicLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
+      <ScrollToTopOnRoute />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />

@@ -160,10 +160,10 @@ export default function PackageCard({ paquete }) {
             </>
           ) : (
             <div className="py-1">
-              <p className="price-amount font-display text-2xl text-moana-orange font-extrabold uppercase tracking-wider">
+              <p className="price-amount font-display text-lg text-moana-orange font-bold uppercase tracking-wider">
                 CONSULTAR
               </p>
-              <p className="text-xs text-moana-gray font-medium mt-0.5">Cotización por WhatsApp</p>
+              <p className="text-xs text-white/90 font-medium mt-0.5">Cotización por WhatsApp</p>
             </div>
           )}
         </div>
