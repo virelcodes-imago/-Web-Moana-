@@ -162,9 +162,9 @@ export default function VendedorCotizadorPage() {
       vacaciones_invierno: 'Vacaciones de Invierno',
     };
     const HOTEL_LABELS = {
-      economico: '🏡 Posada',
-      familiar: '⭐⭐ 2 Estrellas',
-      premium: '⭐⭐⭐ 3 Estrellas',
+      economico: 'Posada',
+      familiar: '2 Estrellas',
+      premium: '3 Estrellas',
     };
     const REGIMEN_LABELS = {
       desayuno: 'Desayuno',
@@ -368,7 +368,7 @@ export default function VendedorCotizadorPage() {
                       >
                         {HOTELES.map((h) => (
                           <option key={h.id} value={h.id}>
-                            {h.emoji} {h.label}
+                            {h.label}
                           </option>
                         ))}
                       </select>

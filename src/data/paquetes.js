@@ -21,9 +21,9 @@ export const TEMPORADAS = [
 ];
 
 export const HOTELES = [
-  { id: 'economico', label: 'Posada', stars: 0, emoji: '🏡' },
-  { id: 'familiar',  label: '2 Estrellas', stars: 2, emoji: '⭐⭐' },
-  { id: 'premium',   label: '3 Estrellas', stars: 3, emoji: '⭐⭐⭐' },
+  { id: 'economico', label: 'Posada', stars: 0 },
+  { id: 'familiar',  label: '2 Estrellas', stars: 2 },
+  { id: 'premium',   label: '3 Estrellas', stars: 3 },
 ];
 
 export const TIPOS_HABITACION = [
