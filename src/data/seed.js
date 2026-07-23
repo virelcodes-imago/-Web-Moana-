@@ -4,48 +4,15 @@ import equipoData from './equipo';
 import { excursionesBase, trasladosBase } from './extras';
 
 export async function seedDatabase() {
-  // Check if database is already seeded
-  let packagesCount = await db.paquetes.count();
-  const firstPkg = await db.paquetes.get(1).catch(() => null);
-
-  // Si ya existían datos pero sin la columna de "incluye" (esquema viejo), forzar re-siembra
-  if (packagesCount > 0 && (!firstPkg || !firstPkg.incluye)) {
-    console.log('Esquema de paquetes viejo detectado. Limpiando y re-sembrando catálogo...');
-    await db.paquetes.clear().catch(() => {});
-    await db.precios.clear().catch(() => {});
-    packagesCount = 0;
-  }
-
-  // Siempre sincronizar el equipo activo y la imagen de Cataratas
-  await db.paquetes.update(16, {
-    imagen: '/fotos/destinos/cataratas_real.png',
-    imagenHero: '/fotos/destinos/cataratas_real.png'
-  }).catch(() => {});
-
-  await db.paquetes.update(14, {
-    titulo: 'Cancún + Playa del Carmen + México'
-  }).catch(() => {});
-  
-  await db.equipo.clear().catch(() => {});
-  const equipoToInsertOnSync = equipoData.map(e => ({
-    id: e.id,
-    vendedor: e.vendedor,
-    cargo: e.cargo,
-    imagen: e.imagen,
-    telefono: e.telefono,
-    orden: e.orden,
-    contactar: e.contactar ? 1 : 0,
-    visible: e.visible ? 1 : 0
-  }));
-  await db.equipo.bulkAdd(equipoToInsertOnSync).catch(() => {});
+  const packagesCount = await db.paquetes.count().catch(() => 0);
 
   // 1. Cargar configuración básica (PINs)
-  await db.config.put({ clave: 'adminPin', valor: '1234' });
-  await db.config.put({ clave: 'sellerPin', valor: '0000' });
+  await db.config.put({ clave: 'adminPin', valor: '1234' }).catch(() => {});
+  await db.config.put({ clave: 'sellerPin', valor: '0000' }).catch(() => {});
 
-  // 2. Si la base de datos es nueva (0 paquetes), sembrar catálogo e inicializar precios
+  // 2. Si la base de datos es totalmente nueva (0 paquetes), sembrar catálogo e inicializar precios
   if (packagesCount === 0) {
-    console.log('Sembrando base de datos inicial...');
+    console.log('Sembrando catálogo de paquetes inicial...');
     for (const p of paquetesBase) {
       await db.paquetes.put({
         id: p.id,
@@ -60,7 +27,7 @@ export async function seedDatabase() {
         noches: p.noches,
         destacado: p.destacado ? 1 : 0,
         orden: p.orden || 99,
-        activo: 1,
+        activo: p.activo !== false ? 1 : 0,
         incluye: p.incluye || [],
         noIncluye: p.noIncluye || []
       });
@@ -104,189 +71,127 @@ export async function seedDatabase() {
 
       // Búzios Hospedaje (30)
       { paqueteId: 30, temporada: 'baja', hotel: 'economico', precio: 395 },
+      { paqueteId: 30, temporada: 'baja', hotel: 'familiar', precio: 395 },
+      { paqueteId: 30, temporada: 'baja', hotel: 'premium', precio: 395 },
+
       { paqueteId: 30, temporada: 'semana_santa', hotel: 'economico', precio: 475 },
-      { paqueteId: 30, temporada: 'alta', hotel: 'economico', precio: 475 },
-      { paqueteId: 30, temporada: 'vacaciones_invierno', hotel: 'economico', precio: 475 },
+      { paqueteId: 30, temporada: 'semana_santa', hotel: 'familiar', precio: 475 },
+      { paqueteId: 30, temporada: 'semana_santa', hotel: 'premium', precio: 475 },
     ];
+    await db.precios.bulkAdd(buziosOfficialPrices).catch(() => {});
 
-    for (const row of buziosOfficialPrices) {
-      await db.precios.put(row).catch(() => {});
-    }
-
-    // Inicializar precios para otros paquetes base
+    // Precios iniciales generalizados para el resto
+    const preciosMatrix = [];
     const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
     const hoteles = ['economico', 'familiar', 'premium'];
-    const preciosBases = {
-      7: 1199, 8: 2499, 9: 2199, 10: 950, 11: 890, 12: 990, 13: 850,
-      14: 1450, 15: 1650, 16: 350, 17: 420, 18: 480, 19: 690, 20: 390, 21: 590, 22: 1050
+    const preciosBasesPorPaquete = {
+      2: 950,   // Rio de Janeiro
+      3: 1100,  // Salvador de Bahia
+      4: 1200,  // Florianópolis
+      5: 1300,  // Natal & Pipa
+      6: 1400,  // Porto de Galinhas
+      7: 1199,  // Miami / Orlando Full
+      8: 2499,  // Europa Soñada
+      9: 2199,  // Italia con Amalfi
+      10: 950,  // Cancún
+      11: 890,  // Playa del Carmen
+      12: 990,  // Punta Cana
+      13: 850,  // Varadero
+      14: 1450, // Cancún + Playa del Carmen + México
+      15: 1650, // Combinado Habana Cayo Varadero
+      16: 350,  // Cataratas del Iguazú
+      17: 420,  // Salta + Jujuy
+      18: 480,  // Bariloche
+      19: 690,  // Ushuaia
+      20: 390,  // Mendoza
+      21: 590,  // El Calafate
+      22: 1050, // Bayahíbe All Inclusive
     };
 
-    const preciosOtros = [];
-    paquetesBase.forEach((p) => {
-      if ([1, 30, 31].includes(p.id)) return;
-      if (p.noches === null || !preciosBases[p.id]) return; // Do not auto-set prices for excursiones & traslados
-      const base = preciosBases[p.id];
+    paquetesBase.forEach((paquete) => {
+      if (paquete.id === 1 || paquete.id === 31 || paquete.id === 30) return;
+      const base = preciosBasesPorPaquete[paquete.id] || 500;
       temporadas.forEach((temp) => {
         hoteles.forEach((hotel) => {
-          preciosOtros.push({ paqueteId: p.id, temporada: temp, hotel, precio: base });
+          preciosMatrix.push({
+            paqueteId: paquete.id,
+            temporada: temp,
+            hotel: hotel,
+            precio: base
+          });
         });
       });
     });
-    if (preciosOtros.length > 0) {
-      await db.precios.bulkAdd(preciosOtros).catch(() => {});
-    }
+    await db.precios.bulkAdd(preciosMatrix).catch(() => {});
   } else {
-    // Si la DB ya existe, limpiar cualquier precio base residual de 500 para excursiones/traslados
-    const excPkgIds = [2, 3, 4, 5, 6, 40, 41];
-    for (const id of excPkgIds) {
-      await db.precios.where({ paqueteId: id, precio: 500 }).delete().catch(() => {});
-    }
-    // Si la DB ya existe, sincronizar el orden y categorías oficiales de paquetesBase sin tocar precios editados
+    // Si la DB ya existe, RESPETAR la persistencia total del usuario
+    // Solo agregar paquetes nuevos si no están en IndexedDB
     for (const p of paquetesBase) {
-      const existing = await db.paquetes.get(p.id);
-      await db.paquetes.put({
-        ...(existing || {}),
-        id: p.id,
-        categoria: p.categoria,
-        slug: p.slug,
-        titulo: p.titulo,
-        subtitulo: p.subtitulo,
-        descCorta: p.descCorta,
-        descripcion: p.descripcion,
-        imagen: existing?.imagen || p.imagen,
-        imagenHero: existing?.imagenHero || p.imagenHero,
-        noches: p.noches,
-        destacado: existing?.destacado !== undefined ? existing.destacado : (p.destacado ? 1 : 0),
-        orden: p.orden || 99,
-        activo: existing?.activo !== undefined ? existing.activo : 1,
-        incluye: p.incluye || [],
-        noIncluye: p.noIncluye || []
-      });
+      const existing = await db.paquetes.get(p.id).catch(() => null);
+      if (!existing) {
+        await db.paquetes.put({
+          id: p.id,
+          categoria: p.categoria,
+          slug: p.slug,
+          titulo: p.titulo,
+          subtitulo: p.subtitulo,
+          descCorta: p.descCorta,
+          descripcion: p.descripcion,
+          imagen: p.imagen,
+          imagenHero: p.imagenHero,
+          noches: p.noches,
+          destacado: p.destacado ? 1 : 0,
+          orden: p.orden || 99,
+          activo: p.activo !== false ? 1 : 0,
+          incluye: p.incluye || [],
+          noIncluye: p.noIncluye || []
+        });
+      }
     }
   }
 
-  if (packagesCount > 0) {
-    console.log('La base de datos ya contiene datos. Sincronización completa.');
-    return;
+  // 3. Cargar Equipo solo si la tabla está vacía
+  const equipoCount = await db.equipo.count().catch(() => 0);
+  if (equipoCount === 0) {
+    const equipoToInsert = equipoData.map(e => ({
+      id: e.id,
+      vendedor: e.vendedor,
+      cargo: e.cargo,
+      imagen: e.imagen,
+      telefono: e.telefono,
+      orden: e.orden,
+      contactar: e.contactar ? 1 : 0,
+      visible: e.visible ? 1 : 0
+    }));
+    await db.equipo.bulkAdd(equipoToInsert).catch(() => {});
   }
 
-  // 3. Cargar precios iniciales por defecto (matriz de precios base)
-  // Generaremos precios estimativos para todos los paquetes del catálogo base
-  const preciosMatrix = [];
-  const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
-  const hoteles = ['economico', 'familiar', 'premium'];
-
-  // Definir un precio base para cada paquete para generar la matriz
-  const preciosBasesPorPaquete = {
-    1: 799,  // Búzios Full
-    2: 70,   // Arraial do Cabo
-    3: 35,   // Paseo en escuna
-    4: 60,   // Buceo en Búzios
-    5: 45,   // Paseo en Buggy
-    6: 120,  // City tour Rio
-    7: 1199, // Miami / Orlando Full
-    8: 2499, // Europa Soñada
-    9: 2199, // Italia con Amalfi
-    10: 950, // Cancún
-    11: 890, // Playa del Carmen
-    12: 990, // Punta Cana
-    13: 850, // Varadero
-    14: 1450,// Cancún + Playa del Carmen
-    15: 1650,// Combinado Habana Cayo Varadero
-    16: 350, // Cataratas del Iguazú
-    17: 420, // Salta + Jujuy
-    18: 480, // Bariloche
-    19: 690, // Ushuaia
-    20: 390, // Mendoza
-    21: 590, // El Calafate
-    22: 1050,// Bayahíbe All Inclusive
-  };
-
-  paquetesBase.forEach((paquete) => {
-    const base = preciosBasesPorPaquete[paquete.id] || 500;
-    
-    temporadas.forEach((temp) => {
-      // Coeficiente por temporada
-      let coefTemp = 1.0;
-      if (temp === 'alta') coefTemp = 1.3;
-      if (temp === 'semana_santa') coefTemp = 1.4;
-      if (temp === 'finde_largo') coefTemp = 1.15;
-      if (temp === 'vacaciones_invierno') coefTemp = 1.25;
-
-      hoteles.forEach((hotel) => {
-        // Coeficiente por hotel
-        let coefHotel = 1.0;
-        if (hotel === 'familiar') coefHotel = 1.25;
-        if (hotel === 'premium') coefHotel = 1.6;
-
-        // Si el paquete no tiene noches (ej. excursiones de un día), omitir hoteles excepto económico como base única o no generar
-        if (paquete.noches === null && hotel !== 'economico') {
-          return;
-        }
-
-        const precioFinal = Math.round(base * coefTemp * coefHotel);
-        preciosMatrix.push({
-          paqueteId: paquete.id,
-          temporada: temp,
-          hotel: hotel,
-          precio: precioFinal
-        });
-      });
-    });
-  });
-
-  await db.precios.bulkAdd(preciosMatrix);
-
-  // 4. Cargar equipo
-  const equipoToInsert = equipoData.map(e => ({
-    id: e.id,
-    vendedor: e.vendedor,
-    cargo: e.cargo,
-    imagen: e.imagen,
-    telefono: e.telefono,
-    orden: e.orden,
-    contactar: e.contactar ? 1 : 0,
-    visible: e.visible ? 1 : 0
-  }));
-  await db.equipo.bulkAdd(equipoToInsert);
-
-  // 5. Cargar excursiones base
-  // Damos valores en USD reales para el cotizador
-  const excursionesToInsert = excursionesBase.map(e => {
-    let precio = 30;
-    if (e.id === 1) precio = 60; // Arraial
-    if (e.id === 2) precio = 30; // Escuna
-    if (e.id === 3) precio = 75; // Buceo
-    if (e.id === 4) precio = 40; // Buggy
-    if (e.id === 5) precio = 95; // Rio
-    if (e.id === 6) precio = 150; // Pan de Azúcar
-    if (e.id === 7) precio = 66; // Maracaná
-    return {
+  // 4. Cargar Excursiones solo si está vacía
+  const excCount = await db.excursiones.count().catch(() => 0);
+  if (excCount === 0) {
+    const excursionesToInsert = excursionesBase.map(e => ({
       nombre: e.nombre,
-      precio: precio,
+      precio: e.precio || 30,
       descripcion: e.descripcion,
       porPersona: e.porPersona ? 1 : 0,
       activo: 1
-    };
-  });
-  await db.excursiones.bulkAdd(excursionesToInsert);
+    }));
+    await db.excursiones.bulkAdd(excursionesToInsert).catch(() => {});
+  }
 
-  // 6. Cargar traslados base
-  const trasladosToInsert = trasladosBase.map(t => {
-    let precio = 40;
-    if (t.id === 1 || t.id === 2) precio = 45; // Río Búzios Regular
-    if (t.id === 3 || t.id === 4) precio = 180; // Río Búzios Privado
-    if (t.id === 5 || t.id === 6) precio = 30; // Aeropuerto IN/OUT
-    return {
+  // 5. Cargar Traslados solo si está vacía
+  const trasCount = await db.traslados.count().catch(() => 0);
+  if (trasCount === 0) {
+    const trasladosToInsert = trasladosBase.map(t => ({
       nombre: t.nombre,
-      precio: precio,
+      precio: t.precio || 40,
       tipo: t.tipo,
       activo: 1
-    };
-  });
-  await db.traslados.bulkAdd(trasladosToInsert);
+    }));
+    await db.traslados.bulkAdd(trasladosToInsert).catch(() => {});
+  }
 
-  // 7. Cargar tarifario base de Posada Moana por habitación / temporada
+  // 6. Cargar Posada Precios solo si está vacía
   const posadaCount = await db.posadaPrecios.count().catch(() => 0);
   if (posadaCount === 0) {
     const posadaMatrix = [];
@@ -311,5 +216,5 @@ export async function seedDatabase() {
     await db.posadaPrecios.bulkAdd(posadaMatrix).catch(() => {});
   }
 
-  console.log('Sembrado finalizado exitosamente.');
+  console.log('Base de datos sincronizada preservando ediciones de usuario.');
 }
