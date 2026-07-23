@@ -38,6 +38,7 @@ export default function VendedorCotizadorPage() {
   });
 
   const [precio, setPrecio] = useState(null);
+  const [paquetesList, setPaquetesList] = useState(paquetesBase);
   const [excursionesList, setExcursionesList] = useState([]);
   const [trasladosList, setTrasladosList] = useState([]);
   const [copied, setCopied] = useState(false);
@@ -45,7 +46,15 @@ export default function VendedorCotizadorPage() {
   const [nuevoExtraNombre, setNuevoExtraNombre] = useState('');
   const [nuevoExtraPrecio, setNuevoExtraPrecio] = useState('');
 
-  const paqueteSeleccionado = paquetesBase.find((p) => p.id === Number(form.paqueteId));
+  useEffect(() => {
+    const loadPkgs = async () => {
+      const list = await db.paquetes.toArray();
+      if (list.length > 0) setPaquetesList(list);
+    };
+    loadPkgs();
+  }, []);
+
+  const paqueteSeleccionado = paquetesList.find((p) => p.id === Number(form.paqueteId)) || paquetesBase.find((p) => p.id === Number(form.paqueteId));
 
   // Cargar precio desde Dexie (Modo Catálogo)
   useEffect(() => {
@@ -342,7 +351,7 @@ export default function VendedorCotizadorPage() {
                         onChange={(e) => setF('paqueteId', e.target.value)}
                         className="input-field"
                       >
-                        {paquetesBase.map((p) => (
+                        {paquetesList.map((p) => (
                           <option key={p.id} value={p.id}>{p.titulo}</option>
                         ))}
                       </select>

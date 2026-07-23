@@ -35,36 +35,56 @@ export async function seedDatabase() {
   }));
   await db.equipo.bulkAdd(equipoToInsertOnSync).catch(() => {});
 
-  if (packagesCount > 0) {
-    console.log('La base de datos ya contiene datos. Sincronización de equipo y Cataratas completa.');
-    return;
-  }
-
-  console.log('Sembrando base de datos local (Dexie)...');
-
   // 1. Cargar configuración básica (PINs)
   await db.config.put({ clave: 'adminPin', valor: '1234' });
   await db.config.put({ clave: 'sellerPin', valor: '0000' });
 
-  // 2. Cargar paquetes
-  const packagesToInsert = paquetesBase.map(p => ({
-    id: p.id,
-    categoria: p.categoria,
-    slug: p.slug,
-    titulo: p.titulo,
-    subtitulo: p.subtitulo,
-    descCorta: p.descCorta,
-    descripcion: p.descripcion,
-    imagen: p.imagen,
-    imagenHero: p.imagenHero,
-    noches: p.noches,
-    destacado: p.destacado ? 1 : 0,
-    orden: p.orden || 99,
-    activo: 1,
-    incluye: p.incluye || [],
-    noIncluye: p.noIncluye || []
-  }));
-  await db.paquetes.bulkAdd(packagesToInsert);
+  // 2. Sincronizar paquetes de paquetesBase en Dexie si falta alguno
+  for (const p of paquetesBase) {
+    const existing = await db.paquetes.get(p.id);
+    if (!existing) {
+      await db.paquetes.put({
+        id: p.id,
+        categoria: p.categoria,
+        slug: p.slug,
+        titulo: p.titulo,
+        subtitulo: p.subtitulo,
+        descCorta: p.descCorta,
+        descripcion: p.descripcion,
+        imagen: p.imagen,
+        imagenHero: p.imagenHero,
+        noches: p.noches,
+        destacado: p.destacado ? 1 : 0,
+        orden: p.orden || 99,
+        activo: 1,
+        incluye: p.incluye || [],
+        noIncluye: p.noIncluye || []
+      });
+
+      // Insertar precios iniciales para el paquete nuevo
+      const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+      const hoteles = ['economico', 'familiar', 'premium'];
+      const base = 500;
+      const preciosNuevos = [];
+      temporadas.forEach((temp) => {
+        hoteles.forEach((hotel) => {
+          if (p.noches === null && hotel !== 'economico') return;
+          preciosNuevos.push({
+            paqueteId: p.id,
+            temporada: temp,
+            hotel: hotel,
+            precio: base
+          });
+        });
+      });
+      await db.precios.bulkAdd(preciosNuevos).catch(() => {});
+    }
+  }
+
+  if (packagesCount > 0) {
+    console.log('La base de datos ya contiene datos. Sincronización completa.');
+    return;
+  }
 
   // 3. Cargar precios iniciales por defecto (matriz de precios base)
   // Generaremos precios estimativos para todos los paquetes del catálogo base

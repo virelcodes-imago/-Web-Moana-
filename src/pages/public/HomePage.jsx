@@ -31,7 +31,7 @@ export default function HomePage() {
   useEffect(() => {
     const load = async () => {
       const list = await db.paquetes.toArray();
-      const activeList = list.length > 0 ? list.filter(p => p.activo !== 0) : paquetesBase;
+      const activeList = list.length > 0 ? list.filter(p => p.activo !== 0 && p.activo !== false) : paquetesBase;
       setPaquetes(activeList);
     };
     load();
