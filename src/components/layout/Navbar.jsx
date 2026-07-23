@@ -13,9 +13,9 @@ const NAV_KEYS = [
 ];
 
 const LANG_OPTIONS = [
-  { code: 'es', flag: '🇦🇷', label: 'ES' },
-  { code: 'pt', flag: '🇧🇷', label: 'PT' },
-  { code: 'en', flag: '🇺🇸', label: 'EN' },
+  { code: 'es', flag: '🇦🇷' },
+  { code: 'pt', flag: '🇧🇷' },
+  { code: 'en', flag: '🇺🇸' },
 ];
 
 export default function Navbar() {
@@ -57,18 +57,18 @@ export default function Navbar() {
             </a>
             {/* Language selector */}
             <div className="flex items-center gap-1 ml-2 border-l border-white/20 pl-3">
-              {LANG_OPTIONS.map(({ code, flag, label }) => (
+              {LANG_OPTIONS.map(({ code, flag }) => (
                 <button
                   key={code}
                   onClick={() => setLang(code)}
-                  className={`px-1.5 py-0.5 rounded text-[11px] font-semibold transition-colors ${
+                  className={`px-1.5 py-0.5 rounded text-base transition-all ${
                     lang === code
-                      ? 'bg-moana-orange text-white'
-                      : 'text-white/70 hover:text-white'
+                      ? 'opacity-100 scale-125'
+                      : 'opacity-50 hover:opacity-100'
                   }`}
-                  aria-label={`Cambiar idioma a ${label}`}
+                  aria-label={`Cambiar idioma a ${code.toUpperCase()}`}
                 >
-                  {flag} {label}
+                  {flag}
                 </button>
               ))}
             </div>

@@ -1,8 +1,18 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Heart } from 'lucide-react';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const { t } = useLanguage();
+
+  const NAV_LINKS = [
+    [t('nav_inicio'), '/'],
+    [t('nav_paquetes'), '/paquetes'],
+    [t('nav_posada'), '/posada'],
+    [t('nav_nosotros'), '/nosotros'],
+    [t('nav_contacto'), '/contacto'],
+  ];
 
   return (
     <footer className="bg-moana-blue text-white">
@@ -11,10 +21,7 @@ export default function Footer() {
         {/* Brand */}
         <div className="lg:col-span-1">
           <img src="/fotos/LOGOS/logo.png" alt="Moana Turismo" className="h-20 w-auto mb-4" />
-          <p className="text-white/70 text-sm leading-relaxed">
-            Agencia de turismo especializada en Búzios y destinos nacionales e internacionales.
-            Tu viaje soñado está más cerca de lo que pensás.
-          </p>
+          <p className="text-white/70 text-sm leading-relaxed">{t('footer_tagline')}</p>
           <div className="flex gap-3 mt-4">
             <a
               href="https://instagram.com/moanaturismo.oficial"
@@ -43,16 +50,10 @@ export default function Footer() {
         {/* Links */}
         <div>
           <h3 className="font-semibold text-moana-orange mb-4 text-sm uppercase tracking-wider">
-            Navegación
+            {t('footer_nav_title')}
           </h3>
           <ul className="space-y-2">
-            {[
-              ['Inicio', '/'],
-              ['Paquetes', '/paquetes'],
-              ['Posada Moana', '/posada'],
-              ['Quiénes Somos', '/nosotros'],
-              ['Contacto', '/contacto'],
-            ].map(([label, to]) => (
+            {NAV_LINKS.map(([label, to]) => (
               <li key={to}>
                 <Link to={to} className="text-white/70 hover:text-moana-orange transition-colors text-sm">
                   {label}
@@ -65,7 +66,7 @@ export default function Footer() {
         {/* Destinations */}
         <div>
           <h3 className="font-semibold text-moana-orange mb-4 text-sm uppercase tracking-wider">
-            Destinos Populares
+            {t('footer_dest_title')}
           </h3>
           <ul className="space-y-2">
             {[
@@ -89,7 +90,7 @@ export default function Footer() {
         {/* Contact */}
         <div>
           <h3 className="font-semibold text-moana-orange mb-4 text-sm uppercase tracking-wider">
-            Contacto
+            {t('footer_contact_title')}
           </h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-2 text-white/70 text-sm">
@@ -115,9 +116,9 @@ export default function Footer() {
           </ul>
 
           <div className="mt-5 p-3 bg-white/10 rounded-xl text-xs text-white/60 leading-relaxed">
-            💳 Financiación en cuotas sin tarjeta<br/>
-            ✈️ Paquetes accesibles para cada presupuesto<br/>
-            🏆 +10 años en turismo
+            {t('footer_financing')}<br/>
+            {t('footer_quality')}<br/>
+            {t('footer_experience')}
           </div>
         </div>
       </div>
@@ -125,9 +126,9 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/10">
         <div className="container-moana py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-white/50 text-xs">
-          <p>© {year} Moana Turismo. Todos los derechos reservados.</p>
+          <p>© {year} Moana Turismo. {t('footer_rights')}</p>
           <p className="flex items-center gap-1">
-            Hecho con <Heart size={11} className="text-moana-orange" /> en Buenos Aires, Argentina
+            {t('footer_made_with')} <Heart size={11} className="text-moana-orange" /> {t('footer_made_in')}
           </p>
         </div>
       </div>
