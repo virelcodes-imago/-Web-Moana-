@@ -57,6 +57,9 @@ export default function PaqueteDetallePage() {
     loadPkg();
   }, [slug]);
 
+  const isInternational = paquete?.categoria === 'internacional';
+  const isNacional = paquete?.categoria === 'nacional';
+
   // Load price
   useEffect(() => {
     if (!paquete) return;
@@ -87,12 +90,22 @@ export default function PaqueteDetallePage() {
           }
         }
 
-        const p = await db.precios.where({ paqueteId: paquete.id, temporada, hotel }).first();
+        if (isInternational) {
+          const rows = await db.precios.where({ paqueteId: paquete.id }).toArray();
+          const valid = rows.find(r => r.precio && Number(r.precio) > 0);
+          if (valid) {
+            setPrecio(Number(valid.precio));
+            return;
+          }
+        }
+
+        const targetHotel = isNacional ? 'economico' : hotel;
+        const p = await db.precios.where({ paqueteId: paquete.id, temporada, hotel: targetHotel }).first();
         setPrecio(p && p.precio && Number(p.precio) > 0 ? Number(p.precio) : null);
       } catch { setPrecio(null); }
     };
     load();
-  }, [paquete, temporada, hotel, isExcursionOrTraslado]);
+  }, [paquete, temporada, hotel, isExcursionOrTraslado, isInternational, isNacional]);
 
   if (loading) {
     return (
@@ -116,8 +129,6 @@ export default function PaqueteDetallePage() {
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };
-
-  const isInternational = paquete?.categoria === 'internacional';
 
   const HOTELES_OPTIONS = isInternational
     ? [
@@ -244,19 +255,29 @@ export default function PaqueteDetallePage() {
           <div className="card p-6 h-fit sticky top-24 space-y-4">
             <h2 className="font-display font-bold text-moana-blue text-xl">{t('detalle_personalizar')}</h2>
 
-            <div>
-              <label className="label-field">{t('detalle_temporada')}</label>
-              <select value={temporada} onChange={(e) => setTemporada(e.target.value)} className="input-field">
-                {TEMPORADA_LIST.map((temp) => <option key={temp.id} value={temp.id}>{temp.label}</option>)}
-              </select>
-            </div>
-            {!isExcursionOrTraslado && (
-              <div>
-                <label className="label-field">{isInternational ? 'Régimen' : t('detalle_hotel')}</label>
-                <select value={hotel} onChange={(e) => setHotel(e.target.value)} className="input-field">
-                  {HOTELES_OPTIONS.map((h) => <option key={h.id} value={h.id}>{h.label}</option>)}
-                </select>
+            {isInternational ? (
+              <div className="py-2.5 px-3.5 bg-moana-blue-pale/70 text-moana-blue text-xs font-semibold rounded-xl border border-moana-teal/30 space-y-1">
+                <p className="font-bold text-sm text-moana-blue">✈️ Salida Grupal Acompañada</p>
+                <p className="text-moana-gray">Cupos e itinerario grupal confirmados. Cotización por pasajero.</p>
               </div>
+            ) : (
+              <>
+                <div>
+                  <label className="label-field">{t('detalle_temporada')}</label>
+                  <select value={temporada} onChange={(e) => setTemporada(e.target.value)} className="input-field">
+                    {TEMPORADA_LIST.map((temp) => <option key={temp.id} value={temp.id}>{temp.label}</option>)}
+                  </select>
+                </div>
+
+                {!isNacional && !isExcursionOrTraslado && (
+                  <div>
+                    <label className="label-field">{t('detalle_hotel')}</label>
+                    <select value={hotel} onChange={(e) => setHotel(e.target.value)} className="input-field">
+                      {HOTELES.map((h) => <option key={h.id} value={h.id}>{h.label}</option>)}
+                    </select>
+                  </div>
+                )}
+              </>
             )}
             <div>
               <label className="label-field">{t('detalle_pasajeros')}</label>

@@ -14,21 +14,15 @@ export default function PackageCard({ paquete }) {
   const { t } = useLanguage();
 
   const isExcursionOrTraslado = paquete?.noches === null || paquete?.categoria === 'traslados_excursiones' || paquete?.categoria === 'traslados' || paquete?.categoria === 'excursiones';
-
   const isInternational = paquete?.categoria === 'internacional';
-
-  const HOTEL_OPTIONS = isInternational
-    ? [
-        { id: 'economico', label: 'Con Desayuno' },
-        { id: 'premium',   label: 'All Inclusive' },
-      ]
-    : [
-        { id: 'economico', label: t('card_hotel_estandar') },
-        { id: 'familiar',  label: t('card_hotel_familiar') },
-        { id: 'premium',   label: t('card_hotel_premium') },
-      ];
-
+  const isNacional = paquete?.categoria === 'nacional';
   const isBuzios = paquete?.categoria === 'buzios' || paquete?.slug?.includes('buzios');
+
+  const HOTEL_OPTIONS = [
+    { id: 'economico', label: t('card_hotel_estandar') },
+    { id: 'familiar',  label: t('card_hotel_familiar') },
+    { id: 'premium',   label: t('card_hotel_premium') },
+  ];
 
   const TEMPORADA_OPTIONS = isBuzios
     ? [
@@ -73,8 +67,18 @@ export default function PackageCard({ paquete }) {
           }
         }
 
+        if (isInternational) {
+          const rows = await db.precios.where({ paqueteId: paquete.id }).toArray();
+          const valid = rows.find(r => r.precio && Number(r.precio) > 0);
+          if (valid) {
+            setPrecio(Number(valid.precio));
+            return;
+          }
+        }
+
+        const targetHotel = isNacional ? 'economico' : hotel;
         const p = await db.precios
-          .where({ paqueteId: paquete.id, temporada, hotel })
+          .where({ paqueteId: paquete.id, temporada, hotel: targetHotel })
           .first();
         setPrecio(p && p.precio && Number(p.precio) > 0 ? Number(p.precio) : null);
       } catch {
@@ -82,7 +86,7 @@ export default function PackageCard({ paquete }) {
       }
     };
     load();
-  }, [paquete.id, paquete.slug, paquete.categoria, hotel, temporada, isExcursionOrTraslado]);
+  }, [paquete.id, paquete.slug, paquete.categoria, hotel, temporada, isExcursionOrTraslado, isInternational, isNacional]);
 
   const handleAdd = () => {
     addItem(paquete, { temporada, hotel, precio });
@@ -93,9 +97,15 @@ export default function PackageCard({ paquete }) {
   const handleConsultar = () => {
     const tempObj = TEMPORADA_OPTIONS.find((t) => t.id === temporada);
     const hotelObj = HOTEL_OPTIONS.find((h) => h.id === hotel);
-    const detailText = isExcursionOrTraslado
-      ? `${tempObj?.label || ''}`
-      : `${tempObj?.label || ''} - Categoría: ${hotelObj?.label || ''}`;
+    let detailText = '';
+    if (isInternational) {
+      detailText = 'Salida Grupal Acompañada';
+    } else if (isNacional || isExcursionOrTraslado) {
+      detailText = tempObj?.label || '';
+    } else {
+      detailText = `${tempObj?.label || ''} - Categoría: ${hotelObj?.label || ''}`;
+    }
+
     const text = encodeURIComponent(
       `Hola Moana! Quiero consultar precio y disponibilidad para el paquete *${paquete.titulo}* (${detailText}) 🌊`
     );
@@ -139,7 +149,12 @@ export default function PackageCard({ paquete }) {
         </div>
 
         {/* Selectors */}
-        {isExcursionOrTraslado ? (
+        {isInternational ? (
+          <div className="py-2 px-3 bg-moana-blue-pale/60 text-moana-blue text-xs font-semibold rounded-lg flex items-center justify-between border border-moana-teal/20">
+            <span>✈️ Salida Grupal Acompañada</span>
+            <span className="text-moana-orange font-bold">Cupos Confirmados</span>
+          </div>
+        ) : isNacional || isExcursionOrTraslado ? (
           <div>
             <label className="label-field text-xs">{t('card_temporada_label')}</label>
             <select
@@ -155,7 +170,7 @@ export default function PackageCard({ paquete }) {
         ) : (
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="label-field text-xs">{isInternational ? 'Régimen' : t('card_hotel_label')}</label>
+              <label className="label-field text-xs">{t('card_hotel_label')}</label>
               <select
                 value={hotel}
                 onChange={(e) => setHotel(e.target.value)}

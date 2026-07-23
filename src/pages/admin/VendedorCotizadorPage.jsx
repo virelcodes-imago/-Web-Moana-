@@ -361,32 +361,42 @@ export default function VendedorCotizadorPage() {
                         ))}
                       </select>
                     </div>
-                    <div>
-                      <label className="label-field">Temporada</label>
-                      <select
-                        value={form.temporada}
-                        onChange={(e) => setF('temporada', e.target.value)}
-                        className="input-field"
-                      >
-                        {TEMPORADAS.map((t) => (
-                          <option key={t.id} value={t.id}>{t.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="label-field">Categoría Hotel</label>
-                      <select
-                        value={form.hotel}
-                        onChange={(e) => setF('hotel', e.target.value)}
-                        className="input-field"
-                      >
-                        {HOTELES.map((h) => (
-                          <option key={h.id} value={h.id}>
-                            {h.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {paqueteSeleccionado?.categoria === 'internacional' ? (
+                      <div className="sm:col-span-2 py-2.5 px-3.5 bg-moana-blue-pale/70 text-moana-blue text-xs font-semibold rounded-xl border border-moana-teal/20">
+                        <span>✈️ Salida Grupal Acompañada — Sin diferenciación de hotel ni temporada</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <label className="label-field">Temporada</label>
+                          <select
+                            value={form.temporada}
+                            onChange={(e) => setF('temporada', e.target.value)}
+                            className="input-field"
+                          >
+                            {TEMPORADAS.map((t) => (
+                              <option key={t.id} value={t.id}>{t.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                        {paqueteSeleccionado?.categoria !== 'nacional' && (
+                          <div>
+                            <label className="label-field">Categoría Hotel</label>
+                            <select
+                              value={form.hotel}
+                              onChange={(e) => setF('hotel', e.target.value)}
+                              className="input-field"
+                            >
+                              {HOTELES.map((h) => (
+                                <option key={h.id} value={h.id}>
+                                  {h.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                      </>
+                    )}
                     <div>
                       <label className="label-field">Habitación</label>
                       <select

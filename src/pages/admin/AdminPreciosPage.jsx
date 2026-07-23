@@ -297,6 +297,7 @@ export default function AdminPreciosPage() {
   const selectedPkg = paquetesList.find(p => p.id === Number(selectedPaquete));
   const isExcursionOrTraslado = selectedPkg?.noches === null || selectedPkg?.categoria === 'traslados_excursiones' || selectedPkg?.categoria === 'traslados' || selectedPkg?.categoria === 'excursiones';
   const isInternationalPkg = selectedPkg?.categoria === 'internacional';
+  const isNacionalPkg = selectedPkg?.categoria === 'nacional';
   const isBuziosPkg = selectedPkg?.categoria === 'buzios' || selectedPkg?.slug?.includes('buzios');
 
   const temporadasMatrix = isBuziosPkg ? TEMPORADAS_BUZIOS : TEMPORADAS;
@@ -641,16 +642,51 @@ export default function AdminPreciosPage() {
               {/* Matriz de Precios */}
               <div className="card p-6">
                 <h2 className="font-display font-bold text-moana-blue text-xl mb-1">
-                  {isExcursionOrTraslado ? 'Tarifario del Servicio / Excursión (USD)' : 'Matriz de Precios de Venta (USD)'}
+                  {isInternationalPkg
+                    ? 'Precio de Salida Grupal Internacional (USD)'
+                    : isNacionalPkg
+                    ? 'Tarifario Nacional por Temporada (USD)'
+                    : isExcursionOrTraslado
+                    ? 'Tarifario del Servicio / Excursión (USD)'
+                    : 'Matriz de Precios de Venta (USD)'}
                 </h2>
                 <p className="text-moana-gray text-sm mb-5">
-                  {isExcursionOrTraslado
-                    ? 'Ingresá el precio final en USD por persona / servicio para cada temporada. Si lo dejás vacío o en cero, en la web figurará como CONSULTAR.'
+                  {isInternationalPkg
+                    ? 'Ingresá el precio único final por persona para este paquete de Salida Grupal Acompañada. Si lo dejás vacío, figurará como CONSULTAR.'
+                    : isNacionalPkg
+                    ? 'Ingresá el precio final en USD por persona para cada temporada. Sin diferenciación de hotel.'
+                    : isExcursionOrTraslado
+                    ? 'Ingresá el precio final en USD por persona / servicio para cada temporada.'
                     : 'Ingresá el precio final en USD por persona (base doble) para cada combinación de Temporada y Categoría de Hotel.'}
                 </p>
 
                 <div className="overflow-x-auto">
-                  {isExcursionOrTraslado ? (
+                  {isInternationalPkg ? (
+                    <div className="p-5 bg-moana-cream/80 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 max-w-lg border border-moana-teal/20">
+                      <div>
+                        <p className="font-bold text-moana-blue text-base">Precio Único por Pasajero (USD)</p>
+                        <p className="text-xs text-moana-gray mt-0.5">Aplica a todas las fechas de la salida grupal</p>
+                      </div>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray font-semibold text-sm">USD</span>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="Consultar"
+                          value={precioMatrix['baja-economico'] ?? ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'].forEach((t) => {
+                              handlePrecioChange(t, 'economico', val);
+                              handlePrecioChange(t, 'familiar', val);
+                              handlePrecioChange(t, 'premium', val);
+                            });
+                          }}
+                          className="w-44 pl-12 pr-3 py-2.5 border border-gray-200 rounded-xl text-center focus:outline-none focus:ring-2 focus:ring-moana-orange font-bold text-moana-blue text-lg shadow-sm"
+                        />
+                      </div>
+                    </div>
+                  ) : isNacionalPkg || isExcursionOrTraslado ? (
                     <table className="w-full text-sm border-collapse">
                       <thead>
                         <tr className="bg-moana-blue-pale">
@@ -658,7 +694,7 @@ export default function AdminPreciosPage() {
                             Temporada
                           </th>
                           <th className="px-4 py-3 text-moana-blue font-semibold text-center rounded-r-xl">
-                            Precio en USD (Vacío = CONSULTAR)
+                            Precio en USD por Persona (Vacío = CONSULTAR)
                           </th>
                         </tr>
                       </thead>
