@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, X, ShoppingCart, Moon, ChevronDown, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { paquetesBase, TEMPORADAS, HOTELES } from '../../data/paquetes';
@@ -8,6 +8,7 @@ import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function PaqueteDetallePage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [paquete, setPaquete] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hotel, setHotel] = useState('economico');
@@ -18,6 +19,14 @@ export default function PaqueteDetallePage() {
   const [condicionesOpen, setCondicionesOpen] = useState(false);
   const { addItem } = useCartStore();
   const { t } = useLanguage();
+
+  const handleVolver = () => {
+    if (window.history.length > 2) {
+      navigate(-1);
+    } else {
+      navigate('/paquetes');
+    }
+  };
 
   const isExcursionOrTraslado = paquete?.noches === null || paquete?.categoria === 'traslados_excursiones' || paquete?.categoria === 'traslados' || paquete?.categoria === 'excursiones';
 
@@ -122,9 +131,12 @@ export default function PaqueteDetallePage() {
         />
         <div className="absolute inset-0 hero-overlay flex items-end">
           <div className="container-moana pb-8 text-white">
-            <Link to="/paquetes" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3 transition-colors w-fit">
-              <ArrowLeft size={16} /> {t('detalle_volver')}
-            </Link>
+            <button
+              onClick={handleVolver}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-black/40 hover:bg-black/60 backdrop-blur-md text-white rounded-full text-sm font-semibold mb-4 transition-all shadow-md cursor-pointer border border-white/20"
+            >
+              <ArrowLeft size={18} /> {t('detalle_volver')}
+            </button>
             <h1 className="font-display font-black text-4xl md:text-6xl">{paquete.titulo}</h1>
             <p className="text-white/80 text-lg mt-1">{paquete.subtitulo}</p>
             {paquete.noches && (
@@ -203,6 +215,16 @@ export default function PaqueteDetallePage() {
                   )}
                 </div>
               )}
+
+              {/* Bottom Back Button */}
+              <div className="pt-2 flex justify-start">
+                <button
+                  onClick={handleVolver}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-moana-blue hover:bg-moana-blue-dark text-white rounded-full text-sm font-semibold transition-all shadow-md cursor-pointer"
+                >
+                  <ArrowLeft size={18} /> {t('detalle_volver')}
+                </button>
+              </div>
             </div>
           </div>
 
