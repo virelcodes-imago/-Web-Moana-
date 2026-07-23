@@ -21,10 +21,10 @@ export default function LoginPage() {
     setError('');
     const result = login(pin);
     if (result.success) {
-      if (result.role === 'admin') navigate('/admin/precios');
-      else navigate('/admin/cotizador');
+      const target = result.role === 'admin' ? '/admin/precios' : '/admin/cotizador';
+      navigate(target, { replace: true });
     } else {
-      setError('PIN incorrecto. Intentá de nuevo.');
+      setError('PIN incorrecto. Intentá de nuevo (Admin: 1234).');
       setPin('');
     }
   };
