@@ -167,7 +167,6 @@ export default function VendedorCotizadorPage() {
       baja: 'Temporada Baja',
       alta: 'Temporada Alta',
       semana_santa: 'Semana Santa',
-      finde_largo: 'Fin de Semana Largo',
       vacaciones_invierno: 'Vacaciones de Invierno',
     };
     const HOTEL_LABELS = {

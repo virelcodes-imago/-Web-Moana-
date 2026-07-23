@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { X, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
 
@@ -6,7 +6,6 @@ const TEMPORADA_LABELS = {
   baja: 'Temporada Baja',
   alta: 'Temporada Alta',
   semana_santa: 'Semana Santa',
-  finde_largo: 'Fin de Semana Largo',
   vacaciones_invierno: 'Vacaciones de Invierno',
 };
 

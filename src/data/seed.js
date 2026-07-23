@@ -81,10 +81,6 @@ export async function seedDatabase() {
       { paqueteId: 1, temporada: 'vacaciones_invierno', hotel: 'familiar', precio: 995 },
       { paqueteId: 1, temporada: 'vacaciones_invierno', hotel: 'premium', precio: 995 },
 
-      { paqueteId: 1, temporada: 'finde_largo', hotel: 'economico', precio: 1150 },
-      { paqueteId: 1, temporada: 'finde_largo', hotel: 'familiar', precio: 1150 },
-      { paqueteId: 1, temporada: 'finde_largo', hotel: 'premium', precio: 1150 },
-
       // Búzios Premium (31)
       { paqueteId: 31, temporada: 'baja', hotel: 'economico', precio: 975 },
       { paqueteId: 31, temporada: 'baja', hotel: 'familiar', precio: 975 },
@@ -102,16 +98,11 @@ export async function seedDatabase() {
       { paqueteId: 31, temporada: 'vacaciones_invierno', hotel: 'familiar', precio: 1250 },
       { paqueteId: 31, temporada: 'vacaciones_invierno', hotel: 'premium', precio: 1250 },
 
-      { paqueteId: 31, temporada: 'finde_largo', hotel: 'economico', precio: 1300 },
-      { paqueteId: 31, temporada: 'finde_largo', hotel: 'familiar', precio: 1300 },
-      { paqueteId: 31, temporada: 'finde_largo', hotel: 'premium', precio: 1300 },
-
       // Búzios Hospedaje (30)
       { paqueteId: 30, temporada: 'baja', hotel: 'economico', precio: 395 },
       { paqueteId: 30, temporada: 'semana_santa', hotel: 'economico', precio: 475 },
       { paqueteId: 30, temporada: 'alta', hotel: 'economico', precio: 475 },
       { paqueteId: 30, temporada: 'vacaciones_invierno', hotel: 'economico', precio: 475 },
-      { paqueteId: 30, temporada: 'finde_largo', hotel: 'economico', precio: 550 },
     ];
 
     for (const row of buziosOfficialPrices) {
@@ -119,7 +110,7 @@ export async function seedDatabase() {
     }
 
     // Inicializar precios para otros paquetes base
-    const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+    const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
     const hoteles = ['economico', 'familiar', 'premium'];
     const preciosBases = {
       7: 1199, 8: 2499, 9: 2199, 10: 950, 11: 890, 12: 990, 13: 850,
@@ -295,13 +286,12 @@ export async function seedDatabase() {
   const posadaCount = await db.posadaPrecios.count().catch(() => 0);
   if (posadaCount === 0) {
     const posadaMatrix = [];
-    const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+    const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
     const habitaciones = ['single', 'doble', 'triple', 'cuadruple'];
     const preciosBaseHab = {
       baja:               { single: 45, doble: 60, triple: 80, cuadruple: 100 },
       alta:               { single: 65, doble: 90, triple: 120, cuadruple: 150 },
       semana_santa:       { single: 75, doble: 100, triple: 135, cuadruple: 170 },
-      finde_largo:        { single: 55, doble: 75, triple: 100, cuadruple: 125 },
       vacaciones_invierno:{ single: 60, doble: 85, triple: 110, cuadruple: 140 },
     };
 

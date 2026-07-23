@@ -220,7 +220,7 @@ export default function AdminPreciosPage() {
     await db.excursiones.bulkAdd(excursiones.map(({ id: _id, ...e }) => e));
 
     const pkgMap = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6 };
-    const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+    const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
 
     for (let i = 0; i < excursiones.length; i++) {
       const exc = excursiones[i];
@@ -246,7 +246,7 @@ export default function AdminPreciosPage() {
     await db.traslados.bulkAdd(traslados.map(({ id: _id, ...t }) => t));
 
     const pkgMap = { 1: 40, 2: 41 };
-    const temporadas = ['baja', 'alta', 'semana_santa', 'finde_largo', 'vacaciones_invierno'];
+    const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
 
     for (let i = 0; i < traslados.length; i++) {
       const tras = traslados[i];

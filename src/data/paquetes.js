@@ -16,7 +16,6 @@ export const TEMPORADAS = [
   { id: 'baja', label: 'Temporada Baja' },
   { id: 'alta', label: 'Temporada Alta' },
   { id: 'semana_santa', label: 'Semana Santa' },
-  { id: 'finde_largo', label: 'Fin de Semana Largo' },
   { id: 'vacaciones_invierno', label: 'Vacaciones de Invierno' },
 ];
 

@@ -25,7 +25,6 @@ export default function PackageCard({ paquete }) {
     { id: 'baja',               label: t('card_temp_baja') },
     { id: 'alta',               label: t('card_temp_alta') },
     { id: 'semana_santa',       label: t('card_temp_semana_santa') },
-    { id: 'finde_largo',        label: t('card_temp_finde') },
     { id: 'vacaciones_invierno',label: t('card_temp_invierno') },
   ];
 
