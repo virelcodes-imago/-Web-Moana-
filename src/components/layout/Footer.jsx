@@ -71,6 +71,7 @@ export default function Footer() {
           <ul className="space-y-2">
             {[
               ['Búzios Full', '/paquetes/buzios-full'],
+              ['Bayahíbe All Inclusive', '/paquetes/bayahibe'],
               ['Miami / Orlando', '/paquetes/miami-orlando-full'],
               ['Cataratas Iguazú', '/paquetes/cataratas-iguazu'],
               ['Europa Soñada', '/paquetes/europa-sonada'],

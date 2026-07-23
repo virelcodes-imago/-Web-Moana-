@@ -268,7 +268,7 @@ export const paquetesBase = [
   {
     id: 14,
     slug: 'cancun-playa-del-carmen',
-    categoria: CATEGORIAS.PACKS,
+    categoria: CATEGORIAS.INTERNACIONAL,
     titulo: 'Cancún + Playa del Carmen',
     subtitulo: 'Lo mejor del Caribe Mexicano combinado',
     descCorta: '10 días / 10 noches. 5n en Cancún + 5n All Inclusive en Playa.',
@@ -284,7 +284,7 @@ export const paquetesBase = [
   {
     id: 15,
     slug: 'la-habana-cayo-varadero',
-    categoria: CATEGORIAS.PACKS,
+    categoria: CATEGORIAS.INTERNACIONAL,
     titulo: 'La Habana + Cayo + Varadero',
     subtitulo: 'Triple combinado cubano — 12 días / 13 noches',
     descCorta: '3n La Habana + 4n Cayo Santa María + 4n Varadero. Todo All Inclusive.',
@@ -296,6 +296,22 @@ export const paquetesBase = [
     orden: 2,
     incluye: ['Aéreos BUE-La Habana', 'Equipaje de mano', 'Traslados', '3n La Habana', '4n Cayo (All Inclusive)', '4n Varadero (All Inclusive)', 'Visa de Cuba'],
     noIncluye: ['Excursiones opcionales'],
+  },
+  {
+    id: 22,
+    slug: 'bayahibe',
+    categoria: CATEGORIAS.INTERNACIONAL,
+    titulo: 'Bayahíbe All Inclusive',
+    subtitulo: 'El paraíso turquesa de República Dominicana',
+    descCorta: 'Aéreos, traslados y 7 noches All Inclusive frente a las playas de Bayahíbe.',
+    descripcion: 'Descubrí la tranquilidad de Bayahíbe, famosa por sus aguas turquesas ultra transparentes, sus extensas playas de arena blanca y el acceso privilegiado a la Isla Saona. Aéreos desde Buenos Aires, traslados y 7 noches en Resort 4★ frente al mar con régimen All Inclusive.',
+    imagen: '/fotos/excursiones/35-excursion-punta-cana.jpg',
+    imagenHero: '/fotos/excursiones/35-excursion-punta-cana.jpg',
+    noches: 7,
+    destacado: true,
+    orden: 9,
+    incluye: ['Aéreos BUE-Punta Cana / La Romana', 'Equipaje de mano', 'Traslados aeropuerto / hotel / aeropuerto', '7 noches All Inclusive en resort 4★', 'Excursión opcional a Isla Saona'],
+    noIncluye: ['Excursiones optativas', 'Tasa turística'],
   },
 
   // ======== NACIONALES ========

@@ -115,6 +115,7 @@ export async function seedDatabase() {
     19: 690, // Ushuaia
     20: 390, // Mendoza
     21: 590, // El Calafate
+    22: 1050,// Bayahíbe All Inclusive
   };
 
   paquetesBase.forEach((paquete) => {
