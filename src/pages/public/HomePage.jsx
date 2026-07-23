@@ -41,7 +41,12 @@ export default function HomePage() {
 
   const filtrados = catActiva === 'todos'
     ? paquetes
-    : paquetes.filter((p) => p.categoria === catActiva);
+    : paquetes.filter((p) => {
+        if (catActiva === CATEGORIAS.BUZIOS) {
+          return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'posada-moana-alojamiento' || p.id === 30;
+        }
+        return p.categoria === catActiva;
+      });
 
   return (
     <>

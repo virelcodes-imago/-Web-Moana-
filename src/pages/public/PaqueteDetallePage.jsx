@@ -45,6 +45,15 @@ export default function PaqueteDetallePage() {
     if (!paquete) return;
     const load = async () => {
       try {
+        if (paquete.slug === 'posada-moana-alojamiento' || paquete.categoria === 'alojamiento') {
+          const habMap = { economico: 'doble', familiar: 'triple', premium: 'cuadruple' };
+          const targetHab = habMap[hotel] || hotel || 'doble';
+          const posadaRow = await db.posadaPrecios.where({ temporada, habitacion: targetHab }).first();
+          if (posadaRow && posadaRow.precio) {
+            setPrecio(posadaRow.precio);
+            return;
+          }
+        }
         const p = await db.precios.where({ paqueteId: paquete.id, temporada, hotel }).first();
         setPrecio(p ? p.precio : null);
       } catch { setPrecio(null); }

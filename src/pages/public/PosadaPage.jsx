@@ -1,6 +1,16 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin, Wifi, Wind, Car, Coffee, Waves, Users } from 'lucide-react';
+import { ArrowRight, MapPin, Wifi, Wind, Car, Coffee, Waves, Users, Calendar, Calculator, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { TEMPORADAS } from '../../data/paquetes';
+import db from '../../db/db';
+
+const HABITACIONES = [
+  { id: 'single', label: 'Single (1 pax)', emoji: '👤', pax: 1 },
+  { id: 'doble', label: 'Doble (2 pax)', emoji: '👥', pax: 2 },
+  { id: 'triple', label: 'Triple (3 pax)', emoji: '👨‍👩‍👦', pax: 3 },
+  { id: 'cuadruple', label: 'Cuádruple (4 pax)', emoji: '👨‍👩‍👧‍👦', pax: 4 },
+];
 
 const FOTOS = [
   '/fotos/habitaciones/habitacion1.jpg',
@@ -22,6 +32,31 @@ const WA_ICON = (
 
 export default function PosadaPage() {
   const { t } = useLanguage();
+  const [posadaMatrix, setPosadaMatrix] = useState({});
+  const [temporada, setTemporada] = useState('baja');
+  const [habitacion, setHabitacion] = useState('doble');
+  const [noches, setNoches] = useState(7);
+
+  // Cargar tarifario desde Dexie (actualizado por Admin)
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const rows = await db.posadaPrecios.toArray();
+        const map = {};
+        rows.forEach((r) => { map[`${r.temporada}-${r.habitacion}`] = r.precio; });
+        setPosadaMatrix(map);
+      } catch {
+        setPosadaMatrix({});
+      }
+    };
+    load();
+  }, []);
+
+  const precioNoche = posadaMatrix[`${temporada}-${habitacion}`] || 60;
+  const totalEstadia = precioNoche * noches;
+
+  const tempObj = TEMPORADAS.find(t => t.id === temporada);
+  const habObj = HABITACIONES.find(h => h.id === habitacion);
 
   const SERVICIOS = [
     { icon: Wifi,   labelKey: 'posada_wifi' },
@@ -35,13 +70,13 @@ export default function PosadaPage() {
   return (
     <>
       {/* Header */}
-      <div className="relative h-72 overflow-hidden">
+      <div className="relative h-72 md:h-80 overflow-hidden">
         <img src="/fotos/habitaciones/habitacion1.jpg" alt="Posada Moana Búzios" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-moana-blue/70 flex items-center">
           <div className="container-moana text-white">
             <span className="badge-teal mb-3 inline-block">{t('posada_badge')}</span>
             <h1 className="font-display font-bold text-4xl md:text-5xl">{t('posada_title')}</h1>
-            <p className="text-white/80 mt-2 flex items-center gap-2">
+            <p className="text-white/80 mt-2 flex items-center gap-2 text-sm md:text-base">
               <MapPin size={16} /> Rua portal da Ferradura Nº10, Búzios, RJ, Brasil
             </p>
           </div>
@@ -90,6 +125,154 @@ export default function PosadaPage() {
             <div className="mt-4 p-4 bg-moana-blue-pale rounded-2xl text-sm text-moana-blue">
               {t('posada_extras')}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DYNAMIC TARIFARIO & CALCULATOR SECTION */}
+      <section className="section-pale-blue py-14" id="cotizador-posada">
+        <div className="container-moana">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="badge-orange mb-2 inline-flex items-center gap-1">
+              <Sparkles size={14} /> Tarifas Oficiales Actualizadas
+            </span>
+            <h2 className="section-title">Cotizá tu Estadía en Posada Moana</h2>
+            <p className="section-subtitle">
+              Seleccioná la temporada, el tipo de habitación y la cantidad de noches para ver la tarifa oficial en tiempo real.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            {/* Interactive Calculator Box */}
+            <div className="lg:col-span-5 card p-6 md:p-8 space-y-5 shadow-lg border border-moana-blue-pale">
+              <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
+                <Calculator className="text-moana-orange" size={22} />
+                <h3 className="font-display font-bold text-moana-blue text-xl">Personalizá tu Estadía</h3>
+              </div>
+
+              <div>
+                <label className="label-field text-xs uppercase font-bold text-moana-blue">Temporada de Viaje</label>
+                <select
+                  value={temporada}
+                  onChange={(e) => setTemporada(e.target.value)}
+                  className="input-field font-semibold text-moana-blue text-sm"
+                >
+                  {TEMPORADAS.map((t) => (
+                    <option key={t.id} value={t.id}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="label-field text-xs uppercase font-bold text-moana-blue">Tipo de Habitación / Ocupación</label>
+                <select
+                  value={habitacion}
+                  onChange={(e) => setHabitacion(e.target.value)}
+                  className="input-field font-semibold text-moana-blue text-sm"
+                >
+                  {HABITACIONES.map((h) => (
+                    <option key={h.id} value={h.id}>{h.emoji} {h.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="label-field text-xs uppercase font-bold text-moana-blue">Cantidad de Noches</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min="1"
+                    max="14"
+                    value={noches}
+                    onChange={(e) => setNoches(Number(e.target.value))}
+                    className="w-full accent-moana-orange cursor-pointer"
+                  />
+                  <span className="font-bold text-moana-orange text-lg w-12 text-center bg-moana-orange-light rounded-xl py-1">
+                    {noches}n
+                  </span>
+                </div>
+              </div>
+
+              {/* Price Calculation Output Box */}
+              <div className="bg-moana-blue text-white p-5 rounded-2xl space-y-2 shadow-inner">
+                <div className="flex justify-between items-center text-white/80 text-xs">
+                  <span>Tarifa por noche:</span>
+                  <span className="font-bold text-sm text-white">USD {precioNoche.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-end pt-2 border-t border-white/20">
+                  <div>
+                    <p className="text-xs text-white/70">Total estadía ({noches} noches)</p>
+                    <p className="font-bold text-moana-orange text-xs">{tempObj?.label} · {habObj?.label}</p>
+                  </div>
+                  <p className="font-display font-extrabold text-3xl text-white">USD {totalEstadia.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <a
+                href={`https://wa.me/5491126810289?text=Hola%20Moana!%20Quiero%20consultar%20disponibilidad%20en%20Posada%20Moana%20para%20*${encodeURIComponent(tempObj?.label || '')}*%20-%20Habitaci%C3%B3n%20*${encodeURIComponent(habObj?.label || '')}*%20por%20*${noches}%20noches*%20(Tarifa%20estimada%3A%20USD%20${totalEstadia})%20%F0%9F%8C%8A`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-whatsapp w-full justify-center text-sm py-4"
+              >
+                {WA_ICON}
+                Consultar Disponibilidad en WhatsApp
+              </a>
+            </div>
+
+            {/* Complete Tariff Table Card */}
+            <div className="lg:col-span-7 card p-6 md:p-8 space-y-4">
+              <h3 className="font-display font-bold text-moana-blue text-xl flex items-center gap-2">
+                <Calendar className="text-moana-orange" size={20} />
+                Tabla de Tarifas por Temporada y Habitación (USD / Noche)
+              </h3>
+              <p className="text-moana-gray text-sm">
+                Valores en USD por persona / noche en Posada Moana B&B con desayuno continental incluido.
+              </p>
+
+              <div className="overflow-x-auto pt-2">
+                <table className="w-full text-xs md:text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-moana-blue-pale text-moana-blue">
+                      <th className="text-left px-3 py-3 font-bold rounded-l-xl">Temporada</th>
+                      {HABITACIONES.map((h) => (
+                        <th key={h.id} className="px-3 py-3 font-bold text-center">
+                          {h.emoji} {h.label}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {TEMPORADAS.map((t) => (
+                      <tr key={t.id} className={t.id === temporada ? 'bg-moana-orange-light/30 font-semibold' : 'hover:bg-gray-50'}>
+                        <td className="px-3 py-3 text-moana-blue font-semibold">{t.label}</td>
+                        {HABITACIONES.map((h) => {
+                          const val = posadaMatrix[`${t.id}-${h.id}`] || 60;
+                          const isMatch = t.id === temporada && h.id === habitacion;
+                          return (
+                            <td key={h.id} className={`px-3 py-3 text-center ${isMatch ? 'text-moana-orange font-bold scale-105' : 'text-moana-dark'}`}>
+                              USD {val}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="bg-moana-cream p-4 rounded-xl text-xs text-moana-gray space-y-1.5 mt-4">
+                <p className="flex items-center gap-1.5 font-medium text-moana-blue">
+                  <CheckCircle2 size={14} className="text-green-600" />
+                  Todas las tarifas incluyen desayuno continental, aire acondicionado, TV, minibar y WiFi.
+                </p>
+                <p className="flex items-center gap-1.5 font-medium text-moana-blue">
+                  <CheckCircle2 size={14} className="text-green-600" />
+                  Financiación en cuotas sin tarjeta disponible.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

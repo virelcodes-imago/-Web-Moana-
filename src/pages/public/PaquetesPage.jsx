@@ -35,8 +35,8 @@ export default function PaquetesPage() {
   const filtrados = paquetes
     .filter((p) => {
       if (catActiva === 'todos') return true;
-      if (catActiva === CATEGORIAS.PACKS) {
-        return p.categoria === CATEGORIAS.PACKS || p.slug === 'buzios-full';
+      if (catActiva === CATEGORIAS.BUZIOS) {
+        return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'posada-moana-alojamiento' || p.id === 30;
       }
       return p.categoria === catActiva;
     })
