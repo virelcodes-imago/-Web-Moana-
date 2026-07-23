@@ -192,10 +192,17 @@ export default function VendedorCotizadorPage() {
     if (form.asesor) msg += `🙋 *Asesor:* ${form.asesor}\n`;
     msg += `\n`;
 
+    const isNac = paqueteSeleccionado?.categoria === 'nacional';
     if (modo === 'catalogo') {
       msg += `✈️ *Paquete:* ${paqueteSeleccionado?.titulo || ''}\n`;
-      msg += `📅 *Temporada:* ${TEMP_LABELS[form.temporada]}\n`;
-      msg += `🏨 *Hotel:* ${HOTEL_LABELS[form.hotel]}\n`;
+      if (isInter) {
+        msg += `✈️ *Modalidad:* Salida Grupal Acompañada\n`;
+      } else {
+        msg += `📅 *Temporada:* ${TEMP_LABELS[form.temporada] || form.temporada}\n`;
+      }
+      if (!isInter && !isNac) {
+        msg += `🏨 *Hotel:* ${HOTEL_LABELS[form.hotel] || form.hotel}\n`;
+      }
       msg += `🛏️ *Habitación:* ${form.habitacion.toUpperCase()}\n`;
       msg += `👥 *Pasajeros:* ${form.pasajeros}\n`;
       if (paqueteSeleccionado?.noches) msg += `🌙 *Noches:* ${paqueteSeleccionado.noches}\n`;
