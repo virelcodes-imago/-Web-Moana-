@@ -15,6 +15,28 @@ export default function AdminPreciosPage() {
   const [activeTab, setActiveTab] = useState('paquetes');
   const [savedMsg, setSavedMsg] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
+  const [sortField, setSortField] = useState('titulo');
+  const [sortDirection, setSortDirection] = useState('asc');
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const renderSortIndicator = (field) => {
+    if (sortField !== field) {
+      return <span className="opacity-30 text-xs ml-1 font-mono">↕</span>;
+    }
+    return sortDirection === 'asc' ? (
+      <span className="text-moana-orange font-bold text-xs ml-1">▲</span>
+    ) : (
+      <span className="text-moana-orange font-bold text-xs ml-1">▼</span>
+    );
+  };
 
   // --- Paquetes/Precios ---
   const [paquetesList, setPaquetesList] = useState([]);
@@ -280,16 +302,42 @@ export default function AdminPreciosPage() {
     setTimeout(() => setSavedMsg(''), 4000);
   };
 
-  // Filtrar lista de paquetes de viajes en el admin (excluyendo excursiones y traslados directos)
-  const paquetesFiltrados = paquetesList.filter((p) => {
-    const isExcursionOrTrasladoPkg = p.noches === null || p.categoria === 'traslados_excursiones' || p.categoria === 'traslados' || p.categoria === 'excursiones';
-    if (isExcursionOrTrasladoPkg) return false;
-    return (
-      searchFilter === '' ||
-      p.titulo.toLowerCase().includes(searchFilter.toLowerCase()) ||
-      p.categoria.toLowerCase().includes(searchFilter.toLowerCase())
-    );
-  });
+  // Filtrar y ordenar lista de publicaciones de viajes en el admin
+  const paquetesFiltrados = paquetesList
+    .filter((p) => {
+      const isExcursionOrTrasladoPkg = p.noches === null || p.categoria === 'traslados_excursiones' || p.categoria === 'traslados' || p.categoria === 'excursiones';
+      if (isExcursionOrTrasladoPkg) return false;
+      if (!searchFilter.trim()) return true;
+      const term = searchFilter.toLowerCase().trim();
+      return (
+        p.titulo.toLowerCase().includes(term) ||
+        (p.categoria && p.categoria.toLowerCase().includes(term)) ||
+        (p.subtitulo && p.subtitulo.toLowerCase().includes(term))
+      );
+    })
+    .sort((a, b) => {
+      let valA, valB;
+      if (sortField === 'titulo') {
+        valA = a.titulo.toLowerCase();
+        valB = b.titulo.toLowerCase();
+      } else if (sortField === 'categoria') {
+        valA = (a.categoria || '').toLowerCase();
+        valB = (b.categoria || '').toLowerCase();
+      } else if (sortField === 'activo') {
+        valA = a.activo !== 0 && a.activo !== false ? 1 : 0;
+        valB = b.activo !== 0 && b.activo !== false ? 1 : 0;
+      } else if (sortField === 'destacado') {
+        valA = a.destacado === 1 || a.destacado === true ? 1 : 0;
+        valB = b.destacado === 1 || b.destacado === true ? 1 : 0;
+      } else {
+        valA = a.orden || 99;
+        valB = b.orden || 99;
+      }
+
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
 
   const totalPublicados = paquetesList.filter(p => p.activo !== 0 && p.activo !== false).length;
   const totalDestacados = paquetesList.filter(p => p.destacado === 1 || p.destacado === true).length;
@@ -349,53 +397,55 @@ export default function AdminPreciosPage() {
               <p className="text-moana-gray text-xs font-semibold uppercase">Total Publicaciones</p>
               <p className="text-2xl font-bold text-moana-blue mt-1">{paquetesList.length}</p>
             </div>
-            <div className="w-10 h-10 bg-moana-blue-pale rounded-xl flex items-center justify-center text-moana-blue">
-              <Edit3 size={20} />
+            <div className="w-10 h-10 bg-moana-blue-pale rounded-full flex items-center justify-center text-moana-blue">
+              <Home size={20} />
             </div>
           </div>
           <div className="card p-5 flex items-center justify-between border-l-4 border-green-500">
             <div>
-              <p className="text-moana-gray text-xs font-semibold uppercase">Publicadas en Web (En Venta)</p>
+              <p className="text-moana-gray text-xs font-semibold uppercase">Publicados en Web</p>
               <p className="text-2xl font-bold text-green-600 mt-1">{totalPublicados}</p>
             </div>
-            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-600">
+            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
               <Eye size={20} />
             </div>
           </div>
           <div className="card p-5 flex items-center justify-between border-l-4 border-amber-500">
             <div>
-              <p className="text-moana-gray text-xs font-semibold uppercase">Destacados del Mes (Portada)</p>
+              <p className="text-moana-gray text-xs font-semibold uppercase font-bold text-amber-600">Destacados Portada</p>
               <p className="text-2xl font-bold text-amber-600 mt-1">{totalDestacados}</p>
             </div>
-            <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500">
-              <Star size={20} />
+            <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-500">
+              <Star size={20} className="fill-amber-500" />
             </div>
           </div>
         </div>
 
-        {/* Main Tabs */}
-        <div className="flex flex-wrap gap-2 bg-white rounded-2xl p-1.5 shadow-card w-fit">
-          {[
-            { id: 'paquetes', label: '✈️ Publicaciones & Precios' },
-            { id: 'posada', label: '🏡 Posada Moana' },
-            { id: 'excursiones', label: '🚢 Excursiones' },
-            { id: 'traslados', label: '🚌 Traslados' },
-          ].map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                activeTab === id
-                  ? 'bg-moana-orange text-white shadow'
-                  : 'text-moana-gray hover:text-moana-blue'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        {/* Tabs navigation */}
+        <div className="flex border-b border-gray-200 gap-2">
+          <button
+            onClick={() => setActiveTab('paquetes')}
+            className={`px-6 py-3 font-semibold text-sm rounded-t-xl transition-all ${
+              activeTab === 'paquetes'
+                ? 'bg-moana-blue text-white shadow-sm'
+                : 'bg-white text-moana-gray hover:text-moana-blue'
+            }`}
+          >
+            ✈️ Paquetes de Viajes
+          </button>
+          <button
+            onClick={() => setActiveTab('excursiones')}
+            className={`px-6 py-3 font-semibold text-sm rounded-t-xl transition-all ${
+              activeTab === 'excursiones'
+                ? 'bg-moana-blue text-white shadow-sm'
+                : 'bg-white text-moana-gray hover:text-moana-blue'
+            }`}
+          >
+            ⛵ Excursiones & Traslados
+          </button>
         </div>
 
-        {/* === PAQUETES TAB === */}
+        {/* TAB 1: PAQUETES DE VIAJES */}
         {activeTab === 'paquetes' && (
           <div className="space-y-8">
 
@@ -408,20 +458,34 @@ export default function AdminPreciosPage() {
                     Gestión Rápida de Publicaciones en la Web
                   </h2>
                   <p className="text-moana-gray text-sm mt-0.5">
-                    Hacé clic en los botones de estado para publicar/despublicar o cambiar los destacados en la portada al instante.
+                    Hacé clic en los nombres de columna para ordenar A-Z / Z-A o usar la búsqueda rápida.
                   </p>
                 </div>
 
                 {/* Search */}
-                <div className="relative w-full sm:w-64">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray" />
-                  <input
-                    type="search"
-                    placeholder="Buscar publicación..."
-                    value={searchFilter}
-                    onChange={(e) => setSearchFilter(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-moana-orange"
-                  />
+                <div className="flex items-center gap-2 w-full sm:w-80">
+                  <div className="relative flex-1">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray" />
+                    <input
+                      type="text"
+                      placeholder="🔍 Búsqueda rápida por título..."
+                      value={searchFilter}
+                      onChange={(e) => setSearchFilter(e.target.value)}
+                      className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-moana-orange shadow-sm"
+                    />
+                    {searchFilter && (
+                      <button
+                        onClick={() => setSearchFilter('')}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs font-bold bg-gray-100 hover:bg-gray-200 w-4 h-4 rounded-full flex items-center justify-center"
+                        title="Limpiar búsqueda"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                  <span className="text-xs text-moana-gray font-semibold whitespace-nowrap bg-moana-blue-pale/80 px-2.5 py-1.5 rounded-lg border border-moana-teal/20">
+                    {paquetesFiltrados.length} pub.
+                  </span>
                 </div>
               </div>
 
@@ -429,18 +493,53 @@ export default function AdminPreciosPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-moana-blue-pale text-left text-moana-blue text-xs uppercase tracking-wider">
-                      <th className="px-4 py-3 rounded-l-xl">Publicación</th>
-                      <th className="px-4 py-3">Categoría</th>
-                      <th className="px-4 py-3 text-center">Estado en Web</th>
-                      <th className="px-4 py-3 text-center">Destacado Portada</th>
+                    <tr className="bg-moana-blue-pale text-left text-moana-blue text-xs uppercase tracking-wider select-none">
+                      <th
+                        onClick={() => handleSort('titulo')}
+                        className="px-4 py-3 rounded-l-xl cursor-pointer hover:bg-moana-blue/10 transition-colors"
+                        title="Hacé clic para ordenar por título"
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>Publicación</span>
+                          {renderSortIndicator('titulo')}
+                        </div>
+                      </th>
+                      <th
+                        onClick={() => handleSort('categoria')}
+                        className="px-4 py-3 cursor-pointer hover:bg-moana-blue/10 transition-colors"
+                        title="Hacé clic para ordenar por categoría"
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>Categoría</span>
+                          {renderSortIndicator('categoria')}
+                        </div>
+                      </th>
+                      <th
+                        onClick={() => handleSort('activo')}
+                        className="px-4 py-3 text-center cursor-pointer hover:bg-moana-blue/10 transition-colors"
+                        title="Hacé clic para ordenar por estado en web"
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          <span>Estado en Web</span>
+                          {renderSortIndicator('activo')}
+                        </div>
+                      </th>
+                      <th
+                        onClick={() => handleSort('destacado')}
+                        className="px-4 py-3 text-center cursor-pointer hover:bg-moana-blue/10 transition-colors"
+                        title="Hacé clic para ordenar por destacado del mes"
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          <span>Destacado Portada</span>
+                          {renderSortIndicator('destacado')}
+                        </div>
+                      </th>
                       <th className="px-4 py-3 text-center rounded-r-xl">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {paquetesFiltrados.map((pkg) => {
                       const isActive = pkg.activo !== 0 && pkg.activo !== false;
-                      const isDestacado = pkg.destacado === 1 || pkg.destacado === true;
                       const isSelected = Number(selectedPaquete) === pkg.id;
 
                       return (

@@ -21,6 +21,10 @@ export async function seedDatabase() {
     imagen: '/fotos/destinos/cataratas_real.png',
     imagenHero: '/fotos/destinos/cataratas_real.png'
   }).catch(() => {});
+
+  await db.paquetes.update(14, {
+    titulo: 'Cancún + Playa del Carmen + México'
+  }).catch(() => {});
   
   await db.equipo.clear().catch(() => {});
   const equipoToInsertOnSync = equipoData.map(e => ({
