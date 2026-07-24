@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, CreditCard, Users, Star } from 'lucide-react';
 import Hero from '../../components/home/Hero';
 import PackageCard from '../../components/packages/PackageCard';
-import { paquetesBase, CATEGORIAS, isExcursionOrTransfer } from '../../data/paquetes';
+import { CATEGORIAS, isExcursionOrTransfer } from '../../data/paquetes';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
 
@@ -30,8 +30,14 @@ export default function HomePage() {
 
   useEffect(() => {
     const load = async () => {
+      // Solicitar almacenamiento persistente para evitar que el navegador limpie IndexedDB
+      if (navigator.storage && navigator.storage.persist) {
+        await navigator.storage.persist().catch(() => {});
+      }
       const list = await db.paquetes.toArray();
-      const activeList = list.length > 0 ? list.filter(p => p.activo !== 0 && p.activo !== false) : paquetesBase;
+      // NUNCA usar paquetesBase como fallback: si la DB está vacía, mostrar lista vacía.
+      // El seed ya corrió antes del render, así que esto solo ocurre si falla algo grave.
+      const activeList = list.filter(p => p.activo !== 0 && p.activo !== false);
       setPaquetes(activeList);
     };
     load();

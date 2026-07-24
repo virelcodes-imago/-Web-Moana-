@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import PackageCard from '../../components/packages/PackageCard';
-import { paquetesBase, CATEGORIAS } from '../../data/paquetes';
+import { CATEGORIAS } from '../../data/paquetes';
 import { Search } from 'lucide-react';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -26,7 +26,8 @@ export default function PaquetesPage() {
   useEffect(() => {
     const load = async () => {
       const list = await db.paquetes.toArray();
-      const activeList = list.length > 0 ? list.filter(p => p.activo !== 0 && p.activo !== false) : paquetesBase;
+      // NUNCA usar paquetesBase como fallback — el seed ya corrió antes del render
+      const activeList = list.filter(p => p.activo !== 0 && p.activo !== false);
       setPaquetes(activeList);
     };
     load();
