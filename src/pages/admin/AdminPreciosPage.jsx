@@ -58,6 +58,7 @@ export default function AdminPreciosPage() {
 
   // --- Posada Moana ---
   const [posadaMatrix, setPosadaMatrix] = useState({}); // key: `temporada-habitacion` → precio
+  const [posadaMeta, setPosadaMeta] = useState({ activo: true, destacado: false });
 
   // --- Excursiones ---
   const [excursiones, setExcursiones] = useState(excursionesBase);
@@ -94,6 +95,43 @@ export default function AdminPreciosPage() {
   useEffect(() => {
     reloadPosadaPrecios();
   }, []);
+
+  // Cargar estado activo/destacado de la Posada (id: 30) desde Dexie
+  const reloadPosadaMeta = async () => {
+    try {
+      const pkg = await db.paquetes.get(30);
+      if (pkg) {
+        setPosadaMeta({
+          activo: pkg.activo !== 0 && pkg.activo !== false,
+          destacado: pkg.destacado === 1 || pkg.destacado === true,
+        });
+      }
+    } catch {
+      // usar default
+    }
+  };
+
+  useEffect(() => {
+    reloadPosadaMeta();
+  }, []);
+
+  const handleTogglePosadaActivo = async () => {
+    const newStatus = posadaMeta.activo ? 0 : 1;
+    await db.paquetes.update(30, { activo: newStatus });
+    saveAdminOverride(30, { activo: newStatus === 1 });
+    setPosadaMeta(prev => ({ ...prev, activo: newStatus === 1 }));
+    await reloadPaquetes();
+    showSaved(newStatus === 1 ? '🏡 Posada ahora está PUBLICADA en la web.' : '🏡 Posada fue OCULTADA de la web.');
+  };
+
+  const handleTogglePosadaDestacado = async () => {
+    const newDest = posadaMeta.destacado ? 0 : 1;
+    await db.paquetes.update(30, { destacado: newDest });
+    saveAdminOverride(30, { destacado: newDest === 1 });
+    setPosadaMeta(prev => ({ ...prev, destacado: newDest === 1 }));
+    await reloadPaquetes();
+    showSaved(newDest === 1 ? '⭐ Posada marcada como Destacada del Mes.' : 'Posada ya no es Destacada del Mes.');
+  };
 
   // Cargar metadatos y matriz de precios al seleccionar paquete
   useEffect(() => {
@@ -922,6 +960,39 @@ export default function AdminPreciosPage() {
         {/* === POSADA MOANA TAB === */}
         {activeTab === 'posada' && (
           <div className="space-y-6">
+            {/* Controles de visibilidad y destacado */}
+            <div className="card p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex-1">
+                <h3 className="font-bold text-moana-blue text-base flex items-center gap-2">
+                  <Home size={18} /> Posada Moana B&B — Visibilidad en la web
+                </h3>
+                <p className="text-xs text-moana-gray mt-0.5">Controlá si la Posada aparece publicada y si figura como destacada en la portada.</p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleTogglePosadaActivo}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                    posadaMeta.activo
+                      ? 'bg-green-100 border-green-300 text-green-800 hover:bg-red-50 hover:border-red-300 hover:text-red-700'
+                      : 'bg-red-100 border-red-300 text-red-700 hover:bg-green-50 hover:border-green-300 hover:text-green-800'
+                  }`}
+                >
+                  {posadaMeta.activo ? <><Eye size={15}/> Publicada</> : <><EyeOff size={15}/> Oculta</>}
+                </button>
+                <button
+                  onClick={handleTogglePosadaDestacado}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                    posadaMeta.destacado
+                      ? 'bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-600'
+                      : 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-yellow-50 hover:border-yellow-300 hover:text-yellow-700'
+                  }`}
+                >
+                  <Star size={15} className={posadaMeta.destacado ? 'fill-yellow-500' : ''} />
+                  {posadaMeta.destacado ? 'Destacada del Mes' : 'No Destacada'}
+                </button>
+              </div>
+            </div>
+
             <div className="card p-6">
               <div className="flex items-center gap-3 mb-2 pb-3 border-b border-gray-100">
                 <div className="w-10 h-10 bg-moana-teal/20 rounded-xl flex items-center justify-center text-moana-blue">
