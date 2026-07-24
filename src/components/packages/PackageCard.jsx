@@ -141,83 +141,80 @@ export default function PackageCard({ paquete }) {
       </div>
 
       {/* Body */}
-      <div className="flex flex-col flex-1 p-5 gap-3">
-        <div>
-          <h3 className="font-display font-bold text-moana-blue text-xl leading-tight">
+      <div className="flex flex-col flex-1 p-5 justify-between gap-3">
+        {/* Title and Short Description - Equal Height */}
+        <div className="h-24 flex flex-col justify-start">
+          <h3 className="font-display font-bold text-moana-blue text-lg leading-tight line-clamp-2">
             {paquete.titulo}
           </h3>
-          <p className="text-moana-gray text-sm mt-1 line-clamp-2">
+          <p className="text-moana-gray text-xs mt-1.5 leading-relaxed line-clamp-2">
             {paquete.descCorta}
           </p>
         </div>
 
-        {/* Selectors */}
-        {isInternational ? (
-          <div className="py-2 px-3 bg-moana-blue-pale/60 text-moana-blue text-xs font-semibold rounded-lg flex items-center justify-between border border-moana-teal/20">
-            <span>✈️ Salida Grupal Acompañada</span>
-            <span className="text-moana-orange font-bold">Cupos Confirmados</span>
-          </div>
-        ) : isNacional ? (
-          <div>
-            <p className="label-field text-xs">{t('card_temporada_label')}</p>
-            <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-3 py-2">
-              <p className="text-sm leading-snug font-semibold text-moana-blue whitespace-normal">
+        {/* Selectors / Badges - Equal Height */}
+        <div className="h-11 flex flex-col justify-center">
+          {isInternational ? (
+            <div className="py-2 px-3 bg-moana-blue-pale/60 text-moana-blue text-xs font-semibold rounded-lg flex items-center justify-between border border-moana-teal/20">
+              <span>✈️ Salida Grupal Acompañada</span>
+              <span className="text-moana-orange font-bold">Cupos Confirmados</span>
+            </div>
+          ) : isNacional ? (
+            <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-3 py-1.5 flex flex-col justify-center">
+              <p className="text-xs leading-tight font-semibold text-moana-blue truncate">
                 {NACIONAL_SEASON_TEXT_MAIN}
               </p>
-              <p className="text-[11px] leading-normal font-normal text-moana-gray whitespace-normal mt-0.5">
+              <p className="text-[10px] leading-tight font-normal text-moana-gray truncate">
                 {NACIONAL_SEASON_TEXT_SUB}
               </p>
             </div>
-          </div>
-        ) : isExcursionOrTraslado ? (
-          <div>
-            <label className="label-field text-xs">{t('card_temporada_label')}</label>
-            <select
-              value={temporada}
-              onChange={(e) => setTemporada(e.target.value)}
-              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange font-medium"
-            >
-              {TEMPORADA_OPTIONS.map((opt) => (
-                <option key={opt.id} value={opt.id}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
+          ) : isExcursionOrTraslado ? (
             <div>
-              <label className="label-field text-xs">{t('card_hotel_label')}</label>
-              <select
-                value={hotel}
-                onChange={(e) => setHotel(e.target.value)}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
-              >
-                {HOTEL_OPTIONS.map((h) => (
-                  <option key={h.id} value={h.id}>{h.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="label-field text-xs">{t('card_temporada_label')}</label>
               <select
                 value={temporada}
                 onChange={(e) => setTemporada(e.target.value)}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
+                className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange font-medium"
               >
                 {TEMPORADA_OPTIONS.map((opt) => (
                   <option key={opt.id} value={opt.id}>{opt.label}</option>
                 ))}
               </select>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <select
+                  value={hotel}
+                  onChange={(e) => setHotel(e.target.value)}
+                  className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
+                >
+                  {HOTEL_OPTIONS.map((h) => (
+                    <option key={h.id} value={h.id}>{h.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <select
+                  value={temporada}
+                  onChange={(e) => setTemporada(e.target.value)}
+                  className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-moana-orange"
+                >
+                  {TEMPORADA_OPTIONS.map((opt) => (
+                    <option key={opt.id} value={opt.id}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
 
-        {/* Price */}
-        <div className="price-tag flex-shrink-0">
+        {/* Price Tag - Equal Height */}
+        <div className="price-tag flex-shrink-0 h-20 flex flex-col justify-center">
           {precio ? (
             <>
               <p className="price-desde">{t('card_desde')}</p>
-              <p className="price-amount font-display">USD {precio.toLocaleString()}</p>
-              <p className="price-unit">
+              <p className="price-amount font-display text-2xl font-bold">USD {precio.toLocaleString()}</p>
+              <p className="price-unit truncate">
                 {isExcursionOrTraslado
                   ? 'por persona · servicio'
                   : isBuzios
@@ -235,19 +232,22 @@ export default function PackageCard({ paquete }) {
           )}
         </div>
 
-        {/* Includes preview */}
-        {paquete.incluye && (
-          <ul className="text-xs text-moana-gray space-y-0.5">
-            {paquete.incluye.slice(0, 3).map((item, i) => (
-              <li key={i} className="flex items-start gap-1">
-                <span className="text-moana-teal-dark mt-0.5">✓</span> {item}
-              </li>
-            ))}
-            {paquete.incluye.length > 3 && (
-              <li className="text-moana-blue font-medium">+{paquete.incluye.length - 3} {t('card_mas_incluidos')}</li>
-            )}
-          </ul>
-        )}
+        {/* Includes preview - Equal Height */}
+        <div className="h-14 flex flex-col justify-start overflow-hidden">
+          {paquete.incluye && (
+            <ul className="text-xs text-moana-gray space-y-0.5">
+              {paquete.incluye.slice(0, 2).map((item, i) => (
+                <li key={i} className="flex items-center gap-1 truncate">
+                  <span className="text-moana-teal-dark flex-shrink-0">✓</span>
+                  <span className="truncate">{item}</span>
+                </li>
+              ))}
+              {paquete.incluye.length > 2 && (
+                <li className="text-moana-blue font-medium text-[11px]">+ {paquete.incluye.length - 2} {t('card_mas_incluidos')}</li>
+              )}
+            </ul>
+          )}
+        </div>
 
         {/* Actions */}
         <div className="flex gap-2 mt-auto pt-2">
