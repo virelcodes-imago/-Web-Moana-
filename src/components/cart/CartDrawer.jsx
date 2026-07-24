@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import { X, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
 import { NACIONAL_SEASON_TEXT } from '../../data/paquetes';
@@ -16,7 +16,7 @@ const HOTEL_LABELS = {
   premium: 'Premium',
 };
 
-const WA_NUMBER = '5522998024697';
+const WA_NUMBER = '5522998090599';
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, generateWhatsAppMessage } = useCartStore();

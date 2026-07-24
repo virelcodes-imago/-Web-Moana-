@@ -112,7 +112,7 @@ export default function PackageCard({ paquete }) {
     const text = encodeURIComponent(
       `Hola Moana! Quiero consultar precio y disponibilidad para el paquete *${paquete.titulo}* (${detailText}) 🌊`
     );
-    window.open(`https://wa.me/5522998024697?text=${text}`, '_blank');
+    window.open(`https://wa.me/5522998090599?text=${text}`, '_blank');
   };
 
   return (

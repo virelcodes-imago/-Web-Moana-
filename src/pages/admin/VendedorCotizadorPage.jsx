@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Copy, Send, Calculator, ChevronDown, ChevronUp, Layers, Compass, Plus, Trash2 } from 'lucide-react';
 import db from '../../db/db';
 import { paquetesBase, TEMPORADAS, HOTELES, TIPOS_HABITACION } from '../../data/paquetes';
 
-const WA_NUMBER = '5522998024697';
+const WA_NUMBER = '5522998090599';
 
 export default function VendedorCotizadorPage() {
   const [modo, setModo] = useState('catalogo'); // 'catalogo' | 'a_medida'

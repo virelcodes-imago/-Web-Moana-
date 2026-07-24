@@ -183,7 +183,7 @@ export default function Hero() {
                 </>
               )}
               <a
-                href="https://wa.me/5522998024697"
+                href="https://wa.me/5522998090599"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-3 btn-whatsapp w-full justify-center text-sm py-2.5"

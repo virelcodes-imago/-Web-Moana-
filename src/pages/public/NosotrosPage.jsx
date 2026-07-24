@@ -94,7 +94,7 @@ export default function NosotrosPage() {
           <h2 className="font-display font-bold text-3xl mb-4">{t('nosotros_cta_title')}</h2>
           <p className="text-white/80 mb-6 max-w-xl mx-auto">{t('nosotros_cta_desc')}</p>
           <a
-            href="https://wa.me/5522998024697?text=Hola%20Moana!%20Quiero%20planificar%20mi%20viaje%20%F0%9F%8C%8A"
+            href="https://wa.me/5522998090599?text=Hola%20Moana!%20Quiero%20planificar%20mi%20viaje%20%F0%9F%8C%8A"
             target="_blank"
             rel="noreferrer"
             className="btn-whatsapp inline-flex"

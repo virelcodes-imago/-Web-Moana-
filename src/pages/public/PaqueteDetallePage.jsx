@@ -333,7 +333,7 @@ export default function PaqueteDetallePage() {
             ) : null}
 
             <a
-              href={`https://wa.me/5522998024697?text=Hola%20Moana!%20Me%20interesa%20el%20paquete%20*${encodeURIComponent(paquete.titulo)}*%20%F0%9F%8C%8A%20%C2%BFPodr%C3%ADan%20darme%20m%C3%A1s%20informaci%C3%B3n%3F`}
+              href={`https://wa.me/5522998090599?text=Hola%20Moana!%20Me%20interesa%20el%20paquete%20*${encodeURIComponent(paquete.titulo)}*%20%F0%9F%8C%8A%20%C2%BFPodr%C3%ADan%20darme%20m%C3%A1s%20informaci%C3%B3n%3F`}
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp w-full justify-center"
