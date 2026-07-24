@@ -1,4 +1,4 @@
-import db from '../db/db';
+import db, { loadAdminOverrides } from '../db/db';
 import paquetesBase, { isExcursionOrTransfer } from './paquetes';
 import equipoData from './equipo';
 import { excursionesBase, trasladosBase } from './extras';
@@ -6,31 +6,42 @@ import { excursionesBase, trasladosBase } from './extras';
 export async function seedDatabase() {
   const packagesCount = await db.paquetes.count().catch(() => 0);
 
+  // Leer overrides del admin guardados en localStorage
+  // Esto garantiza que los estados oculto/destacado del admin persistan
+  // incluso si la DB de IndexedDB fue limpiada por el navegador
+  const adminOverrides = loadAdminOverrides();
+
   // 1. Cargar configuración básica (PINs)
   await db.config.put({ clave: 'adminPin', valor: '1234' }).catch(() => {});
   await db.config.put({ clave: 'sellerPin', valor: '0000' }).catch(() => {});
 
+  const buildPaquete = (p) => {
+    const override = adminOverrides[p.id] || {};
+    return {
+      id: p.id,
+      categoria: p.categoria,
+      slug: p.slug,
+      titulo: p.titulo,
+      subtitulo: p.subtitulo,
+      descCorta: p.descCorta,
+      descripcion: p.descripcion,
+      imagen: p.imagen,
+      imagenHero: p.imagenHero,
+      noches: p.noches,
+      // Respetar override del admin si existe, sino usar el valor base
+      destacado: override.destacado !== undefined ? (override.destacado ? 1 : 0) : (p.destacado ? 1 : 0),
+      orden: p.orden || 99,
+      activo: override.activo !== undefined ? (override.activo ? 1 : 0) : (p.activo !== false ? 1 : 0),
+      incluye: p.incluye || [],
+      noIncluye: p.noIncluye || [],
+    };
+  };
+
   // 2. Si la base de datos es totalmente nueva (0 paquetes), sembrar catálogo e inicializar precios
   if (packagesCount === 0) {
-    console.log('Sembrando catálogo de paquetes inicial...');
+    console.log('Sembrando catálogo inicial — aplicando overrides de admin desde localStorage...');
     for (const p of paquetesBase) {
-      await db.paquetes.put({
-        id: p.id,
-        categoria: p.categoria,
-        slug: p.slug,
-        titulo: p.titulo,
-        subtitulo: p.subtitulo,
-        descCorta: p.descCorta,
-        descripcion: p.descripcion,
-        imagen: p.imagen,
-        imagenHero: p.imagenHero,
-        noches: p.noches,
-        destacado: p.destacado ? 1 : 0,
-        orden: p.orden || 99,
-        activo: p.activo !== false ? 1 : 0,
-        incluye: p.incluye || [],
-        noIncluye: p.noIncluye || []
-      });
+      await db.paquetes.put(buildPaquete(p));
     }
 
     // Cargar matriz de precios oficial inicial para Búzios Clásico (1), Premium (31), y Hospedaje (30)
@@ -124,41 +135,40 @@ export async function seedDatabase() {
     });
     await db.precios.bulkAdd(preciosMatrix).catch(() => {});
   } else {
-    // Si la DB ya existe, RESPETAR la persistencia total del usuario
-    // Solo agregar paquetes nuevos si no están en IndexedDB
+    // DB ya existe — solo agregar paquetes nuevos (que no existen) y respetar todo lo demás
     for (const p of paquetesBase) {
       const existing = await db.paquetes.get(p.id).catch(() => null);
       if (!existing) {
-        await db.paquetes.put({
-          id: p.id,
-          categoria: p.categoria,
-          slug: p.slug,
-          titulo: p.titulo,
-          subtitulo: p.subtitulo,
-          descCorta: p.descCorta,
-          descripcion: p.descripcion,
-          imagen: p.imagen,
-          imagenHero: p.imagenHero,
-          noches: p.noches,
-          destacado: p.destacado ? 1 : 0,
-          orden: p.orden || 99,
-          activo: p.activo !== false ? 1 : 0,
-          incluye: p.incluye || [],
-          noIncluye: p.noIncluye || []
-        });
+        // Paquete nuevo no existe en la DB → agregarlo respetando overrides del admin
+        await db.paquetes.put(buildPaquete(p));
+      }
+      // Si YA existe → NO tocar nada. Los cambios del admin son sagrados.
+    }
+
+    // Aplicar overrides del admin sobre registros existentes
+    // (por si el navegador reinició la DB pero el localStorage sobrevivió)
+    for (const [idStr, override] of Object.entries(adminOverrides)) {
+      const pId = Number(idStr);
+      const existing = await db.paquetes.get(pId).catch(() => null);
+      if (existing) {
+        let needsUpdate = false;
+        const update = {};
+        if (override.activo !== undefined && existing.activo !== (override.activo ? 1 : 0)) {
+          update.activo = override.activo ? 1 : 0;
+          needsUpdate = true;
+        }
+        if (override.destacado !== undefined && existing.destacado !== (override.destacado ? 1 : 0)) {
+          update.destacado = override.destacado ? 1 : 0;
+          needsUpdate = true;
+        }
+        if (needsUpdate) {
+          await db.paquetes.update(pId, update).catch(() => {});
+        }
       }
     }
   }
 
   // 3. Cargar Equipo solo si la tabla está vacía
-  // Limpiar valores destacados antiguos en excursiones y traslados. Esos
-  // servicios conservan su publicación normal, pero no aparecen en el bloque
-  // de paquetes destacados de la portada.
-  await db.paquetes
-    .filter((p) => isExcursionOrTransfer(p) && (p.destacado === 1 || p.destacado === true))
-    .modify({ destacado: 0 })
-    .catch(() => {});
-
   const equipoCount = await db.equipo.count().catch(() => 0);
   if (equipoCount === 0) {
     const equipoToInsert = equipoData.map(e => ({
@@ -203,7 +213,7 @@ export async function seedDatabase() {
   const posadaCount = await db.posadaPrecios.count().catch(() => 0);
   if (posadaCount === 0) {
     const posadaMatrix = [];
-    const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
+    const temporadasP = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
     const habitaciones = ['single', 'doble', 'triple', 'cuadruple'];
     const preciosBaseHab = {
       baja:               { single: 45, doble: 60, triple: 80, cuadruple: 100 },
@@ -212,7 +222,7 @@ export async function seedDatabase() {
       vacaciones_invierno:{ single: 60, doble: 85, triple: 110, cuadruple: 140 },
     };
 
-    temporadas.forEach((temp) => {
+    temporadasP.forEach((temp) => {
       habitaciones.forEach((hab) => {
         posadaMatrix.push({
           temporada: temp,
@@ -224,5 +234,11 @@ export async function seedDatabase() {
     await db.posadaPrecios.bulkAdd(posadaMatrix).catch(() => {});
   }
 
-  console.log('Base de datos sincronizada preservando ediciones de usuario.');
+  // Limpiar destacados incorrectos en excursiones/traslados (nunca deben aparecer como destacados del mes)
+  await db.paquetes
+    .filter((p) => isExcursionOrTransfer(p) && (p.destacado === 1 || p.destacado === true))
+    .modify({ destacado: 0 })
+    .catch(() => {});
+
+  console.log('DB sincronizada. Overrides del admin aplicados desde localStorage.');
 }

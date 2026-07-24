@@ -8,7 +8,8 @@ import { LanguageProvider } from './i18n/LanguageContext';
 
 function AppInitializer() {
   useEffect(() => {
-    seedDatabase();
+    // Inicializar la base de datos una sola vez al montar la app
+    seedDatabase().catch(console.error);
   }, []);
 
   return (
@@ -20,9 +21,7 @@ function AppInitializer() {
   );
 }
 
+// Sin React.StrictMode para evitar la doble ejecución del seed en desarrollo
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <AppInitializer />
-  </React.StrictMode>
+  <AppInitializer />
 );
-

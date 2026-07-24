@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home, LogOut } from 'lucide-react';
-import db from '../../db/db';
+import db, { saveAdminOverride } from '../../db/db';
 import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES, isExcursionOrTransfer } from '../../data/paquetes';
 import { excursionesBase, trasladosBase } from '../../data/extras';
 import useAuthStore from '../../store/authStore';
@@ -169,6 +169,8 @@ export default function AdminPreciosPage() {
     const newStatus = currentIsActive ? 0 : 1;
     
     await db.paquetes.update(pkg.id, { activo: newStatus });
+    // Guardar en localStorage para sobrevivir resets de IndexedDB
+    saveAdminOverride(pkg.id, { activo: newStatus === 1 });
     
     if (Number(selectedPaquete) === pkg.id) {
       setPaqueteMeta(prev => ({ ...prev, activo: newStatus === 1 }));
@@ -185,6 +187,8 @@ export default function AdminPreciosPage() {
     const newDest = currentIsDestacado ? 0 : 1;
     
     await db.paquetes.update(pkg.id, { destacado: newDest });
+    // Guardar en localStorage para sobrevivir resets de IndexedDB
+    saveAdminOverride(pkg.id, { destacado: newDest === 1 });
     
     if (Number(selectedPaquete) === pkg.id) {
       setPaqueteMeta(prev => ({ ...prev, destacado: newDest === 1 }));
@@ -222,6 +226,8 @@ export default function AdminPreciosPage() {
       noIncluye: parseItems(paqueteMeta.noIncluye),
     };
     await db.paquetes.put(updatedPkg);
+    // Guardar en localStorage para que los cambios de visibilidad sobrevivan resets del navegador
+    saveAdminOverride(pId, { activo: paqueteMeta.activo, destacado: paqueteMeta.destacado });
 
     // 2. Guardar matriz de precios
     await db.precios.where({ paqueteId: pId }).delete();

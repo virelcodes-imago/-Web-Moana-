@@ -29,3 +29,35 @@ db.version(1).stores({
 });
 
 export default db;
+
+// ---------------------------------------------------------------------------
+// HELPERS para persistir el estado admin en localStorage como backup
+// Esto garantiza que los cambios de visibilidad/destacados del admin 
+// sobrevivan a limpiezas del navegador y nuevos deploys
+// ---------------------------------------------------------------------------
+
+const STORAGE_KEY = 'moana-admin-overrides';
+
+export function loadAdminOverrides() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveAdminOverride(paqueteId, changes) {
+  try {
+    const current = loadAdminOverrides();
+    current[paqueteId] = { ...(current[paqueteId] || {}), ...changes };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+  } catch {
+    // ignore
+  }
+}
+
+export function getAdminOverridesForPaquete(paqueteId) {
+  const all = loadAdminOverrides();
+  return all[paqueteId] || null;
+}
