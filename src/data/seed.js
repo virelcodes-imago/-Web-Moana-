@@ -15,6 +15,9 @@ export async function seedDatabase() {
   await db.config.put({ clave: 'adminPin', valor: '1234' }).catch(() => {});
   await db.config.put({ clave: 'sellerPin', valor: '0000' }).catch(() => {});
 
+  // Sincronización de títulos: asegura que DBs existentes tengan el nombre correcto
+  await db.paquetes.update(14, { titulo: 'Cancún + Playa del Carmen + México' }).catch(() => {});
+
   const buildPaquete = (p) => {
     const override = adminOverrides[p.id] || {};
     return {
