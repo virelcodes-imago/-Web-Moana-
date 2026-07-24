@@ -364,7 +364,7 @@ export const paquetesBase = [
     id: 14,
     slug: 'cancun-playa-del-carmen',
     categoria: CATEGORIAS.INTERNACIONAL,
-    titulo: 'Cancún + Playa del Carmen + México',
+    titulo: 'Cancún + Playa del Carmen',
     subtitulo: 'Lo mejor del Caribe Mexicano combinado',
     descCorta: '10 días / 10 noches. 5n en Cancún + 5n All Inclusive en Playa.',
     descripcion: 'El pack perfecto para conocer dos destinos icónicos. 5 noches en Hotel Krystal Urban Cancún (desayuno) + 5 noches en Hotel Iberostar Quetzal o similar (All Inclusive). Aéreos y traslados incluidos.',
