@@ -37,6 +37,7 @@ export async function seedDatabase() {
       activo: override.activo !== undefined ? (override.activo ? 1 : 0) : (p.activo !== false ? 1 : 0),
       incluye: p.incluye || [],
       noIncluye: p.noIncluye || [],
+      detallesExtra: p.detallesExtra || [],
     };
   };
 
@@ -105,13 +106,13 @@ export async function seedDatabase() {
       5: 1300,  // Natal & Pipa
       6: 1400,  // Porto de Galinhas
       7: 1199,  // Miami / Orlando Full
-      8: 2499,  // Europa Soñada
+      8: 4949,  // Europa Apasionante
       9: 2199,  // Italia con Amalfi
       10: 950,  // Cancún
       11: 890,  // Playa del Carmen
       12: 990,  // Punta Cana
       13: 850,  // Varadero
-      14: 1450, // Cancún + Playa del Carmen + México
+      14: 3149, // Cancún + Playa del Carmen + Panamá
       15: 1650, // Combinado Habana Cayo Varadero
       16: 350,  // Cataratas del Iguazú
       17: 420,  // Salta + Jujuy
@@ -120,6 +121,9 @@ export async function seedDatabase() {
       20: 390,  // Mendoza
       21: 590,  // El Calafate
       22: 1050, // Bayahíbe All Inclusive
+      23: 2999, // Jamaica Paradisíaca
+      24: 2699, // Perú Místico con Machu Picchu
+      25: 1629, // Río de Janeiro + Búzios
     };
 
     paquetesBase.forEach((paquete) => {
@@ -138,14 +142,42 @@ export async function seedDatabase() {
     });
     await db.precios.bulkAdd(preciosMatrix).catch(() => {});
   } else {
-    // DB ya existe — solo agregar paquetes nuevos (que no existen) y respetar todo lo demás
+    // DB ya existe — sincronizar textos de paquetes base y agregar paquetes nuevos
+    const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
+    const hoteles = ['economico', 'familiar', 'premium'];
+    const preciosBasesPorPaquete = {
+      8: 4949, 14: 3149, 23: 2999, 24: 2699, 25: 1629,
+    };
+
     for (const p of paquetesBase) {
       const existing = await db.paquetes.get(p.id).catch(() => null);
       if (!existing) {
         // Paquete nuevo no existe en la DB → agregarlo respetando overrides del admin
         await db.paquetes.put(buildPaquete(p));
+        // Agregar matriz de precios base para el nuevo paquete
+        const basePrice = preciosBasesPorPaquete[p.id] || 1500;
+        const newPrices = [];
+        temporadas.forEach((temp) => {
+          hoteles.forEach((hotel) => {
+            newPrices.push({ paqueteId: p.id, temporada: temp, hotel: hotel, precio: basePrice });
+          });
+        });
+        await db.precios.bulkAdd(newPrices).catch(() => {});
+      } else {
+        // Si YA existe, actualizar metadatos/textos actualizados preservando activo/destacado
+        await db.paquetes.update(p.id, {
+          titulo: p.titulo,
+          subtitulo: p.subtitulo,
+          descCorta: p.descCorta,
+          descripcion: p.descripcion,
+          noches: p.noches,
+          incluye: p.incluye || [],
+          noIncluye: p.noIncluye || [],
+          detallesExtra: p.detallesExtra || [],
+          imagen: p.imagen,
+          imagenHero: p.imagenHero,
+        }).catch(() => {});
       }
-      // Si YA existe → NO tocar nada. Los cambios del admin son sagrados.
     }
 
     // Aplicar overrides del admin sobre registros existentes

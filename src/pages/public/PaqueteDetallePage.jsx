@@ -212,7 +212,7 @@ export default function PaqueteDetallePage() {
             </div>
 
             {/* Policy & Conditions Accordion */}
-            {(paquete.categoria === 'buzios' || paquete.slug?.includes('buzios')) && (
+            {(paquete.detallesExtra?.length > 0 || paquete.categoria === 'buzios' || paquete.slug?.includes('buzios') || paquete.categoria === 'internacional') && (
               <div className="card overflow-hidden border border-moana-teal/30 shadow-sm">
                 <button
                   type="button"
@@ -221,7 +221,7 @@ export default function PaqueteDetallePage() {
                 >
                   <div className="flex items-center gap-2.5 text-moana-blue font-bold text-sm md:text-base">
                     <Info size={20} className="text-moana-orange flex-shrink-0" />
-                    <span>Información Importante & Condiciones</span>
+                    <span>Información Importante, Excursiones & Detalles</span>
                   </div>
                   <ChevronDown
                     size={20}
@@ -231,10 +231,23 @@ export default function PaqueteDetallePage() {
 
                 {condicionesOpen && (
                   <div className="p-5 bg-white space-y-2.5 text-xs md:text-sm text-moana-dark border-t border-moana-cream animate-fade-in">
-                    <p>• <strong>Impuestos:</strong> Los paquetes tienen 2.9% tasas e impuestos.</p>
-                    <p>• <strong>Menores (0 a 2 años):</strong> No pagan (hasta 2 años sin excepción).</p>
-                    <p>• <strong>Menores (2 a 11 años):</strong> 15% OFF en base familiar (solo aplica a menores).</p>
-                    <p>• <strong>Días Extras:</strong> Todos los paquetes son por 8 días 7 noches. Para adicionar días extras, la variación del aéreo es de USD 100 y la diaria extra de hospedaje es de USD 25 por noche por pasajero.</p>
+                    {paquete.detallesExtra && paquete.detallesExtra.length > 0 ? (
+                      paquete.detallesExtra.map((item, idx) => (
+                        <p key={idx} className="leading-relaxed font-medium text-moana-dark">• {item}</p>
+                      ))
+                    ) : paquete.categoria === 'buzios' || paquete.slug?.includes('buzios') ? (
+                      <>
+                        <p>• <strong>Impuestos:</strong> Los paquetes tienen 2.9% tasas e impuestos.</p>
+                        <p>• <strong>Menores (0 a 2 años):</strong> No pagan (hasta 2 años sin excepción).</p>
+                        <p>• <strong>Menores (2 a 11 años):</strong> 15% OFF en base familiar (solo aplica a menores).</p>
+                        <p>• <strong>Días Extras:</strong> Para adicionar días extras, la variación del aéreo es de USD 100 y la diaria extra de hospedaje es de USD 25 por noche por pasajero.</p>
+                      </>
+                    ) : (
+                      <>
+                        <p>• <strong>Cupos Confirmados:</strong> Salidas grupales con coordinador y acompañamiento exclusivo.</p>
+                        <p>• <strong>Asesoramiento Personalizado:</strong> Consultá a nuestro equipo de ventas por WhatsApp para conocer fechas exactas, itinerarios diarios y facilidades de pago.</p>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
