@@ -14,6 +14,8 @@ export const CATEGORIAS = {
 
 export const NACIONAL_SEASON_TEXT =
   'Salidas desde mayo hasta septiembre (excepto feriados y vacaciones de invierno).';
+export const NACIONAL_SEASON_TEXT_MAIN = 'Salidas desde mayo hasta septiembre';
+export const NACIONAL_SEASON_TEXT_SUB = '(excepto feriados y vacaciones de invierno).';
 
 // Los servicios sueltos se publican en su categoría, pero no deben ocupar
 // lugares reservados para paquetes destacados en la portada.

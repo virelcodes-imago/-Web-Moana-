@@ -1,10 +1,10 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Eye, Moon, MessageCircle } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { NACIONAL_SEASON_TEXT } from '../../data/paquetes';
+import { NACIONAL_SEASON_TEXT, NACIONAL_SEASON_TEXT_MAIN, NACIONAL_SEASON_TEXT_SUB } from '../../data/paquetes';
 
 export default function PackageCard({ paquete }) {
   const [hotel, setHotel] = useState('economico');
@@ -160,9 +160,12 @@ export default function PackageCard({ paquete }) {
         ) : isNacional ? (
           <div>
             <p className="label-field text-xs">{t('card_temporada_label')}</p>
-            <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-3 py-2.5">
-              <p className="text-sm leading-relaxed font-semibold text-moana-blue whitespace-normal">
-                {NACIONAL_SEASON_TEXT}
+            <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-3 py-2">
+              <p className="text-sm leading-snug font-semibold text-moana-blue whitespace-normal">
+                {NACIONAL_SEASON_TEXT_MAIN}
+              </p>
+              <p className="text-[11px] leading-normal font-normal text-moana-gray whitespace-normal mt-0.5">
+                {NACIONAL_SEASON_TEXT_SUB}
               </p>
             </div>
           </div>

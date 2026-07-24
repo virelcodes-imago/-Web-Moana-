@@ -1,7 +1,7 @@
-﻿import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, X, ShoppingCart, Moon, ChevronDown, Info } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES, NACIONAL_SEASON_TEXT } from '../../data/paquetes';
+import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES, NACIONAL_SEASON_TEXT, NACIONAL_SEASON_TEXT_MAIN, NACIONAL_SEASON_TEXT_SUB } from '../../data/paquetes';
 import useCartStore from '../../store/cartStore';
 import db from '../../db/db';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -262,15 +262,18 @@ export default function PaqueteDetallePage() {
               </div>
             ) : (
               <>
-                {isNacional ? (
-                  <div>
-                    <p className="label-field">{t('detalle_temporada')}</p>
-                    <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-4 py-3">
-                      <p className="text-sm leading-relaxed font-semibold text-moana-blue whitespace-normal">
-                        {NACIONAL_SEASON_TEXT}
-                      </p>
-                    </div>
-                  </div>
+                 {isNacional ? (
+                   <div>
+                     <p className="label-field">{t('detalle_temporada')}</p>
+                     <div className="w-full rounded-xl border border-moana-teal/25 bg-moana-blue-pale/60 px-4 py-2.5">
+                       <p className="text-sm leading-snug font-semibold text-moana-blue whitespace-normal">
+                         {NACIONAL_SEASON_TEXT_MAIN}
+                       </p>
+                       <p className="text-xs leading-normal font-normal text-moana-gray whitespace-normal mt-0.5">
+                         {NACIONAL_SEASON_TEXT_SUB}
+                       </p>
+                     </div>
+                   </div>
                 ) : (
                   <div>
                     <label className="label-field">{t('detalle_temporada')}</label>
