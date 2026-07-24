@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Copy, Send, Calculator, ChevronDown, ChevronUp, Layers, Compass, Plus, Trash2 } from 'lucide-react';
 import db from '../../db/db';
 import { paquetesBase, TEMPORADAS, HOTELES, TIPOS_HABITACION } from '../../data/paquetes';
@@ -12,6 +12,8 @@ export default function VendedorCotizadorPage() {
     nombreCliente: '',
     asesor: '',
     pasajeros: 2,
+    fechaDesde: '',
+    fechaHasta: '',
 
     // Modo Catálogo
     paqueteId: paquetesBase[0]?.id || '',
@@ -21,6 +23,7 @@ export default function VendedorCotizadorPage() {
     excursiones: [],
     traslados: [],
     asistencia: { incluir: false, tarifaDiaria: 0, dias: 0 },
+    precioBasePersonalizado: '', // override del precio base del paquete
 
     // Modo A Medida (5 Bloques)
     transporteBase: 0,
@@ -55,6 +58,41 @@ export default function VendedorCotizadorPage() {
   }, []);
 
   const paqueteSeleccionado = paquetesList.find((p) => p.id === Number(form.paqueteId)) || paquetesBase.find((p) => p.id === Number(form.paqueteId));
+
+  // Destination keyword for filtering excursions/traslados
+  const destKeyword = (() => {
+    const titulo = (paqueteSeleccionado?.titulo || '').toLowerCase();
+    if (titulo.includes('búzios') || titulo.includes('buzios') || titulo.includes('río') || titulo.includes('rio de janeiro')) return 'buzios';
+    if (titulo.includes('cancún') || titulo.includes('cancun') || titulo.includes('playa del carmen')) return 'cancun';
+    if (titulo.includes('bariloche')) return 'bariloche';
+    if (titulo.includes('cataratas')) return 'cataratas';
+    if (titulo.includes('calafate') || titulo.includes('patagonia')) return 'calafate';
+    if (titulo.includes('salta')) return 'salta';
+    if (titulo.includes('jamaica')) return 'jamaica';
+    if (titulo.includes('perú') || titulo.includes('peru') || titulo.includes('machu')) return 'peru';
+    if (titulo.includes('europa')) return 'europa';
+    if (titulo.includes('miami')) return 'miami';
+    return null;
+  })();
+
+  // Filtered lists — show all if no destination keyword or no match
+  const excursionesFiltradas = (() => {
+    if (!destKeyword) return excursionesList;
+    const filtered = excursionesList.filter((e) =>
+      (e.destino || '').toLowerCase().includes(destKeyword) ||
+      (e.nombre || '').toLowerCase().includes(destKeyword)
+    );
+    return filtered.length > 0 ? filtered : excursionesList;
+  })();
+
+  const trasladosFiltrados = (() => {
+    if (!destKeyword) return trasladosList;
+    const filtered = trasladosList.filter((t) =>
+      (t.destino || '').toLowerCase().includes(destKeyword) ||
+      (t.nombre || '').toLowerCase().includes(destKeyword)
+    );
+    return filtered.length > 0 ? filtered : trasladosList;
+  })();
 
   // Cargar precio desde Dexie (Modo Catálogo)
   useEffect(() => {
@@ -129,7 +167,8 @@ export default function VendedorCotizadorPage() {
   // --- CÁLCULOS MATEMÁTICOS ---
 
   // 1. Modo Catálogo (Sencillo, los precios ya son de Venta)
-  const precioBaseCat = precio || 0;
+  // Allow seller to override base price for custom adaptations
+  const precioBaseCat = form.precioBasePersonalizado !== '' ? Number(form.precioBasePersonalizado) : (precio || 0);
   const excTotalCat = form.excursiones.reduce((acc, e) => acc + (e.precio || 0), 0);
   const trasTotalCat = form.traslados.reduce((acc, t) => acc + (t.precio || 0), 0) / form.pasajeros;
   const asistTotalCat = form.asistencia.incluir
@@ -190,6 +229,13 @@ export default function VendedorCotizadorPage() {
     msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
     if (form.nombreCliente) msg += `👤 *Cliente:* ${form.nombreCliente}\n`;
     if (form.asesor) msg += `🙋 *Asesor:* ${form.asesor}\n`;
+    if (form.fechaDesde && form.fechaHasta) {
+      const fmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' });
+      msg += `📅 *Fecha de Viaje:* del ${fmt(form.fechaDesde)} al ${fmt(form.fechaHasta)}\n`;
+    } else if (form.fechaDesde) {
+      const fmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' });
+      msg += `📅 *Fecha de Salida:* ${fmt(form.fechaDesde)}\n`;
+    }
     msg += `\n`;
 
     const isNac = paqueteSeleccionado?.categoria === 'nacional';
@@ -206,6 +252,7 @@ export default function VendedorCotizadorPage() {
       msg += `🛏️ *Habitación:* ${form.habitacion.toUpperCase()}\n`;
       msg += `👥 *Pasajeros:* ${form.pasajeros}\n`;
       if (paqueteSeleccionado?.noches) msg += `🌙 *Noches:* ${paqueteSeleccionado.noches}\n`;
+      if (form.precioBasePersonalizado !== '') msg += `📝 *Precio adaptado (personalizado)*\n`;
       msg += `\n`;
 
       if (form.excursiones.length > 0) {
@@ -347,6 +394,38 @@ export default function VendedorCotizadorPage() {
                     className="input-field"
                   />
                 </div>
+
+                {/* 📅 Almanaque — Fecha de Viaje */}
+                <div className="sm:col-span-3">
+                  <label className="label-field">📅 Fecha de Viaje (Almanaque)</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wide mb-1 block">Fecha de salida</label>
+                      <input
+                        type="date"
+                        value={form.fechaDesde}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setF('fechaDesde', e.target.value)}
+                        className="input-field text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wide mb-1 block">Fecha de regreso</label>
+                      <input
+                        type="date"
+                        value={form.fechaHasta}
+                        min={form.fechaDesde || new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setF('fechaHasta', e.target.value)}
+                        className="input-field text-sm"
+                      />
+                    </div>
+                  </div>
+                  {form.fechaDesde && form.fechaHasta && (
+                    <p className="text-xs text-moana-teal-dark font-medium mt-1.5">
+                      🌊 {Math.round((new Date(form.fechaHasta) - new Date(form.fechaDesde)) / (1000 * 60 * 60 * 24))} días de viaje seleccionados
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -419,6 +498,50 @@ export default function VendedorCotizadorPage() {
                   </div>
                 </div>
 
+                {/* Adaptación de precio del paquete */}
+                <div className="card p-5 border-l-4 border-moana-orange">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="font-semibold text-moana-blue text-sm">✏️ Adaptar Precio del Paquete</h3>
+                      <p className="text-xs text-moana-gray mt-0.5">Modificá el precio base para personalizar esta cotización</p>
+                    </div>
+                    {form.precioBasePersonalizado !== '' && (
+                      <button
+                        onClick={() => setF('precioBasePersonalizado', '')}
+                        className="text-xs text-moana-gray hover:text-red-500 transition-colors font-medium"
+                      >
+                        ↩ Restaurar precio original
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="label-field text-xs">Precio original del catálogo</label>
+                      <div className="input-field bg-gray-50 text-moana-gray font-medium text-sm flex items-center">
+                        {precio ? `USD ${precio.toLocaleString()}` : 'Sin precio asignado'}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="label-field text-xs">Precio personalizado (USD/pax)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder={precio ? `${precio}` : 'Ingresar precio'}
+                        value={form.precioBasePersonalizado}
+                        onChange={(e) => setF('precioBasePersonalizado', e.target.value)}
+                        className={`input-field text-sm font-bold ${
+                          form.precioBasePersonalizado !== '' ? 'border-moana-orange ring-1 ring-moana-orange/30' : ''
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  {form.precioBasePersonalizado !== '' && (
+                    <p className="text-xs text-moana-orange font-semibold mt-2">
+                      ⚡ Usando precio personalizado: USD {Number(form.precioBasePersonalizado).toLocaleString()} por persona
+                    </p>
+                  )}
+                </div>
+
                 {/* Extras */}
                 <div className="card overflow-hidden">
                   <button
@@ -431,11 +554,18 @@ export default function VendedorCotizadorPage() {
 
                   {showExtras && (
                     <div className="p-5 border-t border-gray-100 space-y-4">
-                      {/* Excursiones precargadas */}
+                      {/* Excursiones precargadas — filtradas por destino */}
                       <div>
-                        <h3 className="label-field">🗺️ Excursiones</h3>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="label-field mb-0">🗺️ Excursiones</h3>
+                          {destKeyword && excursionesFiltradas.length < excursionesList.length && (
+                            <span className="text-[10px] bg-moana-blue-pale text-moana-blue px-2 py-0.5 rounded-full font-semibold">
+                              Filtradas por destino
+                            </span>
+                          )}
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {excursionesList.map((exc, i) => {
+                          {excursionesFiltradas.map((exc, i) => {
                             const checked = form.excursiones.some((e) => e.nombre === exc.nombre);
                             return (
                               <label key={i} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
@@ -452,11 +582,18 @@ export default function VendedorCotizadorPage() {
                         </div>
                       </div>
 
-                      {/* Traslados precargados */}
+                      {/* Traslados precargados — filtrados por destino */}
                       <div>
-                        <h3 className="label-field">🚌 Traslados</h3>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="label-field mb-0">🚌 Traslados</h3>
+                          {destKeyword && trasladosFiltrados.length < trasladosList.length && (
+                            <span className="text-[10px] bg-moana-blue-pale text-moana-blue px-2 py-0.5 rounded-full font-semibold">
+                              Filtrados por destino
+                            </span>
+                          )}
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {trasladosList.map((tr, i) => {
+                          {trasladosFiltrados.map((tr, i) => {
                             const checked = form.traslados.some((t) => t.nombre === tr.nombre);
                             return (
                               <label key={i} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
@@ -738,12 +875,21 @@ export default function VendedorCotizadorPage() {
               <h2 className="font-display font-bold text-moana-blue text-xl mb-4">💰 Resumen Cotización</h2>
 
               <div className="space-y-3 text-sm">
+                {/* Fechas en resumen */}
+                {(form.fechaDesde || form.fechaHasta) && (
+                  <div className="bg-moana-blue-pale/60 rounded-xl px-3 py-2 text-xs text-moana-blue font-medium mb-2">
+                    {form.fechaDesde && <span>📅 Salida: <strong>{new Date(form.fechaDesde + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short' })}</strong></span>}
+                    {form.fechaDesde && form.fechaHasta && <span className="mx-1">→</span>}
+                    {form.fechaHasta && <span>Regreso: <strong>{new Date(form.fechaHasta + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short' })}</strong></span>}
+                  </div>
+                )}
                 {modo === 'catalogo' ? (
                   <>
                     <div className="flex justify-between py-2 border-b border-gray-100">
                       <span className="text-moana-gray">Paquete base</span>
                       <span className="font-semibold text-moana-dark">
-                        {precio ? `USD ${precio.toLocaleString()}` : '—'}
+                        {precioBaseCat > 0 ? `USD ${precioBaseCat.toLocaleString()}` : '—'}
+                        {form.precioBasePersonalizado !== '' && <span className="ml-1 text-[10px] text-moana-orange font-bold">✏️</span>}
                       </span>
                     </div>
                     {form.excursiones.map((e, i) => (

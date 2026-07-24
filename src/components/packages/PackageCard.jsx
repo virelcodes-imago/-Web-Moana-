@@ -208,13 +208,17 @@ export default function PackageCard({ paquete }) {
           )}
         </div>
 
-        {/* Price Tag - Equal Height */}
-        <div className="price-tag flex-shrink-0 h-20 flex flex-col justify-center">
+        {/* Price Tag - Equal Height & Right-Justified Price */}
+        <div className="price-tag flex-shrink-0 min-h-[5.5rem] py-3 px-4 flex flex-col justify-between shadow-sm">
           {precio ? (
             <>
-              <p className="price-desde">{t('card_desde')}</p>
-              <p className="price-amount font-display text-2xl font-bold">USD {precio.toLocaleString()}</p>
-              <p className="price-unit truncate">
+              <div className="flex items-center justify-between">
+                <span className="price-desde">{t('card_desde')}</span>
+                <span className="price-amount font-display text-2xl font-bold text-moana-orange tracking-tight">
+                  USD {precio.toLocaleString()}
+                </span>
+              </div>
+              <p className="price-unit text-right truncate text-[11px] font-medium opacity-85 mt-1">
                 {isExcursionOrTraslado
                   ? 'por persona · servicio'
                   : isBuzios
@@ -223,11 +227,14 @@ export default function PackageCard({ paquete }) {
               </p>
             </>
           ) : (
-            <div className="py-1">
-              <p className="price-amount font-display text-lg text-moana-orange font-bold uppercase tracking-wider">
+            <div className="flex items-center justify-between py-1">
+              <div>
+                <p className="price-desde">TARIFA</p>
+                <p className="text-[11px] text-white/80 font-medium">Cotización por WhatsApp</p>
+              </div>
+              <p className="price-amount font-display text-xl text-moana-orange font-bold uppercase tracking-wider">
                 CONSULTAR
               </p>
-              <p className="text-xs text-white/90 font-medium mt-0.5">Cotización por WhatsApp</p>
             </div>
           )}
         </div>
