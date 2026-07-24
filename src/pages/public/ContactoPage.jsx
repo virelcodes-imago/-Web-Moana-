@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Instagram, Clock } from 'lucide-react';
+﻿import { Phone, Mail, MapPin, Instagram, Clock } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 const WA_SVG = (
@@ -27,13 +27,13 @@ export default function ContactoPage() {
             <h2 className="section-title">{t('contacto_info_title')}</h2>
 
             <div className="space-y-4">
-              <a href="tel:+5491126810289" className="card p-4 flex items-center gap-4 hover:shadow-card-hover transition-shadow">
+              <a href="tel:+5522998024697" className="card p-4 flex items-center gap-4 hover:shadow-card-hover transition-shadow">
                 <div className="w-12 h-12 bg-moana-blue rounded-xl flex items-center justify-center flex-shrink-0">
                   <Phone size={20} className="text-white" />
                 </div>
                 <div>
                   <p className="font-semibold text-moana-blue text-sm">{t('contacto_tel_label')}</p>
-                  <p className="text-moana-gray">+54 9 11 2681-0289</p>
+                  <p className="text-moana-gray">+55 22 9 9802-4697</p>
                 </div>
               </a>
 
@@ -98,7 +98,7 @@ export default function ContactoPage() {
             <h3 className="font-display font-bold text-moana-blue text-2xl mb-2">{t('contacto_wa_fastest')}</h3>
             <p className="text-moana-gray mb-6">{t('contacto_wa_desc')}</p>
             <a
-              href="https://wa.me/5491126810289?text=Hola%20Moana!%20Quiero%20consultar%20sobre%20un%20viaje%20%F0%9F%8C%8A"
+              href="https://wa.me/5522998024697?text=Hola%20Moana!%20Quiero%20consultar%20sobre%20un%20viaje%20%F0%9F%8C%8A"
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp text-base px-8 py-4"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Phone, Instagram } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
@@ -48,8 +48,8 @@ export default function Navbar() {
             <span>📍 Búzios, Brasil</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="tel:+5491126810289" className="flex items-center gap-1 hover:text-moana-orange transition-colors">
-              <Phone size={12} /> +54 9 11 2681-0289
+            <a href="tel:+5522998024697" className="flex items-center gap-1 hover:text-moana-orange transition-colors">
+              <Phone size={12} /> +55 22 9 9802-4697
             </a>
             <a href="https://instagram.com/moanaturismo.oficial" target="_blank" rel="noreferrer"
                className="flex items-center gap-1 hover:text-moana-orange transition-colors">
@@ -119,7 +119,7 @@ export default function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             <a
-              href="https://wa.me/5491126810289"
+              href="https://wa.me/5522998024697"
               target="_blank"
               rel="noreferrer"
               className="hidden md:flex btn-primary text-sm px-4 py-2 items-center gap-2"
@@ -196,7 +196,7 @@ export default function Navbar() {
                 ))}
               </div>
               <a
-                href="https://wa.me/5491126810289"
+                href="https://wa.me/5522998024697"
                 className="mt-2 btn-whatsapp justify-center text-sm"
                 target="_blank"
                 rel="noreferrer"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
@@ -183,7 +183,7 @@ export default function Hero() {
                 </>
               )}
               <a
-                href="https://wa.me/5491126810289"
+                href="https://wa.me/5522998024697"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-3 btn-whatsapp w-full justify-center text-sm py-2.5"

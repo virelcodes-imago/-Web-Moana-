@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import PackageCard from '../../components/packages/PackageCard';
 import { CATEGORIAS } from '../../data/paquetes';
 import { Search } from 'lucide-react';
@@ -126,7 +126,7 @@ export default function PaquetesPage() {
               ¿Necesitás un destino personalizado? ¡Escribinos!
             </p>
             <a
-              href="https://wa.me/5491126810289?text=Hola%20Moana!%20Quiero%20info%20sobre%20un%20viaje%20%F0%9F%8C%8A"
+              href="https://wa.me/5522998024697?text=Hola%20Moana!%20Quiero%20info%20sobre%20un%20viaje%20%F0%9F%8C%8A"
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp inline-flex"

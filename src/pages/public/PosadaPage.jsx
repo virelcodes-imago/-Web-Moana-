@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Wifi, Wind, Car, Coffee, Waves, Users, Calendar, Calculator, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -94,7 +94,7 @@ export default function PosadaPage() {
 
             <div className="flex flex-wrap gap-3">
               <a
-                href="https://wa.me/5491126810289?text=Hola!%20Quiero%20consultar%20disponibilidad%20en%20la%20Posada%20Moana%20%F0%9F%8C%8A"
+                href="https://wa.me/5522998024697?text=Hola!%20Quiero%20consultar%20disponibilidad%20en%20la%20Posada%20Moana%20%F0%9F%8C%8A"
                 target="_blank"
                 rel="noreferrer"
                 className="btn-whatsapp"
@@ -210,7 +210,7 @@ export default function PosadaPage() {
               </div>
 
               <a
-                href={`https://wa.me/5491126810289?text=Hola%20Moana!%20Quiero%20consultar%20disponibilidad%20en%20Posada%20Moana%20para%20*${encodeURIComponent(tempObj?.label || '')}*%20-%20Habitaci%C3%B3n%20*${encodeURIComponent(habObj?.label || '')}*%20por%20*${noches}%20noches*%20(Tarifa%20estimada%3A%20USD%20${totalEstadia})%20%F0%9F%8C%8A`}
+                href={`https://wa.me/5522998024697?text=Hola%20Moana!%20Quiero%20consultar%20disponibilidad%20en%20Posada%20Moana%20para%20*${encodeURIComponent(tempObj?.label || '')}*%20-%20Habitaci%C3%B3n%20*${encodeURIComponent(habObj?.label || '')}*%20por%20*${noches}%20noches*%20(Tarifa%20estimada%3A%20USD%20${totalEstadia})%20%F0%9F%8C%8A`}
                 target="_blank"
                 rel="noreferrer"
                 className="btn-whatsapp w-full justify-center text-sm py-4"
@@ -307,7 +307,7 @@ export default function PosadaPage() {
               {t('posada_ver_paquete_full')}
             </Link>
             <a
-              href="https://wa.me/5491126810289"
+              href="https://wa.me/5522998024697"
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Eye, Moon, MessageCircle } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
@@ -112,7 +112,7 @@ export default function PackageCard({ paquete }) {
     const text = encodeURIComponent(
       `Hola Moana! Quiero consultar precio y disponibilidad para el paquete *${paquete.titulo}* (${detailText}) 🌊`
     );
-    window.open(`https://wa.me/5491126810289?text=${text}`, '_blank');
+    window.open(`https://wa.me/5522998024697?text=${text}`, '_blank');
   };
 
   return (
