@@ -465,7 +465,21 @@ export default function VendedorCotizadorPage() {
                             ))}
                           </select>
                         </div>
-                        {paqueteSeleccionado?.categoria !== 'nacional' && (
+                        {paqueteSeleccionado?.categoria === 'nacional' ? (
+                          <div className="sm:col-span-2 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1.5">
+                            <p className="font-bold text-amber-950 flex items-center gap-1.5">
+                              <span>📋 Ficha Técnica Vendedor — Paquete Nacional (PDF Oficial)</span>
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+                              <p>✈️ <strong>Vuelos:</strong> Aerolíneas Argentinas (web check-in 48h)</p>
+                              <p>🧳 <strong>Equipaje:</strong> 15kg bodega + mano por pax</p>
+                              <p>🚌 <strong>Traslados:</strong> Combi compartida IN/OUT</p>
+                              <p>🏥 <strong>Asistencia:</strong> Universal Assistance incluida</p>
+                              <p>💳 <strong>Cuota Simple:</strong> 3c (13%), 6c (22%), 12c (35%)</p>
+                              <p>🟢 <strong>Mercado Pago:</strong> 3 cuotas sin interés</p>
+                            </div>
+                          </div>
+                        ) : paqueteSeleccionado?.categoria !== 'nacional' && (
                           <div>
                             <label className="label-field">Categoría Hotel</label>
                             <select
