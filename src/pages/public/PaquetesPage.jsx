@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PackageCard from '../../components/packages/PackageCard';
 import { CATEGORIAS } from '../../data/paquetes';
 import { Search } from 'lucide-react';
@@ -33,9 +33,19 @@ export default function PaquetesPage() {
     load();
   }, []);
 
+  const isDestinoOnly = (p) => {
+    return (
+      p.categoria !== CATEGORIAS.ALOJAMIENTO &&
+      p.categoria !== CATEGORIAS.TRASLADOS_EXCURSIONES &&
+      p.categoria !== 'traslados' &&
+      p.categoria !== 'excursiones' &&
+      p.id !== 30
+    );
+  };
+
   const filtrados = paquetes
     .filter((p) => {
-      if (catActiva === 'todos') return true;
+      if (catActiva === 'todos') return isDestinoOnly(p);
       if (catActiva === CATEGORIAS.BUZIOS) {
         return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'buzios-hospedaje' || p.id === 30;
       }

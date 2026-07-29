@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, CreditCard, Users, Star } from 'lucide-react';
 import Hero from '../../components/home/Hero';
@@ -47,8 +47,19 @@ export default function HomePage() {
     .filter((p) => (p.destacado === 1 || p.destacado === true) && !isExcursionOrTransfer(p))
     .sort((a, b) => (a.orden || 99) - (b.orden || 99));
 
+  const isDestinoOnly = (p) => {
+    return (
+      p.categoria !== CATEGORIAS.ALOJAMIENTO &&
+      p.categoria !== CATEGORIAS.TRASLADOS_EXCURSIONES &&
+      p.categoria !== 'traslados' &&
+      p.categoria !== 'excursiones' &&
+      !isExcursionOrTransfer(p) &&
+      p.id !== 30
+    );
+  };
+
   const filtrados = (catActiva === 'todos'
-    ? paquetes
+    ? paquetes.filter(isDestinoOnly)
     : paquetes.filter((p) => {
         if (catActiva === CATEGORIAS.BUZIOS) {
           return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'buzios-hospedaje' || p.id === 30;
