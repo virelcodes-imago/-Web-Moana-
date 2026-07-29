@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Instagram, Heart } from 'lucide-react';
+import { Phone, Mail, MapPin, Instagram, Heart, ZoomIn, X } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export default function Footer() {
   const year = new Date().getFullYear();
   const { t } = useLanguage();
+  const [qrModal, setQrModal] = useState(null);
 
   const NAV_LINKS = [
     [t('nav_inicio'), '/'],
@@ -124,36 +126,98 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Legajos / Habilitaciones — Discretos */}
+      {/* Legajos / Habilitaciones — Clic para Agrandar */}
       <div className="border-t border-white/10">
         <div className="container-moana py-5 flex flex-wrap justify-center gap-8">
           {/* Legajo Argentina */}
-          <div className="flex items-center gap-3 opacity-50 hover:opacity-80 transition-opacity cursor-default">
-            <img
-              src="/QR RNAV legajo ARG .jpg"
-              alt="Legajo RNAV Argentina"
-              className="w-12 h-12 rounded-md object-contain bg-white p-0.5"
-            />
-            <div>
-              <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Legajo ARG</p>
-              <p className="text-[10px] text-white/40">Habilitación Nacional RNAV</p>
+          <button
+            onClick={() => setQrModal({
+              src: '/QR RNAV legajo ARG .jpg',
+              title: 'Legajo Argentina — RNAV',
+              subtitle: 'Habilitación Nacional de Agencia de Viajes (Ministerio de Turismo ARG)'
+            })}
+            className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-all group p-2 rounded-xl hover:bg-white/5 text-left cursor-pointer"
+            title="Hacé clic para agrandar el QR"
+          >
+            <div className="relative">
+              <img
+                src="/QR RNAV legajo ARG .jpg"
+                alt="Legajo RNAV Argentina"
+                className="w-12 h-12 rounded-md object-contain bg-white p-0.5 group-hover:scale-105 transition-transform"
+              />
+              <div className="absolute inset-0 bg-black/40 rounded-md opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <ZoomIn size={16} className="text-white" />
+              </div>
             </div>
-          </div>
+            <div>
+              <p className="text-[10px] font-semibold text-white/90 uppercase tracking-wider flex items-center gap-1">
+                Legajo ARG <span className="text-[9px] text-moana-orange font-normal">🔍 Agrandar</span>
+              </p>
+              <p className="text-[10px] text-white/60">Habilitación Nacional RNAV</p>
+            </div>
+          </button>
 
           {/* Cadastur Brasil */}
-          <div className="flex items-center gap-3 opacity-50 hover:opacity-80 transition-opacity cursor-default">
-            <img
-              src="/qr cadastur BRASIL.jpeg"
-              alt="Cadastur Brasil"
-              className="w-12 h-12 rounded-md object-contain bg-white p-0.5"
-            />
-            <div>
-              <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Legajo BR</p>
-              <p className="text-[10px] text-white/40">Cadastur — Habilitação Brasil</p>
+          <button
+            onClick={() => setQrModal({
+              src: '/qr cadastur BRASIL.jpeg',
+              title: 'Legajo Brasil — Cadastur',
+              subtitle: 'Habilitação Oficial de Turismo (Ministério do Turismo Brasil)'
+            })}
+            className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-all group p-2 rounded-xl hover:bg-white/5 text-left cursor-pointer"
+            title="Hacé clic para agrandar el QR"
+          >
+            <div className="relative">
+              <img
+                src="/qr cadastur BRASIL.jpeg"
+                alt="Cadastur Brasil"
+                className="w-12 h-12 rounded-md object-contain bg-white p-0.5 group-hover:scale-105 transition-transform"
+              />
+              <div className="absolute inset-0 bg-black/40 rounded-md opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <ZoomIn size={16} className="text-white" />
+              </div>
             </div>
-          </div>
+            <div>
+              <p className="text-[10px] font-semibold text-white/90 uppercase tracking-wider flex items-center gap-1">
+                Legajo BR <span className="text-[9px] text-moana-orange font-normal">🔍 Agrandar</span>
+              </p>
+              <p className="text-[10px] text-white/60">Cadastur — Habilitação Brasil</p>
+            </div>
+          </button>
         </div>
       </div>
+
+      {/* Lightbox / Modal QR */}
+      {qrModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setQrModal(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-sm w-full text-moana-dark text-center shadow-2xl relative border border-gray-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setQrModal(null)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 transition-colors"
+            >
+              <X size={18} />
+            </button>
+            <h4 className="font-display font-bold text-moana-blue text-lg mb-1">{qrModal.title}</h4>
+            <p className="text-xs text-moana-gray mb-4 leading-relaxed">{qrModal.subtitle}</p>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 inline-block mb-3 shadow-inner">
+              <img
+                src={qrModal.src}
+                alt={qrModal.title}
+                className="w-64 h-64 sm:w-72 sm:h-72 object-contain mx-auto rounded-lg bg-white p-1"
+              />
+            </div>
+            <p className="text-xs text-moana-teal-dark font-semibold flex items-center justify-center gap-1">
+              📱 Podés escanearlo directo desde la pantalla con la cámara de tu celular
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
@@ -167,3 +231,4 @@ export default function Footer() {
     </footer>
   );
 }
+
