@@ -166,11 +166,25 @@ export default function VendedorCotizadorPage() {
 
   // --- CÁLCULOS MATEMÁTICOS ---
 
+  const getItemPriceBySeason = (item, temp) => {
+    if (!item) return 0;
+    if (temp === 'alta' && item.precioAlta !== undefined && item.precioAlta !== '') {
+      return Number(item.precioAlta);
+    }
+    if (temp === 'semana_santa' && item.precioSemanaSanta !== undefined && item.precioSemanaSanta !== '') {
+      return Number(item.precioSemanaSanta);
+    }
+    if (temp === 'vacaciones_invierno' && item.precioVacacionesInvierno !== undefined && item.precioVacacionesInvierno !== '') {
+      return Number(item.precioVacacionesInvierno);
+    }
+    return Number(item.precio || item.precioBaja || 0);
+  };
+
   // 1. Modo Catálogo (Sencillo, los precios ya son de Venta)
   // Allow seller to override base price for custom adaptations
   const precioBaseCat = form.precioBasePersonalizado !== '' ? Number(form.precioBasePersonalizado) : (precio || 0);
-  const excTotalCat = form.excursiones.reduce((acc, e) => acc + (e.precio || 0), 0);
-  const trasTotalCat = form.traslados.reduce((acc, t) => acc + (t.precio || 0), 0) / form.pasajeros;
+  const excTotalCat = form.excursiones.reduce((acc, e) => acc + getItemPriceBySeason(e, form.temporada), 0);
+  const trasTotalCat = form.traslados.reduce((acc, t) => acc + getItemPriceBySeason(t, form.temporada), 0) / form.pasajeros;
   const asistTotalCat = form.asistencia.incluir
     ? (form.asistencia.tarifaDiaria * form.asistencia.dias)
     : 0;
@@ -581,6 +595,7 @@ export default function VendedorCotizadorPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {excursionesFiltradas.map((exc, i) => {
                             const checked = form.excursiones.some((e) => e.nombre === exc.nombre);
+                            const pExc = getItemPriceBySeason(exc, form.temporada);
                             return (
                               <label key={i} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                                 checked ? 'border-moana-orange bg-moana-orange-light/20' : 'border-gray-100'
@@ -588,7 +603,7 @@ export default function VendedorCotizadorPage() {
                                 <input type="checkbox" checked={checked} onChange={() => toggleExcursion(exc)} className="accent-moana-orange" />
                                 <div className="flex-1">
                                   <p className="text-xs font-semibold text-moana-dark">{exc.nombre}</p>
-                                  <p className="text-[10px] text-moana-orange font-bold">USD {exc.precio}</p>
+                                  <p className="text-[10px] text-moana-orange font-bold">USD {pExc}</p>
                                 </div>
                               </label>
                             );
@@ -609,6 +624,7 @@ export default function VendedorCotizadorPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {trasladosFiltrados.map((tr, i) => {
                             const checked = form.traslados.some((t) => t.nombre === tr.nombre);
+                            const pTr = getItemPriceBySeason(tr, form.temporada);
                             return (
                               <label key={i} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                                 checked ? 'border-moana-blue bg-moana-blue-pale' : 'border-gray-100'
@@ -616,7 +632,7 @@ export default function VendedorCotizadorPage() {
                                 <input type="checkbox" checked={checked} onChange={() => toggleTraslado(tr)} className="accent-moana-blue" />
                                 <div className="flex-1">
                                   <p className="text-xs font-semibold text-moana-dark">{tr.nombre}</p>
-                                  <p className="text-[10px] text-moana-blue font-bold">USD {tr.precio} total</p>
+                                  <p className="text-[10px] text-moana-blue font-bold">USD {pTr} total</p>
                                 </div>
                               </label>
                             );

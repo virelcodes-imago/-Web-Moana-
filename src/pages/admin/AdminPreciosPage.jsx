@@ -62,9 +62,13 @@ export default function AdminPreciosPage() {
 
   // --- Excursiones ---
   const [excursiones, setExcursiones] = useState(excursionesBase);
+  const [excDestinoFiltro, setExcDestinoFiltro] = useState('todos');
+  const [excSearchTerm, setExcSearchTerm] = useState('');
 
   // --- Traslados ---
   const [traslados, setTraslados] = useState(trasladosBase);
+  const [trasDestinoFiltro, setTrasDestinoFiltro] = useState('todos');
+  const [trasSearchTerm, setTrasSearchTerm] = useState('');
 
   // Cargar paquetes desde Dexie al iniciar
   const reloadPaquetes = async () => {
@@ -346,11 +350,36 @@ export default function AdminPreciosPage() {
   };
 
   const addExcursion = () => {
-    setExcursiones((prev) => [...prev, { nombre: '', precio: 0, descripcion: '', porPersona: true, activo: true }]);
+    setExcursiones((prev) => [
+      ...prev,
+      {
+        nombre: '',
+        precio: 0,
+        precioAlta: '',
+        precioSemanaSanta: '',
+        precioVacacionesInvierno: '',
+        descripcion: '',
+        destino: excDestinoFiltro !== 'todos' ? excDestinoFiltro : 'buzios',
+        porPersona: true,
+        activo: true,
+      },
+    ]);
   };
 
   const addTraslado = () => {
-    setTraslados((prev) => [...prev, { nombre: '', precio: 0, tipo: 'regular', activo: true }]);
+    setTraslados((prev) => [
+      ...prev,
+      {
+        nombre: '',
+        precio: 0,
+        precioAlta: '',
+        precioSemanaSanta: '',
+        precioVacacionesInvierno: '',
+        tipo: 'regular',
+        destino: trasDestinoFiltro !== 'todos' ? trasDestinoFiltro : 'buzios',
+        activo: true,
+      },
+    ]);
   };
 
   const showSaved = (msg) => {
@@ -1064,51 +1093,234 @@ export default function AdminPreciosPage() {
 
         {/* === EXCURSIONES TAB === */}
         {activeTab === 'excursiones' && (
-          <div className="card p-6">
-            <h2 className="font-display font-bold text-moana-blue text-xl mb-5">Excursiones Adicionales</h2>
-            <div className="space-y-3">
-              {excursiones.map((exc, i) => (
-                <div key={i} className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-4 bg-moana-cream rounded-xl items-center">
+          <div className="card p-6 space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-100 pb-4">
+              <div>
+                <h2 className="font-display font-bold text-moana-blue text-xl flex items-center gap-2">
+                  🗺️ Excursiones Adicionales
+                </h2>
+                <p className="text-xs text-moana-gray mt-1">
+                  Gestioná los precios por temporada (Baja, Alta, Semana Santa, Invierno) y asigná cada excursión a su destino.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Filtro por Destino */}
+                <select
+                  value={excDestinoFiltro}
+                  onChange={(e) => setExcDestinoFiltro(e.target.value)}
+                  className="input-field text-xs py-2 bg-moana-blue-pale/50 font-semibold text-moana-blue"
+                >
+                  <option value="todos">🌐 Todos los Destinos ({excursiones.length})</option>
+                  <option value="buzios">🌴 Búzios / Río de Janeiro</option>
+                  <option value="cancun">🏖️ Cancún / Playa del Carmen</option>
+                  <option value="cataratas">🌊 Cataratas del Iguazú</option>
+                  <option value="ushuaia">🐧 Ushuaia</option>
+                  <option value="calafate">🧊 El Calafate</option>
+                  <option value="salta">🏔️ Salta</option>
+                  <option value="bariloche">🌲 Bariloche</option>
+                  <option value="mendoza">🍷 Mendoza</option>
+                  <option value="bayahibe">🇩🇴 Miches / Bayahíbe</option>
+                  <option value="jamaica">🇯🇲 Jamaica</option>
+                  <option value="peru">🇵🇪 Perú / Machu Picchu</option>
+                </select>
+
+                {/* Buscador */}
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray" />
                   <input
                     type="text"
-                    placeholder="Nombre de la excursión"
-                    value={exc.nombre}
-                    onChange={(e) => setExcursiones((prev) => prev.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))}
-                    className="input-field sm:col-span-5 font-semibold text-moana-blue"
+                    placeholder="Buscar excursión..."
+                    value={excSearchTerm}
+                    onChange={(e) => setExcSearchTerm(e.target.value)}
+                    className="input-field text-xs py-2 pl-8 w-44"
                   />
-                  <div className="sm:col-span-3 relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray text-sm font-semibold">USD</span>
-                    <input
-                      type="number"
-                      placeholder="Precio"
-                      value={exc.precio || ''}
-                      onChange={(e) => setExcursiones((prev) => prev.map((x, j) => j === i ? { ...x, precio: Number(e.target.value) } : x))}
-                      className="input-field pl-12 font-semibold"
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Descripción"
-                    value={exc.descripcion || ''}
-                    onChange={(e) => setExcursiones((prev) => prev.map((x, j) => j === i ? { ...x, descripcion: e.target.value } : x))}
-                    className="input-field sm:col-span-3 text-xs"
-                  />
-                  <button
-                    onClick={() => setExcursiones((prev) => prev.filter((_, j) => j !== i))}
-                    className="sm:col-span-1 text-red-400 hover:text-red-600 flex justify-center items-center p-2"
-                    title="Eliminar excursión"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                 </div>
-              ))}
+              </div>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={addExcursion} className="btn-secondary flex items-center gap-2 text-sm">
-                <Plus size={16} /> Agregar Excursión
+
+            {/* Excursiones Grid/List */}
+            <div className="space-y-4">
+              {excursiones
+                .filter((exc) => {
+                  const matchDest = excDestinoFiltro === 'todos' || (exc.destino || '').toLowerCase() === excDestinoFiltro.toLowerCase();
+                  const matchSearch = excSearchTerm === '' || exc.nombre.toLowerCase().includes(excSearchTerm.toLowerCase());
+                  return matchDest && matchSearch;
+                })
+                .map((exc, idx) => {
+                  const realIndex = excursiones.findIndex((x) => x === exc);
+                  return (
+                    <div key={realIndex} className="p-4 bg-moana-cream rounded-2xl border border-gray-100 space-y-3 shadow-sm">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                        {/* Nombre */}
+                        <div className="md:col-span-4">
+                          <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wider block mb-1">
+                            Nombre de Excursión
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Nombre de la excursión"
+                            value={exc.nombre}
+                            onChange={(e) =>
+                              setExcursiones((prev) =>
+                                prev.map((x, j) => (j === realIndex ? { ...x, nombre: e.target.value } : x))
+                              )
+                            }
+                            className="input-field text-xs font-bold text-moana-blue"
+                          />
+                        </div>
+
+                        {/* Destino */}
+                        <div className="md:col-span-3">
+                          <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wider block mb-1">
+                            Destino Asignado
+                          </label>
+                          <select
+                            value={exc.destino || 'buzios'}
+                            onChange={(e) =>
+                              setExcursiones((prev) =>
+                                prev.map((x, j) => (j === realIndex ? { ...x, destino: e.target.value } : x))
+                              )
+                            }
+                            className="input-field text-xs font-medium"
+                          >
+                            <option value="buzios">🌴 Búzios / Río</option>
+                            <option value="cancun">🏖️ Cancún / Playa</option>
+                            <option value="cataratas">🌊 Cataratas Iguazú</option>
+                            <option value="ushuaia">🐧 Ushuaia</option>
+                            <option value="calafate">🧊 El Calafate</option>
+                            <option value="salta">🏔️ Salta</option>
+                            <option value="bariloche">🌲 Bariloche</option>
+                            <option value="mendoza">🍷 Mendoza</option>
+                            <option value="bayahibe">🇩🇴 Miches / Bayahíbe</option>
+                            <option value="jamaica">🇯🇲 Jamaica</option>
+                            <option value="peru">🇵🇪 Perú / Machu</option>
+                          </select>
+                        </div>
+
+                        {/* Descripción */}
+                        <div className="md:col-span-4">
+                          <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wider block mb-1">
+                            Descripción / Incluye
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Detalle o duración..."
+                            value={exc.descripcion || ''}
+                            onChange={(e) =>
+                              setExcursiones((prev) =>
+                                prev.map((x, j) => (j === realIndex ? { ...x, descripcion: e.target.value } : x))
+                              )
+                            }
+                            className="input-field text-xs"
+                          />
+                        </div>
+
+                        {/* Eliminar */}
+                        <div className="md:col-span-1 flex justify-end">
+                          <button
+                            onClick={() => setExcursiones((prev) => prev.filter((_, j) => j !== realIndex))}
+                            className="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Eliminar excursión"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Desglose de Tarifas por Temporada (USD) */}
+                      <div className="bg-white p-3 rounded-xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-moana-blue uppercase tracking-wider mb-2 flex items-center gap-1">
+                          📅 Tarifas por Temporada (USD por persona)
+                        </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Temp. Baja (Base)</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder="0"
+                                value={exc.precio ?? ''}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precio: Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Temp. Alta</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={exc.precio || 'Base'}
+                                value={exc.precioAlta ?? ''}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioAlta: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Semana Santa</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={exc.precio || 'Base'}
+                                value={exc.precioSemanaSanta ?? ''}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioSemanaSanta: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Vacaciones Invierno</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={exc.precio || 'Base'}
+                                value={exc.precioVacacionesInvierno ?? ''}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioVacacionesInvierno: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+              <button onClick={addExcursion} className="btn-secondary flex items-center gap-2 text-sm w-full sm:w-auto justify-center">
+                <Plus size={16} /> Agregar Nueva Excursión
               </button>
-              <button onClick={handleSaveExcursiones} className="btn-primary flex items-center gap-2 text-sm">
-                <Save size={16} /> Guardar Excursiones
+              <button onClick={handleSaveExcursiones} className="btn-primary flex items-center gap-2 text-sm w-full sm:w-auto justify-center shadow-lg px-8">
+                <Save size={16} /> Guardar Cambios en Excursiones
               </button>
             </div>
           </div>
@@ -1116,52 +1328,234 @@ export default function AdminPreciosPage() {
 
         {/* === TRASLADOS TAB === */}
         {activeTab === 'traslados' && (
-          <div className="card p-6">
-            <h2 className="font-display font-bold text-moana-blue text-xl mb-5">Traslados Adicionales</h2>
-            <div className="space-y-3">
-              {traslados.map((tr, i) => (
-                <div key={i} className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-4 bg-moana-cream rounded-xl items-center">
+          <div className="card p-6 space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-100 pb-4">
+              <div>
+                <h2 className="font-display font-bold text-moana-blue text-xl flex items-center gap-2">
+                  🚌 Traslados Adicionales
+                </h2>
+                <p className="text-xs text-moana-gray mt-1">
+                  Gestioná los costos de traslados por temporada y tipo de servicio (Regular / Privado).
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Filtro por Destino */}
+                <select
+                  value={trasDestinoFiltro}
+                  onChange={(e) => setTrasDestinoFiltro(e.target.value)}
+                  className="input-field text-xs py-2 bg-moana-blue-pale/50 font-semibold text-moana-blue"
+                >
+                  <option value="todos">🌐 Todos los Destinos ({traslados.length})</option>
+                  <option value="buzios">🌴 Búzios / Río de Janeiro</option>
+                  <option value="cancun">🏖️ Cancún / Playa del Carmen</option>
+                  <option value="cataratas">🌊 Cataratas del Iguazú</option>
+                  <option value="ushuaia">🐧 Ushuaia</option>
+                  <option value="calafate">🧊 El Calafate</option>
+                  <option value="salta">🏔️ Salta</option>
+                  <option value="bariloche">🌲 Bariloche</option>
+                  <option value="mendoza">🍷 Mendoza</option>
+                  <option value="bayahibe">🇩🇴 Miches / Bayahíbe</option>
+                  <option value="jamaica">🇯🇲 Jamaica</option>
+                  <option value="peru">🇵🇪 Perú / Machu Picchu</option>
+                </select>
+
+                {/* Buscador */}
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray" />
                   <input
                     type="text"
-                    placeholder="Nombre del traslado"
-                    value={tr.nombre}
-                    onChange={(e) => setTraslados((prev) => prev.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))}
-                    className="input-field sm:col-span-5 font-semibold text-moana-blue"
+                    placeholder="Buscar traslado..."
+                    value={trasSearchTerm}
+                    onChange={(e) => setTrasSearchTerm(e.target.value)}
+                    className="input-field text-xs py-2 pl-8 w-44"
                   />
-                  <select
-                    value={tr.tipo}
-                    onChange={(e) => setTraslados((prev) => prev.map((x, j) => j === i ? { ...x, tipo: e.target.value } : x))}
-                    className="input-field sm:col-span-2 text-xs"
-                  >
-                    <option value="regular">Regular</option>
-                    <option value="privado">Privado</option>
-                  </select>
-                  <div className="sm:col-span-3 relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-moana-gray text-sm font-semibold">USD</span>
-                    <input
-                      type="number"
-                      placeholder="Precio"
-                      value={tr.precio || ''}
-                      onChange={(e) => setTraslados((prev) => prev.map((x, j) => j === i ? { ...x, precio: Number(e.target.value) } : x))}
-                      className="input-field pl-12 font-semibold"
-                    />
-                  </div>
-                  <button
-                    onClick={() => setTraslados((prev) => prev.filter((_, j) => j !== i))}
-                    className="sm:col-span-2 text-red-400 hover:text-red-600 flex justify-center items-center p-2"
-                    title="Eliminar traslado"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                 </div>
-              ))}
+              </div>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={addTraslado} className="btn-secondary flex items-center gap-2 text-sm">
-                <Plus size={16} /> Agregar Traslado
+
+            <div className="space-y-4">
+              {traslados
+                .filter((tr) => {
+                  const matchDest = trasDestinoFiltro === 'todos' || (tr.destino || '').toLowerCase() === trasDestinoFiltro.toLowerCase();
+                  const matchSearch = trasSearchTerm === '' || tr.nombre.toLowerCase().includes(trasSearchTerm.toLowerCase());
+                  return matchDest && matchSearch;
+                })
+                .map((tr, idx) => {
+                  const realIndex = traslados.findIndex((x) => x === tr);
+                  return (
+                    <div key={realIndex} className="p-4 bg-moana-cream rounded-2xl border border-gray-100 space-y-3 shadow-sm">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                        {/* Nombre */}
+                        <div className="md:col-span-5">
+                          <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wider block mb-1">
+                            Nombre del Traslado
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Ej: Traslado Aeropuerto ↔ Hotel"
+                            value={tr.nombre}
+                            onChange={(e) =>
+                              setTraslados((prev) =>
+                                prev.map((x, j) => (j === realIndex ? { ...x, nombre: e.target.value } : x))
+                              )
+                            }
+                            className="input-field text-xs font-bold text-moana-blue"
+                          />
+                        </div>
+
+                        {/* Tipo de servicio */}
+                        <div className="md:col-span-3">
+                          <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wider block mb-1">
+                            Tipo de Servicio
+                          </label>
+                          <select
+                            value={tr.tipo || 'regular'}
+                            onChange={(e) =>
+                              setTraslados((prev) =>
+                                prev.map((x, j) => (j === realIndex ? { ...x, tipo: e.target.value } : x))
+                              )
+                            }
+                            className="input-field text-xs font-medium"
+                          >
+                            <option value="regular">Regular (Compartido)</option>
+                            <option value="privado">Privado (Exclusivo)</option>
+                          </select>
+                        </div>
+
+                        {/* Destino */}
+                        <div className="md:col-span-3">
+                          <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wider block mb-1">
+                            Destino Asignado
+                          </label>
+                          <select
+                            value={tr.destino || 'buzios'}
+                            onChange={(e) =>
+                              setTraslados((prev) =>
+                                prev.map((x, j) => (j === realIndex ? { ...x, destino: e.target.value } : x))
+                              )
+                            }
+                            className="input-field text-xs font-medium"
+                          >
+                            <option value="buzios">🌴 Búzios / Río</option>
+                            <option value="cancun">🏖️ Cancún / Playa</option>
+                            <option value="cataratas">🌊 Cataratas Iguazú</option>
+                            <option value="ushuaia">🐧 Ushuaia</option>
+                            <option value="calafate">🧊 El Calafate</option>
+                            <option value="salta">🏔️ Salta</option>
+                            <option value="bariloche">🌲 Bariloche</option>
+                            <option value="mendoza">🍷 Mendoza</option>
+                            <option value="bayahibe">🇩🇴 Miches / Bayahíbe</option>
+                            <option value="jamaica">🇯🇲 Jamaica</option>
+                            <option value="peru">🇵🇪 Perú / Machu</option>
+                          </select>
+                        </div>
+
+                        {/* Eliminar */}
+                        <div className="md:col-span-1 flex justify-end">
+                          <button
+                            onClick={() => setTraslados((prev) => prev.filter((_, j) => j !== realIndex))}
+                            className="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="Eliminar traslado"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Tarifas por Temporada */}
+                      <div className="bg-white p-3 rounded-xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-moana-blue uppercase tracking-wider mb-2 flex items-center gap-1">
+                          📅 Tarifas del Traslado por Temporada (USD total o por pax)
+                        </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Temp. Baja (Base)</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder="0"
+                                value={tr.precio ?? ''}
+                                onChange={(e) =>
+                                  setTraslados((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precio: Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Temp. Alta</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={tr.precio || 'Base'}
+                                value={tr.precioAlta ?? ''}
+                                onChange={(e) =>
+                                  setTraslados((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioAlta: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Semana Santa</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={tr.precio || 'Base'}
+                                value={tr.precioSemanaSanta ?? ''}
+                                onChange={(e) =>
+                                  setTraslados((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioSemanaSanta: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-moana-gray block mb-1">Vacaciones Invierno</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-moana-gray font-bold">USD</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={tr.precio || 'Base'}
+                                value={tr.precioVacacionesInvierno ?? ''}
+                                onChange={(e) =>
+                                  setTraslados((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioVacacionesInvierno: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+              <button onClick={addTraslado} className="btn-secondary flex items-center gap-2 text-sm w-full sm:w-auto justify-center">
+                <Plus size={16} /> Agregar Nuevo Traslado
               </button>
-              <button onClick={handleSaveTraslados} className="btn-primary flex items-center gap-2 text-sm">
-                <Save size={16} /> Guardar Traslados
+              <button onClick={handleSaveTraslados} className="btn-primary flex items-center gap-2 text-sm w-full sm:w-auto justify-center shadow-lg px-8">
+                <Save size={16} /> Guardar Cambios en Traslados
               </button>
             </div>
           </div>
