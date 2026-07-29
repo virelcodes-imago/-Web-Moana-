@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Heart } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
@@ -73,10 +73,10 @@ export default function Footer() {
               ['Búzios Clásico', '/paquetes/buzios-clasico'],
               ['Búzios Premium', '/paquetes/buzios-premium'],
               ['Búzios Hospedaje', '/paquetes/buzios-hospedaje'],
-              ['Miami / Orlando', '/paquetes/miami-orlando-full'],
+              ['Miches + Bayahíbe', '/paquetes/bayahibe'],
               ['Cataratas Iguazú', '/paquetes/cataratas-iguazu'],
-              ['Europa Soñada', '/paquetes/europa-sonada'],
-              ['Cancún All Inclusive', '/paquetes/cancun'],
+              ['Europa Apasionante', '/paquetes/europa-apasionante'],
+              ['Cancún + Playa del Carmen', '/paquetes/cancun-playa-del-carmen'],
               ['El Calafate', '/paquetes/el-calafate'],
             ].map(([label, to]) => (
               <li key={to}>
@@ -120,6 +120,37 @@ export default function Footer() {
             {t('footer_financing')}<br/>
             {t('footer_quality')}<br/>
             {t('footer_experience')}
+          </div>
+        </div>
+      </div>
+
+      {/* Legajos / Habilitaciones — Discretos */}
+      <div className="border-t border-white/10">
+        <div className="container-moana py-5 flex flex-wrap justify-center gap-8">
+          {/* Legajo Argentina */}
+          <div className="flex items-center gap-3 opacity-50 hover:opacity-80 transition-opacity cursor-default">
+            <img
+              src="/QR RNAV legajo ARG .jpg"
+              alt="Legajo RNAV Argentina"
+              className="w-12 h-12 rounded-md object-contain bg-white p-0.5"
+            />
+            <div>
+              <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Legajo ARG</p>
+              <p className="text-[10px] text-white/40">Habilitación Nacional RNAV</p>
+            </div>
+          </div>
+
+          {/* Cadastur Brasil */}
+          <div className="flex items-center gap-3 opacity-50 hover:opacity-80 transition-opacity cursor-default">
+            <img
+              src="/qr cadastur BRASIL.jpeg"
+              alt="Cadastur Brasil"
+              className="w-12 h-12 rounded-md object-contain bg-white p-0.5"
+            />
+            <div>
+              <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Legajo BR</p>
+              <p className="text-[10px] text-white/40">Cadastur — Habilitação Brasil</p>
+            </div>
           </div>
         </div>
       </div>

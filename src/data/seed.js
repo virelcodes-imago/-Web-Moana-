@@ -114,12 +114,12 @@ export async function seedDatabase() {
       13: 850,  // Varadero
       14: 3149, // Cancún + Playa del Carmen + Panamá
       15: 1650, // Combinado Habana Cayo Varadero
-      16: 350,  // Cataratas del Iguazú
-      17: 420,  // Salta + Jujuy
-      18: 480,  // Bariloche
-      19: 690,  // Ushuaia
-      20: 390,  // Mendoza
-      21: 590,  // El Calafate
+      16: 295,  // Cataratas del Iguazú (USD oficial PDF)
+      17: 395,  // Salta + Jujuy (USD oficial PDF)
+      18: 560,  // Bariloche (USD oficial PDF)
+      19: 455,  // Ushuaia (USD oficial PDF)
+      20: 650,  // Mendoza (USD oficial PDF)
+      21: 475,  // El Calafate (USD oficial PDF)
       22: 1050, // Bayahíbe All Inclusive
       23: 2999, // Jamaica Paradisíaca
       24: 2699, // Perú Místico con Machu Picchu
@@ -146,7 +146,7 @@ export async function seedDatabase() {
     const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
     const hoteles = ['economico', 'familiar', 'premium'];
     const preciosBasesPorPaquete = {
-      8: 4949, 14: 3149, 23: 2999, 24: 2699, 25: 1629,
+      8: 4949, 14: 3149, 23: 2999, 24: 2699, 25: 1629, 22: 2799,
     };
 
     for (const p of paquetesBase) {
@@ -224,12 +224,24 @@ export async function seedDatabase() {
   if (excCount === 0) {
     const excursionesToInsert = excursionesBase.map(e => ({
       nombre: e.nombre,
-      precio: e.precio || 30,
+      precio: e.precio || 0,
       descripcion: e.descripcion,
       porPersona: e.porPersona ? 1 : 0,
-      activo: 1
+      activo: 1,
+      destino: e.destino || null,  // campo para filtrado por destino en cotizador
     }));
     await db.excursiones.bulkAdd(excursionesToInsert).catch(() => {});
+  } else {
+    // Actualizar excursiones existentes con destino si no lo tienen
+    const excAll = await db.excursiones.toArray().catch(() => []);
+    for (const exc of excAll) {
+      if (exc.destino === undefined || exc.destino === null) {
+        const base = excursionesBase.find(e => e.nombre === exc.nombre);
+        if (base?.destino) {
+          await db.excursiones.update(exc.id, { destino: base.destino }).catch(() => {});
+        }
+      }
+    }
   }
 
   // 5. Cargar Traslados solo si está vacía
@@ -237,11 +249,23 @@ export async function seedDatabase() {
   if (trasCount === 0) {
     const trasladosToInsert = trasladosBase.map(t => ({
       nombre: t.nombre,
-      precio: t.precio || 40,
+      precio: t.precio || 0,
       tipo: t.tipo,
-      activo: 1
+      activo: 1,
+      destino: t.destino || null,  // campo para filtrado por destino en cotizador
     }));
     await db.traslados.bulkAdd(trasladosToInsert).catch(() => {});
+  } else {
+    // Actualizar traslados existentes con destino si no lo tienen
+    const trasAll = await db.traslados.toArray().catch(() => []);
+    for (const tr of trasAll) {
+      if (tr.destino === undefined || tr.destino === null) {
+        const base = trasladosBase.find(t => t.nombre === tr.nombre);
+        if (base?.destino) {
+          await db.traslados.update(tr.id, { destino: base.destino }).catch(() => {});
+        }
+      }
+    }
   }
 
   // 6. Cargar Posada Precios solo si está vacía

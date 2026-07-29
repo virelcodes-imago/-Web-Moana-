@@ -28,6 +28,18 @@ db.version(1).stores({
   posadaPrecios: '++id, temporada, habitacion',
 });
 
+// Versión 2: agrega campo destino a excursiones y traslados para filtrado por destino en cotizador
+db.version(2).stores({
+  paquetes: '++id, categoria, slug, activo, destacado',
+  precios: '++id, paqueteId, temporada, hotel',
+  excursiones: '++id, categoria, activo, destino',
+  traslados: '++id, tipo, activo, destino',
+  equipo: '++id, visible, orden',
+  cotizaciones: '++id, fecha, asesorId, destino',
+  config: 'clave',
+  posadaPrecios: '++id, temporada, habitacion',
+});
+
 export default db;
 
 // ---------------------------------------------------------------------------

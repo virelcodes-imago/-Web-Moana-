@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useCartStore from '../../store/cartStore';
@@ -22,18 +22,18 @@ const SLIDES = [
   },
   {
     id: 2,
-    paqueteId: 7,
-    slug: 'miami-orlando-full',
-    titulo: 'MIAMI · ORLANDO',
-    subtitulo: '¡El sueño americano!',
-    tagline: 'Aéreos · 8 Noches · Desayuno · Traslados · Seguro',
-    imagen: '/fotos/miami-night-scene.jpg',
-    temporada: 'Todo el año',
-    precio: null,
+    paqueteId: 22,
+    slug: 'bayahibe',
+    titulo: 'MICHES · BAYAHÍBE',
+    subtitulo: '¡El Caribe más auténtico de Rep. Dominicana!',
+    tagline: 'Vuelo Directo Arajet · 10 Noches · All Inclusive 4★ · Traslados · Coordinador',
+    imagen: '/fotos/destinos/bayahibe.jpg',
+    temporada: 'Salidas ago. y oct. 2026',
+    precio: 2799,
     precioLabel: 'DESDE',
     moneda: 'USD',
     base: 'por persona - base doble',
-    badge: '🔥 Oferta especial',
+    badge: '🌴 Salida Grupal Acompañada',
   },
   {
     id: 3,
