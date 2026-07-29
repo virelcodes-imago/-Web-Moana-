@@ -114,13 +114,13 @@ export async function seedDatabase() {
       13: 850,  // Varadero
       14: 3149, // Cancún + Playa del Carmen + Panamá
       15: 1650, // Combinado Habana Cayo Varadero
-      16: 295,  // Cataratas del Iguazú (USD oficial PDF)
-      17: 395,  // Salta + Jujuy (USD oficial PDF)
-      18: 560,  // Bariloche (USD oficial PDF)
-      19: 455,  // Ushuaia (USD oficial PDF)
-      20: 650,  // Mendoza (USD oficial PDF)
-      21: 475,  // El Calafate (USD oficial PDF)
-      22: 1050, // Bayahíbe All Inclusive
+      16: 295,  // Cataratas del Iguazú
+      17: 395,  // Salta + Jujuy
+      18: 560,  // Bariloche
+      19: 455,  // Ushuaia
+      20: 650,  // Mendoza
+      21: 475,  // El Calafate
+      22: 2999, // Bayahíbe All Inclusive
       23: 2999, // Jamaica Paradisíaca
       24: 2699, // Perú Místico con Machu Picchu
       25: 1629, // Río de Janeiro + Búzios
@@ -146,7 +146,7 @@ export async function seedDatabase() {
     const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
     const hoteles = ['economico', 'familiar', 'premium'];
     const preciosBasesPorPaquete = {
-      8: 4949, 14: 3149, 23: 2999, 24: 2699, 25: 1629, 22: 2799,
+      8: 4949, 14: 3149, 23: 2999, 24: 2699, 25: 1629, 22: 2999,
     };
 
     for (const p of paquetesBase) {

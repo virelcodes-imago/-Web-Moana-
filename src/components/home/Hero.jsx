@@ -29,7 +29,7 @@ const SLIDES = [
     tagline: 'Vuelo Directo Arajet · 10 Noches · All Inclusive 4★ · Traslados · Coordinador',
     imagen: '/fotos/destinos/bayahibe.jpg',
     temporada: 'Salidas ago. y oct. 2026',
-    precio: 2799,
+    precio: 2999,
     precioLabel: 'DESDE',
     moneda: 'USD',
     base: 'por persona - base doble',
@@ -44,7 +44,7 @@ const SLIDES = [
     tagline: 'Aéreos · Hotel · Traslados · Entradas al Parque',
     imagen: '/fotos/destinos/cataratas_real.png',
     temporada: 'Temporada baja',
-    precio: null,
+    precio: 295,
     precioLabel: 'DESDE',
     moneda: 'USD',
     base: 'por persona - base doble',
@@ -87,7 +87,7 @@ export default function Hero() {
   const next = () => setCurrent((c) => (c + 1) % SLIDES.length);
 
   const slide = SLIDES[current];
-  const precio = precios[slide.paqueteId];
+  const precio = precios[slide.paqueteId] || slide.precio;
 
   const handleConsultar = () => {
     addItem(
