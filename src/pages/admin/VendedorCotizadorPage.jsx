@@ -393,8 +393,10 @@ export default function VendedorCotizadorPage() {
                   <input
                     type="number"
                     min="1"
-                    value={form.pasajeros}
-                    onChange={(e) => setF('pasajeros', Math.max(1, Number(e.target.value)))}
+                    placeholder="1"
+                    value={form.pasajeros || ''}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => setF('pasajeros', e.target.value === '' ? '' : Math.max(1, Number(e.target.value)))}
                     className="input-field"
                   />
                 </div>
@@ -554,8 +556,9 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="0"
-                        placeholder={precio ? `${precio}` : 'Ingresar precio'}
+                        placeholder={precio ? `${precio}` : '0'}
                         value={form.precioBasePersonalizado}
+                        onFocus={(e) => e.target.select()}
                         onChange={(e) => setF('precioBasePersonalizado', e.target.value)}
                         className={`input-field text-sm font-bold ${
                           form.precioBasePersonalizado !== '' ? 'border-moana-orange ring-1 ring-moana-orange/30' : ''
@@ -658,8 +661,10 @@ export default function VendedorCotizadorPage() {
                               <label className="label-field text-xs">Tarifa diaria (USD)</label>
                               <input
                                 type="number"
-                                value={form.asistencia.tarifaDiaria}
-                                onChange={(e) => setF('asistencia', { ...form.asistencia, tarifaDiaria: Number(e.target.value) })}
+                                placeholder="0"
+                                value={form.asistencia.tarifaDiaria || ''}
+                                onFocus={(e) => e.target.select()}
+                                onChange={(e) => setF('asistencia', { ...form.asistencia, tarifaDiaria: e.target.value === '' ? 0 : Number(e.target.value) })}
                                 className="input-field"
                               />
                             </div>
@@ -667,8 +672,10 @@ export default function VendedorCotizadorPage() {
                               <label className="label-field text-xs">Días totales</label>
                               <input
                                 type="number"
-                                value={form.asistencia.dias}
-                                onChange={(e) => setF('asistencia', { ...form.asistencia, dias: Number(e.target.value) })}
+                                placeholder="0"
+                                value={form.asistencia.dias || ''}
+                                onFocus={(e) => e.target.select()}
+                                onChange={(e) => setF('asistencia', { ...form.asistencia, dias: e.target.value === '' ? 0 : Number(e.target.value) })}
                                 className="input-field"
                               />
                             </div>
@@ -693,8 +700,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="0"
-                        value={form.transporteBase}
-                        onChange={(e) => setF('transporteBase', Number(e.target.value))}
+                        placeholder="0"
+                        value={form.transporteBase || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('transporteBase', e.target.value === '' ? 0 : Number(e.target.value))}
                         className="input-field"
                       />
                     </div>
@@ -703,8 +712,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="0"
-                        value={form.transporteTasas}
-                        onChange={(e) => setF('transporteTasas', Number(e.target.value))}
+                        placeholder="0"
+                        value={form.transporteTasas || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('transporteTasas', e.target.value === '' ? 0 : Number(e.target.value))}
                         className="input-field"
                       />
                     </div>
@@ -720,8 +731,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="0"
-                        value={form.alojamientoNoche}
-                        onChange={(e) => setF('alojamientoNoche', Number(e.target.value))}
+                        placeholder="0"
+                        value={form.alojamientoNoche || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('alojamientoNoche', e.target.value === '' ? 0 : Number(e.target.value))}
                         className="input-field"
                       />
                     </div>
@@ -730,8 +743,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="1"
-                        value={form.alojamientoNoches}
-                        onChange={(e) => setF('alojamientoNoches', Number(e.target.value))}
+                        placeholder="1"
+                        value={form.alojamientoNoches || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('alojamientoNoches', e.target.value === '' ? 0 : Number(e.target.value))}
                         className="input-field"
                       />
                     </div>
@@ -771,8 +786,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="0"
-                        value={form.trasladoTramo}
-                        onChange={(e) => setF('trasladoTramo', Number(e.target.value))}
+                        placeholder="0"
+                        value={form.trasladoTramo || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('trasladoTramo', e.target.value === '' ? 0 : Number(e.target.value))}
                         className="input-field"
                       />
                     </div>
@@ -799,8 +816,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="0"
-                        value={form.asistenciaDiariaMed}
-                        onChange={(e) => setF('asistenciaDiariaMed', Number(e.target.value))}
+                        placeholder="0"
+                        value={form.asistenciaDiariaMed || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('asistenciaDiariaMed', e.target.value === '' ? 0 : Number(e.target.value))}
                         className="input-field"
                       />
                     </div>
@@ -809,8 +828,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="1"
-                        value={form.asistenciaDiasMed}
-                        onChange={(e) => setF('asistenciaDiasMed', Number(e.target.value))}
+                        placeholder="1"
+                        value={form.asistenciaDiasMed || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('asistenciaDiasMed', e.target.value === '' ? 0 : Number(e.target.value))}
                         className="input-field"
                       />
                     </div>
@@ -853,6 +874,7 @@ export default function VendedorCotizadorPage() {
                         type="number"
                         placeholder="Precio (USD)"
                         value={nuevoExtraPrecio}
+                        onFocus={(e) => e.target.select()}
                         onChange={(e) => setNuevoExtraPrecio(e.target.value)}
                         className="input-field text-xs flex-1"
                       />
@@ -884,8 +906,10 @@ export default function VendedorCotizadorPage() {
                       <input
                         type="number"
                         min="0"
-                        value={form.margenGanancia}
-                        onChange={(e) => setF('margenGanancia', Math.max(0, Number(e.target.value)))}
+                        placeholder="0"
+                        value={form.margenGanancia || ''}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => setF('margenGanancia', e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
                         className="input-field pr-8 text-center font-bold"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 font-bold text-moana-gray">%</span>

@@ -878,6 +878,7 @@ export default function AdminPreciosPage() {
                           min="0"
                           placeholder="Consultar"
                           value={precioMatrix['baja-economico'] ?? ''}
+                          onFocus={(e) => e.target.select()}
                           onChange={(e) => {
                             const val = e.target.value;
                             ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'].forEach((t) => {
@@ -916,6 +917,7 @@ export default function AdminPreciosPage() {
                                   min="0"
                                   placeholder="Consultar"
                                   value={precioMatrix[`${t.id}-economico`] ?? ''}
+                                  onFocus={(e) => e.target.select()}
                                   onChange={(e) => {
                                     handlePrecioChange(t.id, 'economico', e.target.value);
                                     handlePrecioChange(t.id, 'familiar', e.target.value);
@@ -959,6 +961,7 @@ export default function AdminPreciosPage() {
                                     min="0"
                                     placeholder="—"
                                     value={precioMatrix[`${t.id}-${h.id}`] ?? ''}
+                                    onFocus={(e) => e.target.select()}
                                     onChange={(e) => handlePrecioChange(t.id, h.id, e.target.value)}
                                     className="w-32 pl-12 pr-3 py-2 border border-gray-200 rounded-lg text-center
                                                focus:outline-none focus:ring-2 focus:ring-moana-orange text-moana-dark font-semibold"
@@ -1066,6 +1069,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder="—"
                                 value={posadaMatrix[`${temp.id}-${hab.id}`] ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) => handlePosadaPrecioChange(temp.id, hab.id, e.target.value)}
                                 className="w-28 pl-10 pr-2 py-2 border border-gray-200 rounded-lg text-center
                                            focus:outline-none focus:ring-2 focus:ring-moana-orange text-moana-dark font-semibold text-sm"
@@ -1242,6 +1246,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder="0"
                                 value={exc.precio ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setExcursiones((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precio: Number(e.target.value) } : x))
@@ -1261,6 +1266,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder={exc.precio || 'Base'}
                                 value={exc.precioAlta ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setExcursiones((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precioAlta: e.target.value === '' ? '' : Number(e.target.value) } : x))
@@ -1280,6 +1286,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder={exc.precio || 'Base'}
                                 value={exc.precioSemanaSanta ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setExcursiones((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precioSemanaSanta: e.target.value === '' ? '' : Number(e.target.value) } : x))
@@ -1299,6 +1306,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder={exc.precio || 'Base'}
                                 value={exc.precioVacacionesInvierno ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setExcursiones((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precioVacacionesInvierno: e.target.value === '' ? '' : Number(e.target.value) } : x))
@@ -1477,6 +1485,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder="0"
                                 value={tr.precio ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setTraslados((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precio: Number(e.target.value) } : x))
@@ -1496,6 +1505,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder={tr.precio || 'Base'}
                                 value={tr.precioAlta ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setTraslados((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precioAlta: e.target.value === '' ? '' : Number(e.target.value) } : x))
@@ -1515,6 +1525,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder={tr.precio || 'Base'}
                                 value={tr.precioSemanaSanta ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setTraslados((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precioSemanaSanta: e.target.value === '' ? '' : Number(e.target.value) } : x))
@@ -1534,6 +1545,7 @@ export default function AdminPreciosPage() {
                                 min="0"
                                 placeholder={tr.precio || 'Base'}
                                 value={tr.precioVacacionesInvierno ?? ''}
+                                onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setTraslados((prev) =>
                                     prev.map((x, j) => (j === realIndex ? { ...x, precioVacacionesInvierno: e.target.value === '' ? '' : Number(e.target.value) } : x))
