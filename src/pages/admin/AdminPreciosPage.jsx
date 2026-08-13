@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home, LogOut } from 'lucide-react';
+import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home, LogOut, Key, X } from 'lucide-react';
 import db, { saveAdminOverride } from '../../db/db';
 import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES, isExcursionOrTransfer } from '../../data/paquetes';
 import { excursionesBase, trasladosBase } from '../../data/extras';
@@ -13,12 +13,17 @@ const HABITACIONES_POSADA = [
 ];
 
 export default function AdminPreciosPage() {
-  const { logout } = useAuthStore();
+  const { logout, adminPin, sellerPin, updatePins } = useAuthStore();
   const [activeTab, setActiveTab] = useState('paquetes');
   const [savedMsg, setSavedMsg] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [sortField, setSortField] = useState('titulo');
   const [sortDirection, setSortDirection] = useState('asc');
+
+  // Modal para cambiar PINs de acceso
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [newAdminPinInput, setNewAdminPinInput] = useState(adminPin || '1234');
+  const [newSellerPinInput, setNewSellerPinInput] = useState(sellerPin || '0000');
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -459,9 +464,20 @@ export default function AdminPreciosPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setNewAdminPinInput(adminPin || '1234');
+                  setNewSellerPinInput(sellerPin || '0000');
+                  setShowPinModal(true);
+                }}
+                className="text-xs bg-moana-orange hover:bg-moana-orange-dark text-white px-3.5 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                title="Cambiar PINs de acceso"
+              >
+                <Key size={14} /> Cambiar Claves
+              </button>
               <a href="/" target="_blank" rel="noreferrer"
-                 className="text-xs bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl text-white font-semibold border border-white/20 transition-all flex items-center gap-2">
-                <Eye size={14} /> Ver Web Pública
+                 className="text-xs bg-white/10 hover:bg-white/20 px-3.5 py-2.5 rounded-xl text-white font-semibold border border-white/20 transition-all flex items-center gap-2">
+                <Eye size={14} /> Ver Web
               </a>
               <button
                 onClick={() => {
@@ -1573,6 +1589,87 @@ export default function AdminPreciosPage() {
           </div>
         )}
       </div>
+
+      {/* Modal para Cambiar Claves de Acceso (Admin y Vendedores) */}
+      {showPinModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setShowPinModal(false)}
+        >
+          <div
+            className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-moana-dark shadow-2xl relative border border-gray-100 space-y-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowPinModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 transition-colors"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="text-center">
+              <div className="w-14 h-14 bg-moana-orange/10 rounded-2xl flex items-center justify-center text-moana-orange mx-auto mb-3">
+                <Key size={26} />
+              </div>
+              <h3 className="font-display font-bold text-moana-blue text-xl">Cambiar Claves de Acceso</h3>
+              <p className="text-xs text-moana-gray mt-1">Establecé PINs personalizados para ingresar al panel Admin y al Cotizador.</p>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <div className="p-4 bg-moana-blue-pale/50 rounded-2xl border border-moana-blue/10 space-y-2">
+                <label className="text-xs font-bold text-moana-blue block">🔑 PIN de Administrador (Flor)</label>
+                <p className="text-[11px] text-moana-gray">Acceso total a precios, publicaciones y posada.</p>
+                <input
+                  type="text"
+                  maxLength="8"
+                  value={newAdminPinInput}
+                  onChange={(e) => setNewAdminPinInput(e.target.value)}
+                  className="input-field text-center font-mono font-bold text-lg py-2"
+                  placeholder="Ej: 9876"
+                />
+              </div>
+
+              <div className="p-4 bg-orange-50/60 rounded-2xl border border-orange-200/50 space-y-2">
+                <label className="text-xs font-bold text-moana-orange block">🔑 PIN de Vendedores</label>
+                <p className="text-[11px] text-moana-gray">Acceso exclusivo al Cotizador para el equipo.</p>
+                <input
+                  type="text"
+                  maxLength="8"
+                  value={newSellerPinInput}
+                  onChange={(e) => setNewSellerPinInput(e.target.value)}
+                  className="input-field text-center font-mono font-bold text-lg py-2"
+                  placeholder="Ej: 5544"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowPinModal(false)}
+                className="btn-secondary flex-1 py-3 text-sm justify-center"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!newAdminPinInput.trim() || !newSellerPinInput.trim()) {
+                    alert('Por favor ingresá PINs válidos.');
+                    return;
+                  }
+                  updatePins(newAdminPinInput.trim(), newSellerPinInput.trim());
+                  setShowPinModal(false);
+                  showSaved('¡Claves de acceso actualizadas con éxito!');
+                }}
+                className="btn-primary flex-1 py-3 text-sm justify-center font-bold shadow-md"
+              >
+                Guardar Claves
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

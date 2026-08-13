@@ -11,15 +11,18 @@ const useAuthStore = create(
       role: null, // null | 'admin' | 'vendedor'
       isAuthenticated: false,
 
+      adminPin: DEFAULT_ADMIN_PIN,
+      sellerPin: DEFAULT_SELLER_PIN,
+
       login: (pin) => {
         const cleanPin = String(pin || '').trim();
-        const adminPin = String(get().adminPin || DEFAULT_ADMIN_PIN).trim();
-        const sellerPin = String(get().sellerPin || DEFAULT_SELLER_PIN).trim();
+        const currentAdminPin = String(get().adminPin || DEFAULT_ADMIN_PIN).trim();
+        const currentSellerPin = String(get().sellerPin || DEFAULT_SELLER_PIN).trim();
 
-        if (cleanPin === adminPin || cleanPin === DEFAULT_ADMIN_PIN || cleanPin === '1234') {
+        if (cleanPin === currentAdminPin) {
           set({ role: 'admin', isAuthenticated: true });
           return { success: true, role: 'admin' };
-        } else if (cleanPin === sellerPin || cleanPin === DEFAULT_SELLER_PIN || cleanPin === '0000') {
+        } else if (cleanPin === currentSellerPin) {
           set({ role: 'vendedor', isAuthenticated: true });
           return { success: true, role: 'vendedor' };
         }
@@ -28,10 +31,12 @@ const useAuthStore = create(
 
       logout: () => set({ role: null, isAuthenticated: false }),
 
-      // PINs almacenados (solo admin puede cambiarlos)
-      adminPin: DEFAULT_ADMIN_PIN,
-      sellerPin: DEFAULT_SELLER_PIN,
-      updatePins: (adminPin, sellerPin) => set({ adminPin, sellerPin }),
+      updatePins: (newAdminPin, newSellerPin) => {
+        set({
+          adminPin: String(newAdminPin || DEFAULT_ADMIN_PIN).trim(),
+          sellerPin: String(newSellerPin || DEFAULT_SELLER_PIN).trim(),
+        });
+      },
     }),
     {
       name: 'moana-auth',

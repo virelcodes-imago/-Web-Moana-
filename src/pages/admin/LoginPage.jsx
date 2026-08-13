@@ -26,7 +26,7 @@ export default function LoginPage() {
         navigate('/admin/cotizador', { replace: true });
       }
     } else {
-      setError('PIN incorrecto. Intentá con 1234 (Admin) o 0000 (Vendedor).');
+      setError('PIN incorrecto. Verificá tu clave de acceso.');
       setPin('');
     }
   };
@@ -87,7 +87,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 inputMode="numeric"
-                maxLength="6"
+                maxLength="8"
                 placeholder="• • • •"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
@@ -110,19 +110,6 @@ export default function LoginPage() {
               Ingresar al Panel
             </button>
           </form>
-
-          <div className="mt-6 grid grid-cols-2 gap-3 pt-4 border-t border-gray-100">
-            <div className="text-center p-3 bg-moana-cream rounded-xl border border-gray-200/60">
-              <Shield size={20} className="text-moana-blue mx-auto mb-1" />
-              <p className="text-xs text-moana-blue font-bold">Admin (Flor)</p>
-              <p className="text-xs text-moana-gray mt-0.5">PIN: <strong>1234</strong></p>
-            </div>
-            <div className="text-center p-3 bg-moana-cream rounded-xl border border-gray-200/60">
-              <Calculator size={20} className="text-moana-orange mx-auto mb-1" />
-              <p className="text-xs text-moana-orange font-bold">Vendedor</p>
-              <p className="text-xs text-moana-gray mt-0.5">PIN: <strong>0000</strong></p>
-            </div>
-          </div>
         </div>
 
         <div className="text-center pt-2">
