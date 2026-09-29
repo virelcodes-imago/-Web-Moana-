@@ -223,9 +223,21 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="container-moana py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-white/50 text-xs">
           <p>© {year} Moana Turismo. {t('footer_rights')}</p>
-          <p className="flex items-center gap-1">
-            {t('footer_made_with')} <Heart size={11} className="text-moana-orange" /> {t('footer_made_in')}
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <p className="flex items-center gap-1">
+              {t('footer_made_with')} <Heart size={11} className="text-moana-orange" /> {t('footer_made_in')}
+            </p>
+            <span className="hidden sm:inline text-white/20">•</span>
+            <a
+              href="https://virelcodes.com"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white/70 hover:text-moana-orange transition-colors font-medium flex items-center gap-1"
+              title="Desarrollo Web por Virel Codes"
+            >
+              Desarrollado por <span className="font-bold underline tracking-wide text-white hover:text-moana-orange">Virel Codes</span>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
