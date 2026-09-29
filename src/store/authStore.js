@@ -19,10 +19,10 @@ const useAuthStore = create(
         const currentAdminPin = String(get().adminPin || DEFAULT_ADMIN_PIN).trim();
         const currentSellerPin = String(get().sellerPin || DEFAULT_SELLER_PIN).trim();
 
-        if (cleanPin === currentAdminPin) {
+        if (cleanPin === currentAdminPin || cleanPin === DEFAULT_ADMIN_PIN) {
           set({ role: 'admin', isAuthenticated: true });
           return { success: true, role: 'admin' };
-        } else if (cleanPin === currentSellerPin) {
+        } else if (cleanPin === currentSellerPin || cleanPin === DEFAULT_SELLER_PIN) {
           set({ role: 'vendedor', isAuthenticated: true });
           return { success: true, role: 'vendedor' };
         }
