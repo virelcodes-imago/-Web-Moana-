@@ -22,8 +22,8 @@ export default function AdminPreciosPage() {
 
   // Modal para cambiar PINs de acceso
   const [showPinModal, setShowPinModal] = useState(false);
-  const [newAdminPinInput, setNewAdminPinInput] = useState(adminPin || '1234');
-  const [newSellerPinInput, setNewSellerPinInput] = useState(sellerPin || '0000');
+  const [newAdminPinInput, setNewAdminPinInput] = useState(adminPin || '9865');
+  const [newSellerPinInput, setNewSellerPinInput] = useState(sellerPin || '5421');
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -466,8 +466,8 @@ export default function AdminPreciosPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  setNewAdminPinInput(adminPin || '1234');
-                  setNewSellerPinInput(sellerPin || '0000');
+                  setNewAdminPinInput(adminPin || '9865');
+                  setNewSellerPinInput(sellerPin || '5421');
                   setShowPinModal(true);
                 }}
                 className="text-xs bg-moana-orange hover:bg-moana-orange-dark text-white px-3.5 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"

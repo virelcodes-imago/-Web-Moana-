@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// PIN por defecto (se puede cambiar desde el panel)
-const DEFAULT_ADMIN_PIN = '1234';
-const DEFAULT_SELLER_PIN = '0000';
+// PIN por defecto oficiales (se pueden cambiar desde el panel)
+const DEFAULT_ADMIN_PIN = '9865';
+const DEFAULT_SELLER_PIN = '5421';
 
 const useAuthStore = create(
   persist(
