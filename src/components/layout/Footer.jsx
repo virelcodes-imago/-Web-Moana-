@@ -105,7 +105,7 @@ export default function Footer() {
               Búzios, Brasil
             </li>
             <li>
-              <a href="tel:+5522998258349" className="flex items-center gap-2 text-white/70 hover:text-moana-orange transition-colors text-sm">
+              <a href="https://wa.me/5522998258349" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-white/70 hover:text-moana-orange transition-colors text-sm">
                 <Phone size={16} className="text-moana-teal" />
                 +55 22 99825-8349
               </a>

@@ -27,7 +27,7 @@ export default function ContactoPage() {
             <h2 className="section-title">{t('contacto_info_title')}</h2>
 
             <div className="space-y-4">
-              <a href="tel:+5522998258349" className="card p-4 flex items-center gap-4 hover:shadow-card-hover transition-shadow">
+              <a href="https://wa.me/5522998258349" target="_blank" rel="noreferrer" className="card p-4 flex items-center gap-4 hover:shadow-card-hover transition-shadow">
                 <div className="w-12 h-12 bg-moana-blue rounded-xl flex items-center justify-center flex-shrink-0">
                   <Phone size={20} className="text-white" />
                 </div>

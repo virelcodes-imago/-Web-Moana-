@@ -48,7 +48,7 @@ export default function Navbar() {
             <span>📍 Búzios, Brasil</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="tel:+5522998258349" className="flex items-center gap-1 hover:text-moana-orange transition-colors">
+            <a href="https://wa.me/5522998258349" target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-moana-orange transition-colors">
               <Phone size={12} /> +55 22 99825-8349
             </a>
             <a href="https://instagram.com/moanaturismo.oficial" target="_blank" rel="noreferrer"
