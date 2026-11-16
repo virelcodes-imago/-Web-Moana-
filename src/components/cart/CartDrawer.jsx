@@ -16,7 +16,7 @@ const HOTEL_LABELS = {
   premium: 'Premium',
 };
 
-const WA_NUMBER = '5522998090599';
+const WA_NUMBER = '5522998258349';
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, generateWhatsAppMessage } = useCartStore();

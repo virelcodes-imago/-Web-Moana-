@@ -35,7 +35,7 @@ export default function Footer() {
               <Instagram size={18} />
             </a>
             <a
-              href="https://wa.me/5522998090599"
+              href="https://wa.me/5522998258349"
               target="_blank"
               rel="noreferrer"
               className="w-10 h-10 bg-white/10 hover:bg-[#25D366] rounded-full flex items-center justify-center transition-colors"
@@ -105,9 +105,9 @@ export default function Footer() {
               Búzios, Brasil
             </li>
             <li>
-              <a href="tel:+5522998090599" className="flex items-center gap-2 text-white/70 hover:text-moana-orange transition-colors text-sm">
+              <a href="tel:+5522998258349" className="flex items-center gap-2 text-white/70 hover:text-moana-orange transition-colors text-sm">
                 <Phone size={16} className="text-moana-teal" />
-                +55 22 99809-0599
+                +55 22 99825-8349
               </a>
             </li>
             <li>

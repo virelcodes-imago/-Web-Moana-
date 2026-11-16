@@ -3,7 +3,7 @@ import { Copy, Send, Calculator, ChevronDown, ChevronUp, Layers, Compass, Plus, 
 import db from '../../db/db';
 import { paquetesBase, TEMPORADAS, HOTELES, TIPOS_HABITACION } from '../../data/paquetes';
 
-const WA_NUMBER = '5522998090599';
+const WA_NUMBER = '5522998258349';
 
 export default function VendedorCotizadorPage() {
   const [modo, setModo] = useState('catalogo'); // 'catalogo' | 'a_medida'
