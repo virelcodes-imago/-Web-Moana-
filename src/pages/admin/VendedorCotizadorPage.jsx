@@ -166,8 +166,15 @@ export default function VendedorCotizadorPage() {
 
   // --- CÁLCULOS MATEMÁTICOS ---
 
-  const getItemPriceBySeason = (item, temp) => {
+  const getItemPriceBySeason = (item, temp, forceCurr) => {
     if (!item) return 0;
+    const isBrl = forceCurr === 'BRL' || (!forceCurr && (item.moneda === 'BRL' || (item.precioReales && !item.precio)));
+    if (isBrl) {
+      if (temp === 'alta' && item.precioRealesAlta) return Number(item.precioRealesAlta);
+      if (temp === 'semana_santa' && item.precioRealesSemanaSanta) return Number(item.precioRealesSemanaSanta);
+      if (temp === 'vacaciones_invierno' && item.precioRealesVacacionesInvierno) return Number(item.precioRealesVacacionesInvierno);
+      return Number(item.precioReales || 0);
+    }
     if (temp === 'alta' && item.precioAlta !== undefined && item.precioAlta !== '') {
       return Number(item.precioAlta);
     }
@@ -272,7 +279,12 @@ export default function VendedorCotizadorPage() {
       if (form.excursiones.length > 0) {
         msg += `🗺️ *Excursiones incluidas:*\n`;
         form.excursiones.forEach((e) => {
-          msg += `   • ${e.nombre}${e.precio ? ` (USD ${e.precio}/pax)` : ''}\n`;
+          const isBrl = e.moneda === 'BRL' || (e.precioReales && !e.precio);
+          const curr = isBrl ? 'R$' : 'USD';
+          const p = isBrl
+            ? (getItemPriceBySeason(e, form.temporada, 'BRL') || e.precioReales)
+            : (getItemPriceBySeason(e, form.temporada, 'USD') || e.precio);
+          msg += `   • ${e.nombre}${p ? ` (${curr} ${p}/pax)` : ''}\n`;
         });
         msg += `\n`;
       }
@@ -598,7 +610,11 @@ export default function VendedorCotizadorPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {excursionesFiltradas.map((exc, i) => {
                             const checked = form.excursiones.some((e) => e.nombre === exc.nombre);
-                            const pExc = getItemPriceBySeason(exc, form.temporada);
+                            const isBrl = exc.moneda === 'BRL' || (exc.precioReales && !exc.precio);
+                            const pExc = isBrl
+                              ? (getItemPriceBySeason(exc, form.temporada, 'BRL') || exc.precioReales || 0)
+                              : (getItemPriceBySeason(exc, form.temporada, 'USD') || exc.precio || 0);
+                            const curr = isBrl ? 'R$' : 'USD';
                             return (
                               <label key={i} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                                 checked ? 'border-moana-orange bg-moana-orange-light/20' : 'border-gray-100'
@@ -606,7 +622,14 @@ export default function VendedorCotizadorPage() {
                                 <input type="checkbox" checked={checked} onChange={() => toggleExcursion(exc)} className="accent-moana-orange" />
                                 <div className="flex-1">
                                   <p className="text-xs font-semibold text-moana-dark">{exc.nombre}</p>
-                                  <p className="text-[10px] text-moana-orange font-bold">USD {pExc}</p>
+                                  <p className={`text-[10px] font-bold ${isBrl ? 'text-emerald-600' : 'text-moana-orange'}`}>
+                                    {curr} {pExc}
+                                    {exc.precioReales && exc.precio && (
+                                      <span className="text-moana-gray text-[9px] font-normal ml-1">
+                                        ({isBrl ? `USD ${exc.precio}` : `R$ ${exc.precioReales}`})
+                                      </span>
+                                    )}
+                                  </p>
                                 </div>
                               </label>
                             );

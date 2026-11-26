@@ -10,6 +10,9 @@ export default function PackageCard({ paquete }) {
   const [hotel, setHotel] = useState('economico');
   const [temporada, setTemporada] = useState('baja');
   const [precio, setPrecio] = useState(null);
+  const [moneda, setMoneda] = useState('USD');
+  const [monedaSeleccionada, setMonedaSeleccionada] = useState(null);
+  const [preciosPorMoneda, setPreciosPorMoneda] = useState({ BRL: null, USD: null });
   const [added, setAdded] = useState(false);
   const { addItem } = useCartStore();
   const { t } = useLanguage();
@@ -56,14 +59,34 @@ export default function PackageCard({ paquete }) {
         if (isExcursionOrTraslado) {
           const excs = await db.excursiones.toArray();
           const foundExc = excs.find(e => (e.paqueteId === paquete.id) || (e.nombre && paquete.titulo && e.nombre.toLowerCase().includes(paquete.titulo.toLowerCase().slice(0, 5))));
-          if (foundExc && foundExc.precio && Number(foundExc.precio) > 0) {
-            setPrecio(Number(foundExc.precio));
+          if (foundExc) {
+            let valBRL = null;
+            if (temporada === 'alta' && foundExc.precioRealesAlta) valBRL = Number(foundExc.precioRealesAlta);
+            else if (temporada === 'semana_santa' && foundExc.precioRealesSemanaSanta) valBRL = Number(foundExc.precioRealesSemanaSanta);
+            else if (temporada === 'vacaciones_invierno' && foundExc.precioRealesVacacionesInvierno) valBRL = Number(foundExc.precioRealesVacacionesInvierno);
+            else if (foundExc.precioReales && Number(foundExc.precioReales) > 0) valBRL = Number(foundExc.precioReales);
+
+            let valUSD = null;
+            if (temporada === 'alta' && foundExc.precioAlta) valUSD = Number(foundExc.precioAlta);
+            else if (temporada === 'semana_santa' && foundExc.precioSemanaSanta) valUSD = Number(foundExc.precioSemanaSanta);
+            else if (temporada === 'vacaciones_invierno' && foundExc.precioVacacionesInvierno) valUSD = Number(foundExc.precioVacacionesInvierno);
+            else if (foundExc.precio && Number(foundExc.precio) > 0) valUSD = Number(foundExc.precio);
+
+            setPreciosPorMoneda({ BRL: valBRL, USD: valUSD });
+
+            const defaultMoneda = foundExc.moneda || (valBRL ? 'BRL' : 'USD');
+            setMoneda(defaultMoneda);
+
+            const activeCurr = monedaSeleccionada || defaultMoneda;
+            const finalVal = activeCurr === 'BRL' ? (valBRL ?? valUSD) : (valUSD ?? valBRL);
+            setPrecio(finalVal);
             return;
           }
           const tras = await db.traslados.toArray();
           const foundTras = tras.find(t => (t.paqueteId === paquete.id) || (t.nombre && paquete.titulo && t.nombre.toLowerCase().includes(paquete.titulo.toLowerCase().slice(0, 5))));
           if (foundTras && foundTras.precio && Number(foundTras.precio) > 0) {
             setPrecio(Number(foundTras.precio));
+            setMoneda('USD');
             return;
           }
         }
@@ -73,6 +96,7 @@ export default function PackageCard({ paquete }) {
           const valid = rows.find(r => r.precio && Number(r.precio) > 0);
           if (valid) {
             setPrecio(Number(valid.precio));
+            setMoneda('USD');
             return;
           }
         }
@@ -82,15 +106,16 @@ export default function PackageCard({ paquete }) {
           .where({ paqueteId: paquete.id, temporada, hotel: targetHotel })
           .first();
         setPrecio(p && p.precio && Number(p.precio) > 0 ? Number(p.precio) : null);
+        setMoneda('USD');
       } catch {
         setPrecio(null);
       }
     };
     load();
-  }, [paquete.id, paquete.slug, paquete.categoria, hotel, temporada, isExcursionOrTraslado, isInternational, isNacional]);
+  }, [paquete.id, paquete.slug, paquete.categoria, hotel, temporada, isExcursionOrTraslado, isInternational, isNacional, monedaSeleccionada]);
 
   const handleAdd = () => {
-    addItem(paquete, { temporada, hotel, precio });
+    addItem(paquete, { temporada, hotel, precio, moneda: monedaSeleccionada || moneda });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -109,8 +134,10 @@ export default function PackageCard({ paquete }) {
       detailText = `${tempObj?.label || ''} - Categoría: ${hotelObj?.label || ''}`;
     }
 
+    const currSym = (monedaSeleccionada || moneda) === 'BRL' ? 'R$' : 'USD';
+    const priceText = precio ? ` - Tarifa: ${currSym} ${precio}` : '';
     const text = encodeURIComponent(
-      `Hola Moana! Quiero consultar precio y disponibilidad para el paquete *${paquete.titulo}* (${detailText}) 🌊`
+      `Hola Moana! Quiero consultar precio y disponibilidad para el paquete *${paquete.titulo}* (${detailText}${priceText}) 🌊`
     );
     window.open(`https://wa.me/5522998258349?text=${text}`, '_blank');
   };
@@ -212,11 +239,43 @@ export default function PackageCard({ paquete }) {
         <div className="price-tag flex-shrink-0 min-h-[5.5rem] py-3 px-4 flex flex-col justify-between shadow-sm">
           {precio ? (
             <>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <span className="price-desde">{t('card_desde')}</span>
-                <span className="price-amount font-display text-2xl font-bold text-moana-orange tracking-tight">
-                  USD {precio.toLocaleString()}
-                </span>
+                <div className="flex items-center gap-2">
+                  {isExcursionOrTraslado && preciosPorMoneda.BRL && preciosPorMoneda.USD && (
+                    <div className="inline-flex rounded-md p-0.5 bg-black/20 text-[10px] font-bold">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setMonedaSeleccionada('BRL');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition-all ${
+                          (monedaSeleccionada || moneda) === 'BRL' ? 'bg-emerald-500 text-white shadow-sm' : 'text-white/70 hover:text-white'
+                        }`}
+                        title="Ver tarifa en Reales"
+                      >
+                        R$
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setMonedaSeleccionada('USD');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition-all ${
+                          (monedaSeleccionada || moneda) === 'USD' ? 'bg-moana-orange text-white shadow-sm' : 'text-white/70 hover:text-white'
+                        }`}
+                        title="Ver tarifa en Dólares"
+                      >
+                        USD
+                      </button>
+                    </div>
+                  )}
+                  <span className="price-amount font-display text-2xl font-bold text-moana-orange tracking-tight">
+                    {(monedaSeleccionada || moneda) === 'BRL' ? 'R$' : 'USD'} {precio.toLocaleString()}
+                  </span>
+                </div>
               </div>
               <p className="price-unit text-right truncate text-[11px] font-medium opacity-85 mt-1">
                 {isExcursionOrTraslado

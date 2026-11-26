@@ -15,6 +15,9 @@ export default function PaqueteDetallePage() {
   const [temporada, setTemporada] = useState('baja');
   const [pasajeros, setPasajeros] = useState(2);
   const [precio, setPrecio] = useState(null);
+  const [moneda, setMoneda] = useState('USD');
+  const [monedaSeleccionada, setMonedaSeleccionada] = useState(null);
+  const [preciosPorMoneda, setPreciosPorMoneda] = useState({ BRL: null, USD: null });
   const [added, setAdded] = useState(false);
   const [condicionesOpen, setCondicionesOpen] = useState(false);
   const { addItem } = useCartStore();
@@ -78,14 +81,34 @@ export default function PaqueteDetallePage() {
         if (isExcursionOrTraslado) {
           const excs = await db.excursiones.toArray();
           const foundExc = excs.find(e => (e.paqueteId === paquete.id) || (e.nombre && paquete.titulo && e.nombre.toLowerCase().includes(paquete.titulo.toLowerCase().slice(0, 5))));
-          if (foundExc && foundExc.precio && Number(foundExc.precio) > 0) {
-            setPrecio(Number(foundExc.precio));
+          if (foundExc) {
+            let valBRL = null;
+            if (temporada === 'alta' && foundExc.precioRealesAlta) valBRL = Number(foundExc.precioRealesAlta);
+            else if (temporada === 'semana_santa' && foundExc.precioRealesSemanaSanta) valBRL = Number(foundExc.precioRealesSemanaSanta);
+            else if (temporada === 'vacaciones_invierno' && foundExc.precioRealesVacacionesInvierno) valBRL = Number(foundExc.precioRealesVacacionesInvierno);
+            else if (foundExc.precioReales && Number(foundExc.precioReales) > 0) valBRL = Number(foundExc.precioReales);
+
+            let valUSD = null;
+            if (temporada === 'alta' && foundExc.precioAlta) valUSD = Number(foundExc.precioAlta);
+            else if (temporada === 'semana_santa' && foundExc.precioSemanaSanta) valUSD = Number(foundExc.precioSemanaSanta);
+            else if (temporada === 'vacaciones_invierno' && foundExc.precioVacacionesInvierno) valUSD = Number(foundExc.precioVacacionesInvierno);
+            else if (foundExc.precio && Number(foundExc.precio) > 0) valUSD = Number(foundExc.precio);
+
+            setPreciosPorMoneda({ BRL: valBRL, USD: valUSD });
+
+            const defaultMoneda = foundExc.moneda || (valBRL ? 'BRL' : 'USD');
+            setMoneda(defaultMoneda);
+
+            const activeCurr = monedaSeleccionada || defaultMoneda;
+            const finalVal = activeCurr === 'BRL' ? (valBRL ?? valUSD) : (valUSD ?? valBRL);
+            setPrecio(finalVal);
             return;
           }
           const tras = await db.traslados.toArray();
           const foundTras = tras.find(t => (t.paqueteId === paquete.id) || (t.nombre && paquete.titulo && t.nombre.toLowerCase().includes(paquete.titulo.toLowerCase().slice(0, 5))));
           if (foundTras && foundTras.precio && Number(foundTras.precio) > 0) {
             setPrecio(Number(foundTras.precio));
+            setMoneda('USD');
             return;
           }
         }
@@ -95,6 +118,7 @@ export default function PaqueteDetallePage() {
           const valid = rows.find(r => r.precio && Number(r.precio) > 0);
           if (valid) {
             setPrecio(Number(valid.precio));
+            setMoneda('USD');
             return;
           }
         }
@@ -102,10 +126,11 @@ export default function PaqueteDetallePage() {
         const targetHotel = isNacional ? 'economico' : hotel;
         const p = await db.precios.where({ paqueteId: paquete.id, temporada, hotel: targetHotel }).first();
         setPrecio(p && p.precio && Number(p.precio) > 0 ? Number(p.precio) : null);
+        setMoneda('USD');
       } catch { setPrecio(null); }
     };
     load();
-  }, [paquete, temporada, hotel, isExcursionOrTraslado, isInternational, isNacional]);
+  }, [paquete, temporada, hotel, isExcursionOrTraslado, isInternational, isNacional, monedaSeleccionada]);
 
   if (loading) {
     return (
@@ -125,7 +150,7 @@ export default function PaqueteDetallePage() {
   }
 
   const handleAdd = () => {
-    addItem(paquete, { temporada, hotel, pasajeros, precio });
+    addItem(paquete, { temporada, hotel, pasajeros, precio, moneda: monedaSeleccionada || moneda });
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };
@@ -316,8 +341,38 @@ export default function PaqueteDetallePage() {
             <div className="price-tag">
               {precio ? (
                 <>
-                  <p className="price-desde">{t('detalle_desde')}</p>
-                  <p className="price-amount font-display text-3xl">USD {precio.toLocaleString()}</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="price-desde">{t('detalle_desde')}</p>
+                    {isExcursionOrTraslado && preciosPorMoneda.BRL && preciosPorMoneda.USD && (
+                      <div className="inline-flex rounded-md p-0.5 bg-black/20 text-[11px] font-bold">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMonedaSeleccionada('BRL');
+                          }}
+                          className={`px-2 py-0.5 rounded transition-all ${
+                            (monedaSeleccionada || moneda) === 'BRL' ? 'bg-emerald-500 text-white shadow-sm' : 'text-white/70 hover:text-white'
+                          }`}
+                        >
+                          R$ Reales
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMonedaSeleccionada('USD');
+                          }}
+                          className={`px-2 py-0.5 rounded transition-all ${
+                            (monedaSeleccionada || moneda) === 'USD' ? 'bg-moana-orange text-white shadow-sm' : 'text-white/70 hover:text-white'
+                          }`}
+                        >
+                          USD
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p className="price-amount font-display text-3xl">
+                    {(monedaSeleccionada || moneda) === 'BRL' ? 'R$' : 'USD'} {precio.toLocaleString()}
+                  </p>
                   <p className="price-unit">
                     {isExcursionOrTraslado
                       ? 'por persona · servicio'
@@ -327,7 +382,9 @@ export default function PaqueteDetallePage() {
                   </p>
                   <div className="mt-2 pt-2 border-t border-white/20">
                     <p className="text-white/70 text-xs">{t('detalle_total')} {pasajeros} {t('detalle_pax')}</p>
-                    <p className="font-bold text-moana-orange text-lg">USD {totalGeneral?.toLocaleString()}</p>
+                    <p className="font-bold text-moana-orange text-lg">
+                      {(monedaSeleccionada || moneda) === 'BRL' ? 'R$' : 'USD'} {totalGeneral?.toLocaleString()}
+                    </p>
                   </div>
                 </>
               ) : (
@@ -349,7 +406,7 @@ export default function PaqueteDetallePage() {
             ) : null}
 
             <a
-              href={`https://wa.me/5522998258349?text=Hola%20Moana!%20Me%20interesa%20el%20paquete%20*${encodeURIComponent(paquete.titulo)}*%20%F0%9F%8C%8A%20%C2%BFPodr%C3%ADan%20darme%20m%C3%A1s%20informaci%C3%B3n%3F`}
+              href={`https://wa.me/5522998258349?text=Hola%20Moana!%20Me%20interesa%20el%20paquete%20*${encodeURIComponent(paquete.titulo)}*${precio ? encodeURIComponent(` (${(monedaSeleccionada || moneda) === 'BRL' ? 'R$' : 'USD'} ${precio} por persona)`) : ''}%20%F0%9F%8C%8A%20%C2%BFPodr%C3%ADan%20darme%20m%C3%A1s%20informaci%C3%B3n%3F`}
               target="_blank"
               rel="noreferrer"
               className="btn-whatsapp w-full justify-center"

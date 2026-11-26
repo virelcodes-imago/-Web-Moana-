@@ -317,8 +317,9 @@ export default function AdminPreciosPage() {
           await db.paquetes.update(pId, { titulo: exc.nombre, descCorta: exc.descripcion || '' }).catch(() => {});
         }
         await db.precios.where({ paqueteId: pId }).delete().catch(() => {});
-        if (exc.precio && Number(exc.precio) > 0) {
-          const rows = temporadas.map(t => ({ paqueteId: pId, temporada: t, hotel: 'economico', precio: Number(exc.precio) }));
+        const pPrincipal = (exc.moneda === 'BRL' ? exc.precioReales : exc.precio) || exc.precio || exc.precioReales;
+        if (pPrincipal && Number(pPrincipal) > 0) {
+          const rows = temporadas.map(t => ({ paqueteId: pId, temporada: t, hotel: 'economico', precio: Number(pPrincipal) }));
           await db.precios.bulkAdd(rows).catch(() => {});
         }
       }
@@ -359,7 +360,12 @@ export default function AdminPreciosPage() {
       ...prev,
       {
         nombre: '',
-        precio: 0,
+        moneda: 'BRL',
+        precioReales: '',
+        precioRealesAlta: '',
+        precioRealesSemanaSanta: '',
+        precioRealesVacacionesInvierno: '',
+        precio: '',
         precioAlta: '',
         precioSemanaSanta: '',
         precioVacacionesInvierno: '',
@@ -1247,11 +1253,172 @@ export default function AdminPreciosPage() {
                         </div>
                       </div>
 
+                      {/* Selector de Moneda para Publicación */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 bg-white rounded-xl border border-gray-100">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-bold text-moana-blue">Moneda de publicación en la web:</span>
+                          <div className="inline-flex rounded-lg p-0.5 bg-gray-100 border border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExcursiones((prev) =>
+                                  prev.map((x, j) => (j === realIndex ? { ...x, moneda: 'BRL' } : x))
+                                )
+                              }
+                              className={`px-3 py-1 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
+                                (exc.moneda || 'BRL') === 'BRL'
+                                  ? 'bg-emerald-600 text-white shadow-sm'
+                                  : 'text-gray-600 hover:text-emerald-700'
+                              }`}
+                            >
+                              <span>🇧🇷</span> Reales (R$)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExcursiones((prev) =>
+                                  prev.map((x, j) => (j === realIndex ? { ...x, moneda: 'USD' } : x))
+                                )
+                              }
+                              className={`px-3 py-1 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
+                                exc.moneda === 'USD'
+                                  ? 'bg-moana-blue text-white shadow-sm'
+                                  : 'text-gray-600 hover:text-moana-blue'
+                              }`}
+                            >
+                              <span>🇺🇸</span> Dólares (USD)
+                            </button>
+                          </div>
+                        </div>
+
+                        <span className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${
+                          (exc.moneda || 'BRL') === 'BRL'
+                            ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                            : 'text-moana-blue bg-blue-50 border-blue-200'
+                        }`}>
+                          {(exc.moneda || 'BRL') === 'BRL'
+                            ? '🇧🇷 Visible en la web en Reales (R$)'
+                            : '🇺🇸 Visible en la web en Dólares (USD)'}
+                        </span>
+                      </div>
+
+                      {/* Tarifas en Reales (R$) */}
+                      <div className={`p-3 rounded-xl border transition-all ${
+                        (exc.moneda || 'BRL') === 'BRL'
+                          ? 'bg-emerald-50/40 border-emerald-200 ring-1 ring-emerald-500/20'
+                          : 'bg-white border-gray-100 opacity-90'
+                      }`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                            🇧🇷 Tarifas en Reales (R$ por persona)
+                            {(exc.moneda || 'BRL') === 'BRL' && (
+                              <span className="text-[9px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">
+                                Activa en la web
+                              </span>
+                            )}
+                          </p>
+                          <span className="text-[10px] text-emerald-700">Completar precios en R$</span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div>
+                            <label className="text-[10px] font-medium text-emerald-900 block mb-1">Temp. Baja (Base)</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-emerald-700 font-bold">R$</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder="0"
+                                value={exc.precioReales ?? ''}
+                                onFocus={(e) => e.target.select()}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioReales: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-8 pr-2 py-1.5 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-950 text-center focus:ring-1 focus:ring-emerald-500 bg-white"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-emerald-900 block mb-1">Temp. Alta</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-emerald-700 font-bold">R$</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={exc.precioReales || 'Base'}
+                                value={exc.precioRealesAlta ?? ''}
+                                onFocus={(e) => e.target.select()}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioRealesAlta: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-8 pr-2 py-1.5 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-950 text-center focus:ring-1 focus:ring-emerald-500 bg-white"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-emerald-900 block mb-1">Semana Santa</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-emerald-700 font-bold">R$</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={exc.precioReales || 'Base'}
+                                value={exc.precioRealesSemanaSanta ?? ''}
+                                onFocus={(e) => e.target.select()}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioRealesSemanaSanta: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-8 pr-2 py-1.5 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-950 text-center focus:ring-1 focus:ring-emerald-500 bg-white"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-emerald-900 block mb-1">Vacaciones Invierno</label>
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-emerald-700 font-bold">R$</span>
+                              <input
+                                type="number"
+                                min="0"
+                                placeholder={exc.precioReales || 'Base'}
+                                value={exc.precioRealesVacacionesInvierno ?? ''}
+                                onFocus={(e) => e.target.select()}
+                                onChange={(e) =>
+                                  setExcursiones((prev) =>
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precioRealesVacacionesInvierno: e.target.value === '' ? '' : Number(e.target.value) } : x))
+                                  )
+                                }
+                                className="w-full pl-8 pr-2 py-1.5 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-950 text-center focus:ring-1 focus:ring-emerald-500 bg-white"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Desglose de Tarifas por Temporada (USD) */}
-                      <div className="bg-white p-3 rounded-xl border border-gray-100">
-                        <p className="text-[10px] font-bold text-moana-blue uppercase tracking-wider mb-2 flex items-center gap-1">
-                          📅 Tarifas por Temporada (USD por persona)
-                        </p>
+                      <div className={`p-3 rounded-xl border transition-all ${
+                        exc.moneda === 'USD'
+                          ? 'bg-blue-50/40 border-blue-200 ring-1 ring-moana-blue/20'
+                          : 'bg-white border-gray-100 opacity-90'
+                      }`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[10px] font-bold text-moana-blue uppercase tracking-wider flex items-center gap-1.5">
+                            🇺🇸 Tarifas en Dólares (USD por persona)
+                            {exc.moneda === 'USD' && (
+                              <span className="text-[9px] bg-moana-blue text-white px-2 py-0.5 rounded-full font-bold">
+                                Activa en la web
+                              </span>
+                            )}
+                          </p>
+                          <span className="text-[10px] text-moana-gray">Opcional / Referencia en USD</span>
+                        </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           <div>
                             <label className="text-[10px] font-medium text-moana-gray block mb-1">Temp. Baja (Base)</label>
@@ -1265,7 +1432,7 @@ export default function AdminPreciosPage() {
                                 onFocus={(e) => e.target.select()}
                                 onChange={(e) =>
                                   setExcursiones((prev) =>
-                                    prev.map((x, j) => (j === realIndex ? { ...x, precio: Number(e.target.value) } : x))
+                                    prev.map((x, j) => (j === realIndex ? { ...x, precio: e.target.value === '' ? '' : Number(e.target.value) } : x))
                                   )
                                 }
                                 className="w-full pl-9 pr-2 py-1.5 border border-gray-200 rounded-lg text-xs font-bold text-moana-dark text-center focus:ring-1 focus:ring-moana-orange"

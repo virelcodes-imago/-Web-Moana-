@@ -131,7 +131,7 @@ export default function CartDrawer() {
                     </p>
                     {item.precio ? (
                       <p className="text-moana-orange font-bold text-sm mt-1">
-                        DESDE USD {item.precio} / persona
+                        DESDE {item.moneda === 'BRL' ? 'R$' : 'USD'} {item.precio} / persona
                       </p>
                     ) : (
                       <p className="text-moana-teal-dark text-xs mt-1">

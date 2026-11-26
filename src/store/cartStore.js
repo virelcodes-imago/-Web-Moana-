@@ -24,6 +24,7 @@ const useCartStore = create(
             habitacion: opciones.habitacion || 'doble',
             pasajeros: opciones.pasajeros || 2,
             precio: opciones.precio || null,
+            moneda: opciones.moneda || 'USD',
             cantidad: 1,
             cartId: `${paquete.id}-${Date.now()}`,
           }],
@@ -84,7 +85,8 @@ const useCartStore = create(
           msg += `   🛏️ Habitación: ${item.habitacion}\n`;
           msg += `   👥 Pasajeros: ${item.pasajeros}\n`;
           if (item.precio) {
-            msg += `   💰 *DESDE USD ${item.precio} por persona*\n`;
+            const curr = item.moneda === 'BRL' ? 'R$' : 'USD';
+            msg += `   💰 *DESDE ${curr} ${item.precio} por persona*\n`;
           }
           msg += `\n`;
         });

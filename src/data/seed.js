@@ -225,6 +225,11 @@ export async function seedDatabase() {
     const excursionesToInsert = excursionesBase.map(e => ({
       nombre: e.nombre,
       precio: e.precio || 0,
+      precioReales: e.precioReales ?? null,
+      precioRealesAlta: null,
+      precioRealesSemanaSanta: null,
+      precioRealesVacacionesInvierno: null,
+      moneda: e.moneda || 'BRL',
       descripcion: e.descripcion,
       porPersona: e.porPersona ? 1 : 0,
       activo: 1,
@@ -232,14 +237,22 @@ export async function seedDatabase() {
     }));
     await db.excursiones.bulkAdd(excursionesToInsert).catch(() => {});
   } else {
-    // Actualizar excursiones existentes con destino si no lo tienen
+    // Actualizar excursiones existentes con destino y campos de Reales si no los tienen
     const excAll = await db.excursiones.toArray().catch(() => []);
     for (const exc of excAll) {
+      const updates = {};
+      const base = excursionesBase.find(e => e.nombre === exc.nombre);
       if (exc.destino === undefined || exc.destino === null) {
-        const base = excursionesBase.find(e => e.nombre === exc.nombre);
-        if (base?.destino) {
-          await db.excursiones.update(exc.id, { destino: base.destino }).catch(() => {});
-        }
+        if (base?.destino) updates.destino = base.destino;
+      }
+      if (exc.moneda === undefined || exc.moneda === null) {
+        updates.moneda = base?.moneda || ((exc.destino === 'buzios') ? 'BRL' : 'USD');
+      }
+      if (exc.precioReales === undefined) {
+        updates.precioReales = base?.precioReales ?? null;
+      }
+      if (Object.keys(updates).length > 0) {
+        await db.excursiones.update(exc.id, updates).catch(() => {});
       }
     }
   }
