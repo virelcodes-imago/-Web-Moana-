@@ -26,8 +26,23 @@ export default function PaquetesPage() {
   useEffect(() => {
     const load = async () => {
       const list = await db.paquetes.toArray();
-      // NUNCA usar paquetesBase como fallback — el seed ya corrió antes del render
-      const activeList = list.filter(p => p.activo !== 0 && p.activo !== false);
+      const excs = await db.excursiones.toArray().catch(() => []);
+
+      // Excursiones apagadas en el admin
+      const excsApagadas = excs
+        .filter((e) => e.activo === 0 || e.activo === false)
+        .map((e) => (e.nombre || '').toLowerCase().trim());
+
+      const activeList = list.filter((p) => {
+        if (p.activo === 0 || p.activo === false) return false;
+        const isExc =
+          p.categoria === CATEGORIAS.TRASLADOS_EXCURSIONES ||
+          p.categoria === 'excursiones';
+        if (isExc && p.titulo && excsApagadas.includes(p.titulo.toLowerCase().trim())) {
+          return false;
+        }
+        return true;
+      });
       setPaquetes(activeList);
     };
     load();
@@ -47,7 +62,17 @@ export default function PaquetesPage() {
     .filter((p) => {
       if (catActiva === 'todos') return isDestinoOnly(p);
       if (catActiva === CATEGORIAS.BUZIOS) {
-        return p.categoria === CATEGORIAS.BUZIOS || p.slug === 'buzios-hospedaje' || p.id === 30;
+        return (
+          (p.categoria === CATEGORIAS.BUZIOS || p.slug === 'buzios-hospedaje' || p.id === 30) &&
+          (p.noches !== null || p.id === 30)
+        );
+      }
+      if (catActiva === CATEGORIAS.TRASLADOS_EXCURSIONES) {
+        return (
+          p.categoria === CATEGORIAS.TRASLADOS_EXCURSIONES ||
+          p.categoria === 'excursiones' ||
+          p.categoria === 'traslados'
+        );
       }
       return p.categoria === catActiva;
     })

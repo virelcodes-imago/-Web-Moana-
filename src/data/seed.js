@@ -1,4 +1,4 @@
-import db, { loadAdminOverrides } from '../db/db';
+import db, { loadAdminOverrides, syncExcursionToPackage } from '../db/db';
 import paquetesBase, { isExcursionOrTransfer } from './paquetes';
 import equipoData from './equipo';
 import { excursionesBase, trasladosBase } from './extras';
@@ -232,12 +232,12 @@ export async function seedDatabase() {
       moneda: e.moneda || 'BRL',
       descripcion: e.descripcion,
       porPersona: e.porPersona ? 1 : 0,
-      activo: 1,
+      activo: e.activo ? 1 : 0,
       destino: e.destino || null,  // campo para filtrado por destino en cotizador
     }));
     await db.excursiones.bulkAdd(excursionesToInsert).catch(() => {});
   } else {
-    // Actualizar excursiones existentes con destino y campos de Reales si no los tienen
+    // Actualizar excursiones existentes con destino, moneda y estado activo/apagado
     const excAll = await db.excursiones.toArray().catch(() => []);
     for (const exc of excAll) {
       const updates = {};
@@ -251,11 +251,37 @@ export async function seedDatabase() {
       if (exc.precioReales === undefined) {
         updates.precioReales = base?.precioReales ?? null;
       }
+
+      // Solo Arraial, Escuna y Buceo deben estar activas inicialmente; el resto apagadas
+      const isInitialActive = Boolean(
+        exc.nombre.toLowerCase().includes('arraial') ||
+        exc.nombre.toLowerCase().includes('escuna') ||
+        exc.nombre.toLowerCase().includes('buceo')
+      );
+      if (exc.activo === undefined || exc.activo === null) {
+        updates.activo = isInitialActive ? 1 : 0;
+      } else if (!isInitialActive && exc.overrideActivo !== true) {
+        // Asegurar que las que no estaban en la web arranquen apagadas
+        updates.activo = 0;
+      }
+
       if (Object.keys(updates).length > 0) {
         await db.excursiones.update(exc.id, updates).catch(() => {});
       }
     }
   }
+
+  // Desactivar duplicados viejos en db.paquetes (IDs 2, 3, 4, 5, 6)
+  await db.paquetes.update(2, { activo: 0 }).catch(() => {});
+  await db.paquetes.update(3, { activo: 0 }).catch(() => {});
+  await db.paquetes.update(4, { activo: 0 }).catch(() => {});
+  await db.paquetes.update(5, { activo: 0 }).catch(() => {});
+  await db.paquetes.update(6, { activo: 0 }).catch(() => {});
+
+  // Asegurar que las 3 oficiales estén activas en db.paquetes
+  await db.paquetes.update(50, { activo: 1 }).catch(() => {});
+  await db.paquetes.update(51, { activo: 1 }).catch(() => {});
+  await db.paquetes.update(52, { activo: 1 }).catch(() => {});
 
   // 5. Cargar Traslados solo si está vacía
   const trasCount = await db.traslados.count().catch(() => 0);

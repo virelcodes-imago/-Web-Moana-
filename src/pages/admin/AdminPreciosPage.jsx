@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Save, Plus, Trash2, CheckCircle, Settings, Edit3, Star, Eye, EyeOff, Search, Sparkles, Home, LogOut, Key, X } from 'lucide-react';
-import db, { saveAdminOverride } from '../../db/db';
+import db, { saveAdminOverride, syncExcursionToPackage } from '../../db/db';
 import { paquetesBase, TEMPORADAS, TEMPORADAS_BUZIOS, HOTELES, isExcursionOrTransfer } from '../../data/paquetes';
 import { excursionesBase, trasladosBase } from '../../data/extras';
 import useAuthStore from '../../store/authStore';
@@ -306,27 +306,40 @@ export default function AdminPreciosPage() {
     await db.excursiones.clear();
     await db.excursiones.bulkAdd(excursiones.map(({ id: _id, ...e }) => e));
 
-    const pkgMap = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6 };
-    const temporadas = ['baja', 'alta', 'semana_santa', 'vacaciones_invierno'];
-
     for (let i = 0; i < excursiones.length; i++) {
       const exc = excursiones[i];
-      const pId = exc.paqueteId || pkgMap[exc.id] || pkgMap[i + 1];
-      if (pId) {
-        if (exc.nombre) {
-          await db.paquetes.update(pId, { titulo: exc.nombre, descCorta: exc.descripcion || '' }).catch(() => {});
-        }
-        await db.precios.where({ paqueteId: pId }).delete().catch(() => {});
-        const pPrincipal = (exc.moneda === 'BRL' ? exc.precioReales : exc.precio) || exc.precio || exc.precioReales;
-        if (pPrincipal && Number(pPrincipal) > 0) {
-          const rows = temporadas.map(t => ({ paqueteId: pId, temporada: t, hotel: 'economico', precio: Number(pPrincipal) }));
-          await db.precios.bulkAdd(rows).catch(() => {});
-        }
-      }
+      await syncExcursionToPackage(exc);
     }
 
     await reloadPaquetes();
     showSaved('¡Excursiones guardadas y actualizadas en la web correctamente!');
+  };
+
+  const handleToggleExcursionActivo = async (realIndex) => {
+    const exc = excursiones[realIndex];
+    if (!exc) return;
+    const currentActive = exc.activo !== 0 && exc.activo !== false;
+    const nextStatus = currentActive ? 0 : 1;
+    const isNowActive = nextStatus === 1;
+
+    const updated = excursiones.map((x, j) => {
+      if (j !== realIndex) return x;
+      return { ...x, activo: nextStatus, overrideActivo: true };
+    });
+    setExcursiones(updated);
+
+    if (exc.id) {
+      await db.excursiones.update(exc.id, { activo: nextStatus, overrideActivo: true }).catch(() => {});
+    }
+
+    await syncExcursionToPackage({ ...exc, activo: nextStatus });
+    await reloadPaquetes();
+
+    showSaved(
+      isNowActive
+        ? `🌊 "${exc.nombre}" ahora está PUBLICADA en la web.`
+        : `⚪ "${exc.nombre}" fue APAGADA de la web.`
+    );
   };
 
   const handleSaveTraslados = async () => {
@@ -1175,10 +1188,62 @@ export default function AdminPreciosPage() {
                 .map((exc, idx) => {
                   const realIndex = excursiones.findIndex((x) => x === exc);
                   return (
-                    <div key={realIndex} className="p-4 bg-moana-cream rounded-2xl border border-gray-100 space-y-3 shadow-sm">
+                    <div key={realIndex} className={`p-4 rounded-2xl border space-y-3 shadow-sm transition-all ${
+                      (exc.activo !== 0 && exc.activo !== false)
+                        ? 'bg-moana-cream border-emerald-200 ring-1 ring-emerald-500/10'
+                        : 'bg-gray-50/80 border-gray-200 opacity-80'
+                    }`}>
+                      {/* Cabecera: Switch de publicación en la web y botón Eliminar */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white rounded-xl border border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            role="switch"
+                            aria-checked={Boolean(exc.activo !== 0 && exc.activo !== false)}
+                            onClick={() => handleToggleExcursionActivo(realIndex)}
+                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                              (exc.activo !== 0 && exc.activo !== false) ? 'bg-emerald-600' : 'bg-gray-300'
+                            }`}
+                            title="Hacé clic para publicar u ocultar de la web"
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                (exc.activo !== 0 && exc.activo !== false) ? 'translate-x-5' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-moana-dark">Publicación en la web:</span>
+                              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                                (exc.activo !== 0 && exc.activo !== false)
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                  : 'bg-gray-100 text-gray-500 border-gray-200'
+                              }`}>
+                                {(exc.activo !== 0 && exc.activo !== false) ? '🟢 Publicada en la web' : '⚪ Apagada (Oculta)'}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-moana-gray">
+                              {(exc.activo !== 0 && exc.activo !== false)
+                                ? 'Visible para los clientes en la sección de excursiones de la web.'
+                                : 'No se muestra en la web. Disponible solo internamente en el cotizador.'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Eliminar */}
+                        <button
+                          onClick={() => setExcursiones((prev) => prev.filter((_, j) => j !== realIndex))}
+                          className="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                          title="Eliminar excursión"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                         {/* Nombre */}
-                        <div className="md:col-span-4">
+                        <div className="md:col-span-5">
                           <label className="text-[10px] font-semibold text-moana-gray uppercase tracking-wider block mb-1">
                             Nombre de Excursión
                           </label>
@@ -1239,17 +1304,6 @@ export default function AdminPreciosPage() {
                             }
                             className="input-field text-xs"
                           />
-                        </div>
-
-                        {/* Eliminar */}
-                        <div className="md:col-span-1 flex justify-end">
-                          <button
-                            onClick={() => setExcursiones((prev) => prev.filter((_, j) => j !== realIndex))}
-                            className="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                            title="Eliminar excursión"
-                          >
-                            <Trash2 size={18} />
-                          </button>
                         </div>
                       </div>
 
